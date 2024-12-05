@@ -1,0 +1,23 @@
+{
+  "name": "@subql/types-starknet",
+  "version": "0.0.1",
+  "description": "",
+  "homepage": "https://github.com/subquery/subql",
+  "repository": "github:subquery/subql",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && tsc -b",
+    "changelog:release": "echo \"Updating changelog $npm_package_version\" && npx chan release $npm_package_version --git-url \"https://github.com/subquery/subql-starknet\" --release-prefix=\"types-starknet/\""
+  },
+  "author": "Jay Ji",
+  "main": "dist/index.js",
+  "license": "GPL-3.0",
+  "files": [
+    "src/global.d.ts",
+    "/dist"
+  ],
+  "dependencies": {
+    "@subql/types-core": "^1.1.1",
+    "starknet": "^6.11.0"
+  }
+}

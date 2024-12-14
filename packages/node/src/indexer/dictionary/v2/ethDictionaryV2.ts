@@ -1,7 +1,7 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { NOT_NULL_FILTER } from '@subql/common-ethereum';
+import { NOT_NULL_FILTER } from '@subql/common-starknet';
 import {
   NodeConfig,
   DictionaryV2,
@@ -24,7 +24,7 @@ import {
   EthereumProjectDsTemplate,
   SubqueryProject,
 } from '../../../configure/SubqueryProject';
-import { EthereumApi } from '../../../ethereum';
+import { EthereumApi } from '../../../starknet';
 import { eventToTopic, functionToSighash } from '../../../utils/string';
 import { yargsOptions } from '../../../yargs';
 import { groupedDataSources, validAddresses } from '../utils';

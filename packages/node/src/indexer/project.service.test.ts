@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { EthereumApi, EthereumApiService } from '../ethereum';
+import { StarknetApi, StarknetApiService } from '../starknet';
 import { ProjectService } from './project.service';
 
-const HTTP_ENDPOINT = 'https://ethereum.rpc.subquery.network/public';
+const HTTP_ENDPOINT = 'https://free-rpc.nstrkermind.io/mainnet-juno/v0_7';
 
-const mockApiService = (): EthereumApiService => {
-  const ethApi = new EthereumApi(HTTP_ENDPOINT, 20, new EventEmitter2());
+const mockApiService = (): StarknetApiService => {
+  const ethApi = new StarknetApi(HTTP_ENDPOINT, new EventEmitter2());
 
   // await ethApi.init();
 

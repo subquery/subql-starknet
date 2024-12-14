@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { Inject, Injectable } from '@nestjs/common';
-import { SubqlEthereumDataSource } from '@subql/common-ethereum';
+import { SubqlStarknetDataSource } from '@subql/common-starknet';
 import {
   NodeConfig,
   IProjectService,
@@ -12,9 +12,9 @@ import {
   IProjectUpgradeService,
   IBlock,
 } from '@subql/node-core';
-import { EthereumProjectDs } from '../../configure/SubqueryProject';
-import { EthereumApi } from '../../ethereum';
-import SafeEthProvider from '../../ethereum/safe-api';
+import { StarknetProjectDs } from '../../configure/SubqueryProject';
+import { StarknetApi } from '../../starknet';
+import SafeEthProvider from '../../starknet/safe-api';
 import { IndexerManager } from '../indexer.manager';
 import { BlockContent } from '../types';
 
@@ -31,18 +31,18 @@ export type WorkerStatusResponse = {
 export class WorkerService extends BaseWorkerService<
   BlockContent,
   FetchBlockResponse,
-  SubqlEthereumDataSource,
+  SubqlStarknetDataSource,
   {}
 > {
   constructor(
     private apiService: ApiService<
-      EthereumApi,
+      StarknetApi,
       SafeEthProvider,
       IBlock<BlockContent>[]
     >,
     private indexerManager: IndexerManager,
     @Inject('IProjectService')
-    projectService: IProjectService<EthereumProjectDs>,
+    projectService: IProjectService<StarknetProjectDs>,
     @Inject('IProjectUpgradeService')
     projectUpgradeService: IProjectUpgradeService,
     nodeConfig: NodeConfig,
@@ -66,7 +66,7 @@ export class WorkerService extends BaseWorkerService<
 
   protected async processFetchedBlock(
     block: IBlock<BlockContent>,
-    dataSources: SubqlEthereumDataSource[],
+    dataSources: SubqlStarknetDataSource[],
   ): Promise<ProcessBlockResponse> {
     return this.indexerManager.indexBlock(block, dataSources);
   }

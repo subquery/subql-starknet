@@ -5,21 +5,21 @@ import {
   SubqlRuntimeHandler,
   SubqlCustomHandler,
   SubqlHandler,
-  EthereumHandlerKind,
-  SubqlEthereumHandlerKind,
+  StarknetHandlerKind,
+  SubqlStarknetHandlerKind,
   isCustomDs,
   isRuntimeDs,
-} from '@subql/common-ethereum';
+} from '@subql/common-starknet';
 import { retryOnFail } from '@subql/node-core';
 import {
-  EthereumProjectDs,
+  StarknetProjectDs,
   SubqueryProject,
 } from '../configure/SubqueryProject';
 
 export function isBaseHandler(
   handler: SubqlHandler,
 ): handler is SubqlRuntimeHandler {
-  return Object.values<string>(EthereumHandlerKind).includes(handler.kind);
+  return Object.values<string>(StarknetHandlerKind).includes(handler.kind);
 }
 
 export function isCustomHandler(
@@ -38,11 +38,11 @@ export async function retryOnFailEth<T>(
 }
 
 export function onlyHasLogDataSources(
-  dataSources: EthereumProjectDs[],
+  dataSources: StarknetProjectDs[],
 ): boolean {
   for (const ds of dataSources) {
     for (const handler of ds.mapping.handlers) {
-      if (handler.kind !== SubqlEthereumHandlerKind.EthEvent) {
+      if (handler.kind !== SubqlStarknetHandlerKind.StrkEvent) {
         return false;
       }
     }
@@ -51,10 +51,10 @@ export function onlyHasLogDataSources(
   return true;
 }
 
-function dsContainsNonEventHandlers(ds: EthereumProjectDs): boolean {
+function dsContainsNonEventHandlers(ds: StarknetProjectDs): boolean {
   if (isRuntimeDs(ds)) {
     return !!ds.mapping.handlers.find(
-      (handler) => handler.kind !== EthereumHandlerKind.Event,
+      (handler) => handler.kind !== StarknetHandlerKind.Event,
     );
   } else if (isCustomDs(ds)) {
     // TODO this can be improved upon in the future.
@@ -68,7 +68,7 @@ export function isOnlyEventHandlers(project: SubqueryProject): boolean {
     dsContainsNonEventHandlers(ds),
   );
   const hasNonEventTemplate = !!project.templates.find((ds) =>
-    dsContainsNonEventHandlers(ds as EthereumProjectDs),
+    dsContainsNonEventHandlers(ds as StarknetProjectDs),
   );
 
   return !hasNonEventHandler && !hasNonEventTemplate;

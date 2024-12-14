@@ -15,53 +15,52 @@ import {
 } from '@subql/node-core';
 import { IEndpointConfig } from '@subql/types-core';
 import {
-  EthereumBlock,
-  EthereumNetworkConfig,
-  IEthereumEndpointConfig,
-  LightEthereumBlock,
-} from '@subql/types-ethereum';
-import { EthereumNodeConfig } from '../configure/NodeConfig';
+  StarknetBlock,
+  StarknetNetworkConfig,
+  IStarknetEndpointConfig,
+  LightStarknetBlock,
+} from '@subql/types-starknet';
+import { StarknetNodeConfig } from '../configure/NodeConfig';
 import { SubqueryProject } from '../configure/SubqueryProject';
 import { isOnlyEventHandlers } from '../utils/project';
 import {
-  EthereumApiConnection,
+  StarknetApiConnection,
   FetchFunc,
   GetFetchFunc,
 } from './api.connection';
-import { EthereumApi } from './api.ethereum';
-import SafeEthProvider from './safe-api';
-
+import { StarknetApi } from './api.starknet';
+import SafeStarknetProvider from './safe-api';
 const logger = getLogger('api');
 
 @Injectable()
-export class EthereumApiService extends ApiService<
-  EthereumApi,
-  SafeEthProvider,
-  IBlock<EthereumBlock>[] | IBlock<LightEthereumBlock>[],
-  EthereumApiConnection,
-  IEthereumEndpointConfig
+export class StarknetApiService extends ApiService<
+  StarknetApi,
+  SafeStarknetProvider,
+  IBlock<StarknetBlock>[] | IBlock<LightStarknetBlock>[],
+  StarknetApiConnection,
+  IStarknetEndpointConfig
 > {
   private fetchBlocksFunction?: FetchFunc;
   private fetchBlocksBatches: GetFetchFunc = () => {
     assert(this.fetchBlocksFunction, 'Fetch blocks function is not defined');
     return this.fetchBlocksFunction;
   };
-  private nodeConfig: EthereumNodeConfig;
+  private nodeConfig: StarknetNodeConfig;
 
   constructor(
     @Inject('ISubqueryProject') private project: SubqueryProject,
-    connectionPoolService: ConnectionPoolService<EthereumApiConnection>,
+    connectionPoolService: ConnectionPoolService<StarknetApiConnection>,
     eventEmitter: EventEmitter2,
     nodeConfig: NodeConfig,
   ) {
     super(connectionPoolService, eventEmitter);
-    this.nodeConfig = new EthereumNodeConfig(nodeConfig);
+    this.nodeConfig = new StarknetNodeConfig(nodeConfig);
 
     this.updateBlockFetching();
   }
 
-  async init(): Promise<EthereumApiService> {
-    let network: EthereumNetworkConfig;
+  async init(): Promise<StarknetApiService> {
+    let network: StarknetNetworkConfig;
     try {
       network = this.project.network;
     } catch (e) {
@@ -74,12 +73,10 @@ export class EthereumApiService extends ApiService<
     }
 
     await this.createConnections(network, (endpoint, config) =>
-      EthereumApiConnection.create(
+      StarknetApiConnection.create(
         endpoint,
-        this.nodeConfig.blockConfirmations,
         this.fetchBlocksBatches,
         this.eventEmitter,
-        this.nodeConfig.unfinalizedBlocks,
         config,
       ),
     );
@@ -99,11 +96,11 @@ export class EthereumApiService extends ApiService<
     );
   }
 
-  get api(): EthereumApi {
+  get api(): StarknetApi {
     return this.unsafeApi;
   }
 
-  safeApi(height: number): SafeEthProvider {
+  safeApi(height: number): SafeStarknetProvider {
     const maxRetries = 5;
 
     const retryErrorCodes = [
@@ -116,9 +113,9 @@ export class EthereumApiService extends ApiService<
       'CANCELLED',
     ];
 
-    const handler: ProxyHandler<SafeEthProvider> = {
+    const handler: ProxyHandler<SafeStarknetProvider> = {
       get: (target, prop, receiver) => {
-        const originalMethod = target[prop as keyof SafeEthProvider];
+        const originalMethod = target[prop as keyof SafeStarknetProvider];
         if (typeof originalMethod === 'function') {
           return async (
             ...args: Parameters<typeof originalMethod>
@@ -165,16 +162,16 @@ export class EthereumApiService extends ApiService<
   }
 
   private async fetchFullBlocksBatch(
-    api: EthereumApi,
+    api: StarknetApi,
     batch: number[],
-  ): Promise<IBlock<EthereumBlock>[]> {
+  ): Promise<IBlock<StarknetBlock>[]> {
     return api.fetchBlocks(batch);
   }
 
   private async fetchLightBlocksBatch(
-    api: EthereumApi,
+    api: StarknetApi,
     batch: number[],
-  ): Promise<IBlock<LightEthereumBlock>[]> {
+  ): Promise<IBlock<LightStarknetBlock>[]> {
     return api.fetchBlocksLight(batch);
   }
 
@@ -210,7 +207,7 @@ export class EthereumApiService extends ApiService<
     if (this.nodeConfig?.profiler) {
       this.fetchBlocksFunction = profilerWrap(
         fetchFunc,
-        'SubstrateUtil',
+        'StarknetApi',
         'fetchBlocksBatches',
       ) as FetchFunc;
     } else {

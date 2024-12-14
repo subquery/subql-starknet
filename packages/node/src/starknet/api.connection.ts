@@ -14,66 +14,58 @@ import {
   IBlock,
 } from '@subql/node-core';
 import {
-  EthereumBlock,
-  IEthereumEndpointConfig,
-  LightEthereumBlock,
-} from '@subql/types-ethereum';
-import { EthereumApi } from './api.ethereum';
-import SafeEthProvider from './safe-api';
+  StarknetBlock,
+  IStarknetEndpointConfig,
+  LightStarknetBlock,
+} from '@subql/types-starknet';
+import { StarknetApi } from './api.starknet';
+import SafeStarknetProvider from './safe-api';
 
 export type FetchFunc =
-  | ((api: EthereumApi, batch: number[]) => Promise<IBlock<EthereumBlock>[]>)
+  | ((api: StarknetApi, batch: number[]) => Promise<IBlock<StarknetBlock>[]>)
   | ((
-      api: EthereumApi,
+      api: StarknetApi,
       batch: number[],
-    ) => Promise<IBlock<LightEthereumBlock>[]>);
+    ) => Promise<IBlock<LightStarknetBlock>[]>);
 
 // We use a function to get the fetch function because it can change depending on the skipBlocks feature
 export type GetFetchFunc = () => FetchFunc;
 
-export class EthereumApiConnection
+export class StarknetApiConnection
   implements
     IApiConnectionSpecific<
-      EthereumApi,
-      SafeEthProvider,
-      IBlock<EthereumBlock>[] | IBlock<LightEthereumBlock>[]
+      StarknetApi,
+      SafeStarknetProvider,
+      IBlock<StarknetBlock>[] | IBlock<LightStarknetBlock>[]
     >
 {
   readonly networkMeta: NetworkMetadataPayload;
 
   private constructor(
-    public unsafeApi: EthereumApi,
+    public unsafeApi: StarknetApi,
     private fetchBlocksBatches: GetFetchFunc,
   ) {
     this.networkMeta = {
       chain: unsafeApi.getChainId().toString(),
-      specName: unsafeApi.getSpecName(),
+      specName: unsafeApi.getSpecVersion(),
       genesisHash: unsafeApi.getGenesisHash(),
     };
   }
 
   static async create(
     endpoint: string,
-    blockConfirmations: number,
     fetchBlocksBatches: GetFetchFunc,
     eventEmitter: EventEmitter2,
-    unfinalizedBlocks: boolean,
-    config?: IEthereumEndpointConfig,
-  ): Promise<EthereumApiConnection> {
-    const api = new EthereumApi(
-      endpoint,
-      blockConfirmations,
-      eventEmitter,
-      unfinalizedBlocks,
-      config,
-    );
+    config?: IStarknetEndpointConfig,
+  ): Promise<StarknetApiConnection> {
+    const api = new StarknetApi(endpoint, eventEmitter, config);
 
     await api.init();
 
-    return new EthereumApiConnection(api, fetchBlocksBatches);
+    return new StarknetApiConnection(api, fetchBlocksBatches);
   }
 
-  safeApi(height: number): SafeEthProvider {
+  safeApi(height: number): SafeStarknetProvider {
     throw new Error(`Not Implemented`);
   }
 
@@ -87,13 +79,14 @@ export class EthereumApiConnection
 
   async fetchBlocks(
     heights: number[],
-  ): Promise<IBlock<EthereumBlock>[] | IBlock<LightEthereumBlock>[]> {
+  ): Promise<IBlock<StarknetBlock>[] | IBlock<LightStarknetBlock>[]> {
     const blocks = await this.fetchBlocksBatches()(this.unsafeApi, heights);
     return blocks;
   }
 
-  handleError = EthereumApiConnection.handleError;
+  handleError = StarknetApiConnection.handleError;
 
+  // TODO, we unsure rpc errors are handled correctly yet, will improve these in future
   static handleError(e: Error): ApiConnectionError {
     let formatted_error: ApiConnectionError;
     if (e.message.startsWith(`No response received from RPC endpoint in`)) {

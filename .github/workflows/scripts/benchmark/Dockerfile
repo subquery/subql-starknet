@@ -15,7 +15,7 @@ ENV DB_PORT=5432
 WORKDIR /app
 
 # Install app dependencies
-RUN npm i @subql/node-ethereum@$INDEXER_VERSION -g
+RUN npm i @subql/node-starknet@$INDEXER_VERSION -g
 
 # Copy the rest of the app's code to the container
 COPY . .

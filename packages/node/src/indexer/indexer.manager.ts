@@ -8,11 +8,11 @@ import {
   isEventHandlerProcessor,
   isCustomDs,
   isRuntimeDs,
-  SubqlEthereumCustomDataSource,
-  EthereumHandlerKind,
-  EthereumRuntimeHandlerInputMap,
-  SubqlEthereumDataSource,
-} from '@subql/common-ethereum';
+  StarknetCustomDataSource,
+  StarknetHandlerKind,
+  StarknetRuntimeHandlerInputMap,
+  SubqlStarknetDataSource,
+} from '@subql/common-starknet';
 import {
   ApiService,
   NodeConfig,
@@ -24,24 +24,23 @@ import {
   SandboxService,
 } from '@subql/node-core';
 import {
-  EthereumTransaction,
-  EthereumLog,
-  EthereumBlock,
-  SubqlRuntimeDatasource,
-  EthereumBlockFilter,
-  EthereumLogFilter,
-  EthereumTransactionFilter,
-  LightEthereumLog,
-} from '@subql/types-ethereum';
-import { EthereumProjectDs } from '../configure/SubqueryProject';
-import { EthereumApi } from '../ethereum';
+  StarknetTransaction,
+  StarknetLog,
+  StarknetBlock,
+  StarknetRuntimeDatasource,
+  StarknetBlockFilter,
+  StarknetLogFilter,
+  StarknetTransactionFilter,
+} from '@subql/types-starknet';
+import { StarknetProjectDs } from '../configure/SubqueryProject';
+import { StarknetApi } from '../starknet';
 import {
   filterBlocksProcessor,
   filterLogsProcessor,
   filterTransactionsProcessor,
   isFullBlock,
-} from '../ethereum/block.ethereum';
-import SafeEthProvider from '../ethereum/safe-api';
+} from '../starknet/block.starknet';
+import SafeEthProvider from '../starknet/safe-api';
 import { DsProcessorService } from './ds-processor.service';
 import { DynamicDsService } from './dynamic-ds.service';
 import { BlockContent } from './types';
@@ -49,15 +48,15 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
 
 @Injectable()
 export class IndexerManager extends BaseIndexerManager<
-  EthereumApi,
+  StarknetApi,
   SafeEthProvider,
   BlockContent,
   ApiService,
-  SubqlEthereumDataSource,
-  SubqlEthereumCustomDataSource,
+  SubqlStarknetDataSource,
+  StarknetCustomDataSource,
   typeof FilterTypeMap,
   typeof ProcessorTypeMap,
-  EthereumRuntimeHandlerInputMap
+  StarknetRuntimeHandlerInputMap
 > {
   protected isRuntimeDs = isRuntimeDs;
   protected isCustomDs = isCustomDs;
@@ -65,7 +64,7 @@ export class IndexerManager extends BaseIndexerManager<
   constructor(
     apiService: ApiService,
     nodeConfig: NodeConfig,
-    sandboxService: SandboxService<SafeEthProvider, EthereumApi>,
+    sandboxService: SandboxService<SafeEthProvider, StarknetApi>,
     dsProcessorService: DsProcessorService,
     dynamicDsService: DynamicDsService,
     unfinalizedBlocksService: UnfinalizedBlocksService,
@@ -85,7 +84,7 @@ export class IndexerManager extends BaseIndexerManager<
   @profiler()
   async indexBlock(
     block: IBlock<BlockContent>,
-    dataSources: SubqlEthereumDataSource[],
+    dataSources: SubqlStarknetDataSource[],
   ): Promise<ProcessBlockResponse> {
     return super.internalIndexBlock(block, dataSources, () =>
       this.getApi(block.block),
@@ -94,11 +93,11 @@ export class IndexerManager extends BaseIndexerManager<
 
   // eslint-disable-next-line @typescript-eslint/require-await
   private async getApi(block: BlockContent): Promise<SafeEthProvider> {
-    return this.apiService.safeApi(block.number);
+    return this.apiService.safeApi(block.blockNumber);
   }
 
   protected getDsProcessor(
-    ds: SubqlEthereumDataSource,
+    ds: SubqlStarknetDataSource,
     safeApi: SafeEthProvider,
   ): IndexerSandbox {
     return this.sandboxService.getDsProcessor(
@@ -110,8 +109,8 @@ export class IndexerManager extends BaseIndexerManager<
 
   protected async indexBlockData(
     block: BlockContent,
-    dataSources: EthereumProjectDs[],
-    getVM: (d: EthereumProjectDs) => Promise<IndexerSandbox>,
+    dataSources: StarknetProjectDs[],
+    getVM: (d: StarknetProjectDs) => Promise<IndexerSandbox>,
   ): Promise<void> {
     if (isFullBlock(block)) {
       await this.indexBlockContent(block, dataSources, getVM);
@@ -131,77 +130,76 @@ export class IndexerManager extends BaseIndexerManager<
   }
 
   private async indexBlockContent(
-    block: EthereumBlock,
-    dataSources: EthereumProjectDs[],
-    getVM: (d: EthereumProjectDs) => Promise<IndexerSandbox>,
+    block: StarknetBlock,
+    dataSources: StarknetProjectDs[],
+    getVM: (d: StarknetProjectDs) => Promise<IndexerSandbox>,
   ): Promise<void> {
     for (const ds of dataSources) {
-      await this.indexData(EthereumHandlerKind.Block, block, ds, getVM);
+      await this.indexData(StarknetHandlerKind.Block, block, ds, getVM);
     }
   }
 
   private async indexTransaction(
-    tx: EthereumTransaction,
-    dataSources: EthereumProjectDs[],
-    getVM: (d: EthereumProjectDs) => Promise<IndexerSandbox>,
+    tx: StarknetTransaction,
+    dataSources: StarknetProjectDs[],
+    getVM: (d: StarknetProjectDs) => Promise<IndexerSandbox>,
   ): Promise<void> {
     for (const ds of dataSources) {
-      await this.indexData(EthereumHandlerKind.Call, tx, ds, getVM);
+      await this.indexData(StarknetHandlerKind.Call, tx, ds, getVM);
     }
   }
 
   private async indexEvent(
-    log: EthereumLog | LightEthereumLog,
-    dataSources: EthereumProjectDs[],
-    getVM: (d: EthereumProjectDs) => Promise<IndexerSandbox>,
+    log: StarknetLog,
+    dataSources: StarknetProjectDs[],
+    getVM: (d: StarknetProjectDs) => Promise<IndexerSandbox>,
   ): Promise<void> {
     for (const ds of dataSources) {
-      await this.indexData(EthereumHandlerKind.Event, log, ds, getVM);
+      await this.indexData(StarknetHandlerKind.Event, log, ds, getVM);
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
   protected async prepareFilteredData(
-    kind: EthereumHandlerKind,
+    kind: StarknetHandlerKind,
     data: any,
-    ds: SubqlRuntimeDatasource,
+    ds: StarknetRuntimeDatasource,
   ): Promise<any> {
     return DataAbiParser[kind](this.apiService.api)(data, ds);
   }
 }
 
 const ProcessorTypeMap = {
-  [EthereumHandlerKind.Block]: isBlockHandlerProcessor,
-  [EthereumHandlerKind.Event]: isEventHandlerProcessor,
-  [EthereumHandlerKind.Call]: isCallHandlerProcessor,
+  [StarknetHandlerKind.Block]: isBlockHandlerProcessor,
+  [StarknetHandlerKind.Event]: isEventHandlerProcessor,
+  [StarknetHandlerKind.Call]: isCallHandlerProcessor,
 };
 
 const FilterTypeMap = {
-  [EthereumHandlerKind.Block]: (
-    data: EthereumBlock,
-    filter: EthereumBlockFilter,
-    ds: SubqlEthereumDataSource,
+  [StarknetHandlerKind.Block]: (
+    data: StarknetBlock,
+    filter: StarknetBlockFilter,
+    ds: SubqlStarknetDataSource,
   ) => filterBlocksProcessor(data, filter, ds.options?.address),
-  [EthereumHandlerKind.Event]: (
-    data: EthereumLog | LightEthereumLog,
-    filter: EthereumLogFilter,
-    ds: SubqlEthereumDataSource,
+  [StarknetHandlerKind.Event]: (
+    data: StarknetLog,
+    filter: StarknetLogFilter,
+    ds: SubqlStarknetDataSource,
   ) => filterLogsProcessor(data, filter, ds.options?.address),
-  [EthereumHandlerKind.Call]: (
-    data: EthereumTransaction,
-    filter: EthereumTransactionFilter,
-    ds: SubqlEthereumDataSource,
+  [StarknetHandlerKind.Call]: (
+    data: StarknetTransaction,
+    filter: StarknetTransactionFilter,
+    ds: SubqlStarknetDataSource,
   ) => filterTransactionsProcessor(data, filter, ds.options?.address),
 };
 
 const DataAbiParser = {
-  [EthereumHandlerKind.Block]: () => (data: EthereumBlock) => data,
-  [EthereumHandlerKind.Event]:
-    (api: EthereumApi) =>
-    (data: EthereumLog | LightEthereumLog, ds: SubqlRuntimeDatasource) =>
+  [StarknetHandlerKind.Block]: () => (data: StarknetBlock) => data,
+  [StarknetHandlerKind.Event]:
+    (api: StarknetApi) => (data: StarknetLog, ds: StarknetRuntimeDatasource) =>
       api.parseLog(data, ds),
-  [EthereumHandlerKind.Call]:
-    (api: EthereumApi) =>
-    (data: EthereumTransaction, ds: SubqlRuntimeDatasource) =>
+  [StarknetHandlerKind.Call]:
+    (api: StarknetApi) =>
+    (data: StarknetTransaction, ds: StarknetRuntimeDatasource) =>
       api.parseTransaction(data, ds),
 };

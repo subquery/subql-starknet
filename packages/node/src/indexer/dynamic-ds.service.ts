@@ -3,10 +3,10 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import {
-  EthereumRuntimeDataSourceImpl,
+  StarknetRuntimeDataSourceImpl,
   isCustomDs,
   isRuntimeDs,
-} from '@subql/common-ethereum';
+} from '@subql/common-starknet';
 import {
   DatasourceParams,
   DynamicDsService as BaseDynamicDsService,
@@ -14,14 +14,14 @@ import {
 import { plainToClass } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import {
-  EthereumProjectDs,
+  StarknetProjectDs,
   SubqueryProject,
 } from '../configure/SubqueryProject';
 import { DsProcessorService } from './ds-processor.service';
 
 @Injectable()
 export class DynamicDsService extends BaseDynamicDsService<
-  EthereumProjectDs,
+  StarknetProjectDs,
   SubqueryProject
 > {
   constructor(
@@ -33,8 +33,8 @@ export class DynamicDsService extends BaseDynamicDsService<
 
   protected async getDatasource(
     params: DatasourceParams,
-  ): Promise<EthereumProjectDs> {
-    const dsObj = this.getTemplate<EthereumProjectDs>(
+  ): Promise<StarknetProjectDs> {
+    const dsObj = this.getTemplate<StarknetProjectDs>(
       params.templateName,
       params.startBlock,
     );
@@ -52,7 +52,7 @@ export class DynamicDsService extends BaseDynamicDsService<
           ...params.args,
         };
 
-        const parsedDs = plainToClass(EthereumRuntimeDataSourceImpl, dsObj);
+        const parsedDs = plainToClass(StarknetRuntimeDataSourceImpl, dsObj);
 
         const errors = validateSync(parsedDs, {
           whitelist: true,

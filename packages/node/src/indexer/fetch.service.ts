@@ -5,7 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SchedulerRegistry } from '@nestjs/schedule';
 
-import { isCustomDs, EthereumHandlerKind } from '@subql/common-ethereum';
+import { isCustomDs, StarknetHandlerKind } from '@subql/common-starknet';
 import {
   NodeConfig,
   BaseFetchService,
@@ -15,14 +15,14 @@ import {
   Header,
   StoreCacheService,
 } from '@subql/node-core';
-import { EthereumBlock, SubqlDatasource } from '@subql/types-ethereum';
+import { StarknetBlock, SubqlDatasource } from '@subql/types-starknet';
 import { SubqueryProject } from '../configure/SubqueryProject';
-import { EthereumApi } from '../ethereum';
+import { StarknetApi } from '../starknet';
 import {
   calcInterval,
-  ethereumBlockToHeader,
-} from '../ethereum/utils.ethereum';
-import { IEthereumBlockDispatcher } from './blockDispatcher';
+  starknetBlockHeaderToHeader,
+} from '../starknet/utils.starknet';
+import { IStarknetBlockDispatcher } from './blockDispatcher';
 import { EthDictionaryService } from './dictionary/ethDictionary.service';
 import { ProjectService } from './project.service';
 import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
@@ -34,8 +34,8 @@ const INTERVAL_PERCENT = 0.9;
 @Injectable()
 export class FetchService extends BaseFetchService<
   SubqlDatasource,
-  IEthereumBlockDispatcher,
-  EthereumBlock
+  IStarknetBlockDispatcher,
+  StarknetBlock
 > {
   constructor(
     private apiService: ApiService,
@@ -43,7 +43,7 @@ export class FetchService extends BaseFetchService<
     @Inject('IProjectService') projectService: ProjectService,
     @Inject('ISubqueryProject') project: SubqueryProject,
     @Inject('IBlockDispatcher')
-    blockDispatcher: IEthereumBlockDispatcher,
+    blockDispatcher: IStarknetBlockDispatcher,
     dictionaryService: EthDictionaryService,
     unfinalizedBlocksService: UnfinalizedBlocksService,
     eventEmitter: EventEmitter2,
@@ -63,17 +63,17 @@ export class FetchService extends BaseFetchService<
     );
   }
 
-  get api(): EthereumApi {
+  get api(): StarknetApi {
     return this.apiService.unsafeApi;
   }
 
   protected async getFinalizedHeader(): Promise<Header> {
-    const block = await this.api.getFinalizedBlock();
-    return ethereumBlockToHeader(block);
+    const blockHeader = await this.api.getFinalizedBlock();
+    return starknetBlockHeaderToHeader(blockHeader);
   }
 
   protected async getBestHeight(): Promise<number> {
-    return this.api.getBestBlockHeight();
+    return (await this.getFinalizedHeader()).blockHeight;
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -84,7 +84,7 @@ export class FetchService extends BaseFetchService<
   }
 
   protected getModulos(dataSources: SubqlDatasource[]): number[] {
-    return getModulos(dataSources, isCustomDs, EthereumHandlerKind.Block);
+    return getModulos(dataSources, isCustomDs, StarknetHandlerKind.Block);
   }
 
   protected async initBlockDispatcher(): Promise<void> {
@@ -94,7 +94,7 @@ export class FetchService extends BaseFetchService<
   }
 
   protected async preLoopHook(): Promise<void> {
-    // Ethereum doesn't need to do anything here
+    // Starknet doesn't need to do anything here
     return Promise.resolve();
   }
 }

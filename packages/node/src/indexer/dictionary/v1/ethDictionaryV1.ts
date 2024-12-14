@@ -1,7 +1,7 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { NOT_NULL_FILTER } from '@subql/common-ethereum';
+import { NOT_NULL_FILTER } from '@subql/common-starknet';
 import { NodeConfig, DictionaryV1, getLogger } from '@subql/node-core';
 import {
   DictionaryQueryCondition,

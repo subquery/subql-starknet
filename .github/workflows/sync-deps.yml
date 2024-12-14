@@ -24,7 +24,7 @@ jobs:
     - name: Update types
       run: yarn --cwd ./packages/types add @subql/types-core
     - name: Update common
-      run: yarn --cwd ./packages/common-ethereum add @subql/common
+      run: yarn --cwd ./packages/common-starknet add @subql/common
     - name: Update node
       run: yarn --cwd ./packages/node add @subql/common @subql/node-core
 

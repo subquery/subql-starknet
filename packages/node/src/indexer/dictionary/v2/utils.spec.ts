@@ -5,7 +5,7 @@ import { IBlock } from '@subql/node-core';
 import { EthereumBlock } from '@subql/types-ethereum';
 import EventEmitter2 from 'eventemitter2';
 import fetch from 'node-fetch';
-import { EthereumApi } from '../../../ethereum';
+import { EthereumApi } from '../../../starknet';
 import { RawEthBlock } from './types';
 import { rawBlockToEthBlock } from './utils';
 

@@ -17,8 +17,8 @@ import {
   CoreModule,
 } from '@subql/node-core';
 import { SubqueryProject } from '../configure/SubqueryProject';
-import { EthereumApiConnection } from '../ethereum/api.connection';
-import { EthereumApiService } from '../ethereum/api.service.ethereum';
+import { StarknetApiConnection } from '../starknet/api.connection';
+import { StarknetApiService } from '../starknet/api.service.starknet';
 import {
   BlockDispatcherService,
   WorkerBlockDispatcherService,
@@ -38,11 +38,11 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
       provide: ApiService,
       useFactory: async (
         project: SubqueryProject,
-        connectionPoolService: ConnectionPoolService<EthereumApiConnection>,
+        connectionPoolService: ConnectionPoolService<StarknetApiConnection>,
         eventEmitter: EventEmitter2,
         nodeConfig: NodeConfig,
       ) => {
-        const apiService = new EthereumApiService(
+        const apiService = new StarknetApiService(
           project,
           connectionPoolService,
           eventEmitter,
@@ -66,7 +66,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
         eventEmitter: EventEmitter2,
         projectService: ProjectService,
         projectUpgradeService: IProjectUpgradeService,
-        apiService: EthereumApiService,
+        apiService: StarknetApiService,
         indexerManager: IndexerManager,
         cacheService: InMemoryCacheService,
         storeService: StoreService,
@@ -75,7 +75,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
         project: SubqueryProject,
         dynamicDsService: DynamicDsService,
         unfinalizedBlocks: UnfinalizedBlocksService,
-        connectionPoolState: ConnectionPoolStateManager<EthereumApiConnection>,
+        connectionPoolState: ConnectionPoolStateManager<StarknetApiConnection>,
         monitorService?: MonitorService,
       ) =>
         nodeConfig.workers

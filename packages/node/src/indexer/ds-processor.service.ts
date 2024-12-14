@@ -4,16 +4,16 @@
 import { Injectable } from '@nestjs/common';
 import {
   isCustomDs,
-  SubqlEthereumCustomDataSource,
-  SubqlEthereumDataSource,
+  StarknetCustomDataSource,
+  StarknetRuntimeDataSource,
   SubqlDatasourceProcessor,
-} from '@subql/common-ethereum';
+} from '@subql/common-starknet';
 import { BaseDsProcessorService } from '@subql/node-core';
 
 @Injectable()
 export class DsProcessorService extends BaseDsProcessorService<
-  SubqlEthereumDataSource,
-  SubqlEthereumCustomDataSource<string>,
+  StarknetRuntimeDataSource,
+  StarknetCustomDataSource<string>,
   SubqlDatasourceProcessor<string, Record<string, unknown>>
 > {
   protected isCustomDs = isCustomDs;

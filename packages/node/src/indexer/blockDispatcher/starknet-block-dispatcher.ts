@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { IBlockDispatcher } from '@subql/node-core';
-import { EthereumBlock } from '@subql/types-ethereum';
+import { StarknetBlock } from '@subql/types-Starknet';
 
-export interface IEthereumBlockDispatcher
-  extends IBlockDispatcher<EthereumBlock> {
+export interface IStarknetBlockDispatcher
+  extends IBlockDispatcher<StarknetBlock> {
   init(onDynamicDsCreated: (height: number) => Promise<void>): Promise<void>;
 }

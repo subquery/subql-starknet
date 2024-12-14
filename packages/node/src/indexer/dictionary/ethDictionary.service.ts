@@ -12,7 +12,7 @@ import {
 } from '@subql/node-core';
 import { EthereumBlock, SubqlDatasource } from '@subql/types-ethereum';
 import { SubqueryProject } from '../../configure/SubqueryProject';
-import { EthereumApiService } from '../../ethereum';
+import { EthereumApiService } from '../../starknet';
 import { EthDictionaryV1 } from './v1';
 import { EthDictionaryV2 } from './v2';
 

@@ -4,6 +4,8 @@
 // This file is cloned from the Starknet.js repo https://github.com/starknet-io/starknet.js/blob/main/src/types/api/rpcspec_0_6/components.ts
 // Due to types are not exported from Starknet and we need to re-use from rpc interface, we have to copy them here.
 
+export type BlockWithTxs = BLOCK_WITH_TXS | PENDING_BLOCK_WITH_TXS;
+export type BlockWithTxHashes = BLOCK_WITH_TX_HASHES | PENDING_BLOCK_WITH_TX_HASHES;
 /**
  * PRIMITIVES
  */

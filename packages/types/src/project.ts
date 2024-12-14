@@ -286,7 +286,9 @@ export type SubqlDatasourceProcessor<
   >
 > = DsProcessor<DS, P, ApiWrapper>;
 
-export type IStarknetEndpointConfig = IEndpointConfig;
+export interface IStarknetEndpointConfig extends IEndpointConfig {
+  batchSize?: number;
+}
 /**
  * Represents a Starknet subquery network configuration, which is based on the CommonSubqueryNetworkConfig template.
  * @type {IProjectNetworkConfig}

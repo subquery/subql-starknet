@@ -48,7 +48,7 @@ contributor for other behaviors that is deemed inappropriate, threatening, offen
 ## Scope
 
 This Code of Conduct applies to all of SubQuery's content on GitHub, as well as at all official SubQuery 
-events, whether offline or online.
+logs, whether offline or online.
 
 Examples of representing a project or community include using an official e-mail address,
 posting via an official social media account, or acting as an appointed

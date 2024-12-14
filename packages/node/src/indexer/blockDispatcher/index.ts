@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { BlockDispatcherService } from './block-dispatcher.service';
-import { IEthereumBlockDispatcher } from './ethereum-block-dispatcher';
+import { IStarknetBlockDispatcher } from './starknet-block-dispatcher';
 import { WorkerBlockDispatcherService } from './worker-block-dispatcher.service';
 
 export {
   BlockDispatcherService,
   WorkerBlockDispatcherService,
-  IEthereumBlockDispatcher,
+  IStarknetBlockDispatcher,
 };

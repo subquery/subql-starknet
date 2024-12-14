@@ -18,10 +18,10 @@
     "inlineSources": true,
     "composite": true,
     "paths": {
-      "@subql/common-ethereum": ["packages/common-ethereum/src"],
-      "@subql/common-ethereum/*": ["packages/common-ethereum/src/*"],
-      "@subql/types-ethereum": ["packages/types/src"],
-      "@subql/types-ethereum/*": ["packages/types/src/*"]
+      "@subql/common-starknet": ["packages/common-starknet/src"],
+      "@subql/common-starknet/*": ["packages/common-starknet/src/*"],
+      "@subql/types-starknet": ["packages/types/src"],
+      "@subql/types-starknet/*": ["packages/types/src/*"]
     },
     "skipLibCheck": true
   },

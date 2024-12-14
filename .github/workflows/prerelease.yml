@@ -13,7 +13,7 @@ concurrency:
 jobs:
   Bump-Prerelease-Publish:
     name: Bump-Prerelease-Publish
-    if: "!startsWith(github.event.head_commit.message, '[SKIP CI]') && !startsWith(github.event.head_commit.message, '[release]') && github.repository == 'subquery/subql-ethereum'"
+    if: "!startsWith(github.event.head_commit.message, '[SKIP CI]') && !startsWith(github.event.head_commit.message, '[release]') && github.repository == 'subquery/subql-starknet'"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,14 +27,14 @@ jobs:
           node-version: 18
 
       - uses: marceloprado/has-changed-path@v1
-        id: changed-types-ethereum
+        id: changed-types-starknet
         with:
           paths: packages/types
 
       - uses: marceloprado/has-changed-path@v1
-        id: changed-common-ethereum
+        id: changed-common-starknet
         with:
-          paths: packages/common-ethereum
+          paths: packages/common-starknet
 
       - uses: marceloprado/has-changed-path@v1
         id: changed-node
@@ -47,18 +47,18 @@ jobs:
         run: yarn build
 
       #Add remove-stable-version
-      - name: Bump types ethereum & deploy
-        if: steps.changed-types-ethereum.outputs.changed == 'true'
+      - name: Bump types starknet & deploy
+        if: steps.changed-types-starknet.outputs.changed == 'true'
         uses: ./.github/actions/create-prerelease
         with:
           package-path: packages/types
           npm-token: ${{ secrets.NPM_TOKEN }}
 
-      - name: Bump common ethereum & deploy
-        if: steps.changed-common-ethereum.outputs.changed == 'true'
+      - name: Bump common starknet & deploy
+        if: steps.changed-common-starknet.outputs.changed == 'true'
         uses: ./.github/actions/create-prerelease
         with:
-          package-path: packages/common-ethereum
+          package-path: packages/common-starknet
           npm-token: ${{ secrets.NPM_TOKEN }}
 
       - name: Bump node & deploy

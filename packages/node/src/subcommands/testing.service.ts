@@ -12,22 +12,22 @@ import {
   IBlock,
 } from '@subql/node-core';
 import {
-  EthereumProjectDs,
+  StarknetProjectDs,
   SubqueryProject,
 } from '../configure/SubqueryProject';
-import { EthereumApi } from '../ethereum';
-import SafeEthProvider from '../ethereum/safe-api';
 import { IndexerManager } from '../indexer/indexer.manager';
 import { ProjectService } from '../indexer/project.service';
 import { BlockContent } from '../indexer/types';
+import { StarknetApi } from '../starknet';
+import SafeEthProvider from '../starknet/safe-api';
 import { TestingModule } from './testing.module';
 
 @Injectable()
 export class TestingService extends BaseTestingService<
-  EthereumApi,
+  StarknetApi,
   SafeEthProvider,
   BlockContent,
-  EthereumProjectDs
+  StarknetProjectDs
 > {
   constructor(
     nodeConfig: NodeConfig,
@@ -40,10 +40,10 @@ export class TestingService extends BaseTestingService<
     [
       close: () => Promise<void>,
       runner: TestRunner<
-        EthereumApi,
+        StarknetApi,
         SafeEthProvider,
         BlockContent,
-        EthereumProjectDs
+        StarknetProjectDs
       >,
     ]
   > {

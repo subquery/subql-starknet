@@ -4,14 +4,14 @@
 import { Formatter } from '@ethersproject/providers';
 import { IBlock } from '@subql/node-core';
 import { EthereumBlock, EthereumReceipt } from '@subql/types-ethereum';
-import { EthereumApi } from '../../../ethereum';
+import { EthereumApi } from '../../../starknet';
 import {
   formatBlock,
   formatBlockUtil,
   formatLog,
   formatReceipt,
   formatTransaction,
-} from '../../../ethereum/utils.ethereum';
+} from '../../../starknet/utils.ethereum';
 import { RawEthBlock } from './types';
 
 export function rawBlockToEthBlock(

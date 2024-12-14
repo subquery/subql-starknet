@@ -12,17 +12,16 @@ import {
 import { GraphQLSchema } from 'graphql';
 import { range } from 'lodash';
 import { SubqueryProject } from '../configure/SubqueryProject';
-import { EthereumApiService } from './api.service.ethereum';
+import { StarknetApiService } from './api.service.starknet';
 
 // Add api key to work
-const WS_ENDPOINT = 'wss://eth.api.onfinality.io/ws?apikey=';
-const HTTP_ENDPOINT = 'https://ethereum.rpc.subquery.network/public';
+const HTTP_ENDPOINT = 'https://free-rpc.nethermind.io/mainnet-juno/v0_7';
 
 function testSubqueryProject(endpoint: string): SubqueryProject {
   return {
     network: {
       endpoint: [endpoint],
-      chainId: '1',
+      chainId: '0x534e5f4d41494e',
     },
     dataSources: [],
     id: 'test',
@@ -34,7 +33,7 @@ function testSubqueryProject(endpoint: string): SubqueryProject {
 
 const prepareApiService = async (
   endpoint: string = HTTP_ENDPOINT,
-): Promise<[EthereumApiService, INestApplication]> => {
+): Promise<[StarknetApiService, INestApplication]> => {
   const module = await Test.createTestingModule({
     providers: [
       ConnectionPoolService,
@@ -47,21 +46,21 @@ const prepareApiService = async (
         provide: 'ISubqueryProject',
         useFactory: () => testSubqueryProject(endpoint),
       },
-      EthereumApiService,
+      StarknetApiService,
     ],
     imports: [EventEmitterModule.forRoot()],
   }).compile();
 
   const app = module.createNestApplication();
   await app.init();
-  const apiService = app.get(EthereumApiService);
+  const apiService = app.get(StarknetApiService);
   await apiService.init();
   return [apiService, app];
 };
 
 jest.setTimeout(90000);
 describe('ApiService', () => {
-  let apiService: EthereumApiService;
+  let apiService: StarknetApiService;
   let app: INestApplication;
 
   beforeEach(async () => {
@@ -73,37 +72,26 @@ describe('ApiService', () => {
   });
 
   it('can instantiate api', () => {
-    expect(apiService.api.getChainId()).toEqual(1);
+    expect(apiService.api.getChainId()).toEqual('0x534e5f4d41494e');
   });
 
   it('can fetch blocks', async () => {
     await expect(
-      apiService.api.fetchBlocks(range(12369621, 12369625)),
+      apiService.api.fetchBlocks(range(50000, 50004)),
     ).resolves.toHaveLength(4);
   });
 
+  it('can fetch block events with height', async () => {
+    //https://starkscan.co/block/500000#events
+    await expect(apiService.api.fetchBlockLogs(500000)).resolves.toHaveLength(
+      637,
+    );
+  });
+
   it('can get the finalized height', async () => {
-    const height = (await apiService.api.getFinalizedBlock()).number;
+    const height = (await apiService.api.getFinalizedBlock()).block_number;
 
     console.log('Finalized height', height);
-    expect(height).toBeGreaterThan(16_000_000);
-  });
-
-  it('ensure api errorCode is exposed when throwing', async () => {
-    await expect(
-      apiService
-        .safeApi(17520376)
-        .getCode('0x75F0398549C9fDEa03BbDde388361827cb376D5'),
-    ).rejects.toHaveProperty('code', 'INVALID_ARGUMENT');
-  });
-  it('should not retry on any errors not in the retry list', async () => {
-    const callSpy = jest.spyOn(apiService.unsafeApi, 'getSafeApi');
-    await expect(
-      apiService
-        .safeApi(17520376)
-        .getCode('0x75F0398549C9fDEa03BbDde388361827cb376D5'),
-    ).rejects.toHaveProperty('code', 'INVALID_ARGUMENT');
-
-    expect(callSpy).toHaveBeenCalledTimes(1);
+    expect(height).toBeGreaterThan(975_650);
   });
 });

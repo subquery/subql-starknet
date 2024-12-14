@@ -17,12 +17,12 @@ import {
   createIndexerWorker,
   MonitorServiceInterface,
 } from '@subql/node-core';
-import { EthereumBlock } from '@subql/types-ethereum';
+import { StarknetBlock } from '@subql/types-starknet';
 import {
-  EthereumProjectDs,
+  StarknetProjectDs,
   SubqueryProject,
 } from '../../configure/SubqueryProject';
-import { EthereumApiConnection } from '../../ethereum/api.connection';
+import { StarknetApiConnection } from '../../starknet/api.connection';
 import { DynamicDsService } from '../dynamic-ds.service';
 import { BlockContent } from '../types';
 import { UnfinalizedBlocksService } from '../unfinalizedBlocks.service';
@@ -34,14 +34,14 @@ type IndexerWorker = IIndexerWorker & {
 
 @Injectable()
 export class WorkerBlockDispatcherService
-  extends WorkerBlockDispatcher<EthereumProjectDs, IndexerWorker, EthereumBlock>
+  extends WorkerBlockDispatcher<StarknetProjectDs, IndexerWorker, StarknetBlock>
   implements OnApplicationShutdown
 {
   constructor(
     nodeConfig: NodeConfig,
     eventEmitter: EventEmitter2,
     @Inject('IProjectService')
-    projectService: IProjectService<EthereumProjectDs>,
+    projectService: IProjectService<StarknetProjectDs>,
     @Inject('IProjectUpgradeService')
     projectUpgadeService: IProjectUpgradeService,
     cacheService: InMemoryCacheService,
@@ -51,7 +51,7 @@ export class WorkerBlockDispatcherService
     @Inject('ISubqueryProject') project: SubqueryProject,
     dynamicDsService: DynamicDsService,
     unfinalizedBlocksSevice: UnfinalizedBlocksService,
-    connectionPoolState: ConnectionPoolStateManager<EthereumApiConnection>,
+    connectionPoolState: ConnectionPoolStateManager<StarknetApiConnection>,
     monitorService?: MonitorServiceInterface,
   ) {
     super(
@@ -66,9 +66,9 @@ export class WorkerBlockDispatcherService
       () =>
         createIndexerWorker<
           IIndexerWorker,
-          EthereumApiConnection,
+          StarknetApiConnection,
           BlockContent,
-          EthereumProjectDs
+          StarknetProjectDs
         >(
           path.resolve(__dirname, '../../../dist/indexer/worker/worker.js'),
           [],
@@ -89,6 +89,6 @@ export class WorkerBlockDispatcherService
     worker: IndexerWorker,
     height: number,
   ): Promise<void> {
-    await worker.fetchBlock(height, 0 /* Unused with ethereum*/);
+    await worker.fetchBlock(height, 0 /* Unused with starknet*/);
   }
 }

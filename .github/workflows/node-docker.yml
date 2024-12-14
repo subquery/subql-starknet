@@ -25,7 +25,7 @@ jobs:
           if [[ "${{ github.event_name }}" == "release" ]]
           then
             TAG_NAME=${GITHUB_REF#refs/tags/}
-            if [[ $TAG_NAME == "node-ethereum/"* ]]
+            if [[ $TAG_NAME == "node-starknet/"* ]]
             then
               echo "changes_found=true" >> "$GITHUB_OUTPUT"
             else
@@ -74,7 +74,7 @@ jobs:
           push: true
           platforms: arm64,amd64
           file: ./packages/node/Dockerfile
-          tags: onfinality/subql-node-ethereum:v${{ steps.get-node-version.outputs.NODE_VERSION }}
+          tags: onfinality/subql-node-starknet:v${{ steps.get-node-version.outputs.NODE_VERSION }}
           build-args: RELEASE_VERSION=${{ steps.get-node-version.outputs.NODE_VERSION }}
 
       - name: Build and push
@@ -85,7 +85,7 @@ jobs:
           push: true
           platforms: arm64,amd64
           file: ./packages/node/Dockerfile
-          tags: onfinality/subql-node-ethereum:v${{ steps.get-node-version.outputs.NODE_VERSION }},onfinality/subql-node-ethereum:latest
+          tags: onfinality/subql-node-starknet:v${{ steps.get-node-version.outputs.NODE_VERSION }},onfinality/subql-node-starknet:latest
           build-args: RELEASE_VERSION=${{ steps.get-node-version.outputs.NODE_VERSION }}
 
       - name: Image digest
@@ -131,7 +131,7 @@ jobs:
           push: true
           platforms: arm64,amd64
           file: ./packages/node/Dockerfile
-          tags: subquerynetwork/subql-node-ethereum:v${{ steps.get-node-version.outputs.NODE_VERSION }}
+          tags: subquerynetwork/subql-node-starknet:v${{ steps.get-node-version.outputs.NODE_VERSION }}
           build-args: RELEASE_VERSION=${{ steps.get-node-version.outputs.NODE_VERSION }}
 
       - name: Build and push
@@ -142,7 +142,7 @@ jobs:
           push: true
           platforms: arm64,amd64
           file: ./packages/node/Dockerfile
-          tags: subquerynetwork/subql-node-ethereum:v${{ steps.get-node-version.outputs.NODE_VERSION }},subquerynetwork/subql-node-ethereum:latest
+          tags: subquerynetwork/subql-node-starknet:v${{ steps.get-node-version.outputs.NODE_VERSION }},subquerynetwork/subql-node-starknet:latest
           build-args: RELEASE_VERSION=${{ steps.get-node-version.outputs.NODE_VERSION }}
 
       - name: Image digest

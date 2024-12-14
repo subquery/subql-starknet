@@ -3,13 +3,11 @@
 
 import { IConfig, NodeConfig } from '@subql/node-core';
 
-export interface IEthereumConfig extends IConfig {
+export interface IStarknetConfig extends IConfig {
   skipTransactions: boolean;
-  blockConfirmations: number;
-  blockForkReindex: number;
 }
 
-export class EthereumNodeConfig extends NodeConfig<IEthereumConfig> {
+export class StarknetNodeConfig extends NodeConfig<IStarknetConfig> {
   /**
    * This is a wrapper around the core NodeConfig to get additional properties that are provided through args or node runner options
    * NOTE: This isn't injected anywhere so you need to wrap the injected node config
@@ -18,7 +16,7 @@ export class EthereumNodeConfig extends NodeConfig<IEthereumConfig> {
    * constructor(
    *   nodeConfig: NodeConfig,
    * ) {
-   *   this.nodeConfig = new EthereumNodeConfig(nodeConfig);
+   *   this.nodeConfig = new StarknetNodeConfig(nodeConfig);
    * }
    * */
   constructor(config: NodeConfig) {
@@ -28,13 +26,5 @@ export class EthereumNodeConfig extends NodeConfig<IEthereumConfig> {
 
   get skipTransactions(): boolean {
     return !!this._config.skipTransactions;
-  }
-
-  get blockConfirmations(): number {
-    return this._config.blockConfirmations;
-  }
-
-  get blockForkReindex(): number {
-    return this._config.blockForkReindex;
   }
 }

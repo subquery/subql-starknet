@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import {BlockFilter} from '@subql/types-core';
-import type {TXN_TYPE, COMMON_RECEIPT_PROPERTIES, TXN, BLOCK_HEADER, BLOCK_STATUS, TXN_HASH} from './rpcSpec';
-
+import {TransactionReceipt} from 'starknet';
+import {BLOCK_HASH, BLOCK_NUMBER, FELT, RESOURCE_PRICE, TXN_TYPE, BLOCK_STATUS} from './rpcSpec';
 export type StarknetBlockFilter = BlockFilter;
 
 /**
@@ -60,23 +60,43 @@ export interface StarknetResult extends ReadonlyArray<any> {
   readonly [key: string]: any;
 }
 
-export type StarknetBlock = {
-  status: BLOCK_STATUS;
-  header: BLOCK_HEADER;
-  txs: (TXN & {
-    transaction_hash: TXN_HASH;
-  })[];
+export type StarknetBlock = LightStarknetBlock & {
+  transactions: StarknetTransaction[];
+  logs: StarknetLog[];
 };
 
-export type StarknetTransaction<T extends StarknetResult = StarknetResult> = TXN & {
+// Should be accepted block only
+export type LightStarknetBlock = {
+  blockHash: BLOCK_HASH;
+  parentHash: BLOCK_HASH;
+  blockNumber: BLOCK_NUMBER;
+  newRoot: FELT;
+  timestamp: number;
+  sequencerAddress: FELT;
+  l1GasPrice: RESOURCE_PRICE;
+  starknetVersion: string;
+  status: BLOCK_STATUS;
+  logs: StarknetLog[];
+};
+
+export interface StarknetContractCall {
+  to: FELT;
+  selector: FELT;
+  calldata: FELT[];
+  decodedArgs?: any;
+}
+
+export type StarknetTransaction = {
+  hash: string;
+  from: string;
   blockHash: string;
   blockNumber: number;
-  blockTimestamp: bigint;
-  transactionIndex: bigint;
-  receipt: <R extends COMMON_RECEIPT_PROPERTIES = COMMON_RECEIPT_PROPERTIES>() => Promise<R>;
+  blockTimestamp: number;
+  transactionIndex: number;
+  callData: string[];
+  decodedCalls?: StarknetContractCall[];
+  receipt?: () => Promise<TransactionReceipt>;
   logs?: StarknetLog[];
-  chainId?: string; // Hex string , example: "0x1"
-  args?: T;
 };
 
 export type StarknetLog<T extends StarknetResult = StarknetResult> = {
@@ -87,7 +107,6 @@ export type StarknetLog<T extends StarknetResult = StarknetResult> = {
   blockNumber: number;
   transactionHash: string;
   transactionIndex: number;
-  logIndex: number;
   args?: T;
   block: StarknetBlock;
   transaction: StarknetTransaction;

@@ -16,10 +16,10 @@ import {
 } from '@subql/node-core';
 import { Sequelize } from '@subql/x-sequelize';
 import {
-  EthereumProjectDs,
+  StarknetProjectDs,
   SubqueryProject,
 } from '../configure/SubqueryProject';
-import { EthereumApiService } from '../ethereum';
+import { StarknetApiService } from '../starknet';
 import { DsProcessorService } from './ds-processor.service';
 import { DynamicDsService } from './dynamic-ds.service';
 import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
@@ -29,15 +29,15 @@ const { version: packageVersion } = require('../../package.json');
 
 @Injectable()
 export class ProjectService extends BaseProjectService<
-  EthereumApiService,
-  EthereumProjectDs,
+  StarknetApiService,
+  StarknetProjectDs,
   UnfinalizedBlocksService
 > {
   protected packageVersion = packageVersion;
 
   constructor(
     dsProcessorService: DsProcessorService,
-    @Inject(ApiService) apiService: EthereumApiService,
+    @Inject(ApiService) apiService: StarknetApiService,
     @Inject(isMainThread ? PoiService : 'Null') poiService: PoiService,
     @Inject(isMainThread ? PoiSyncService : 'Null')
     poiSyncService: PoiSyncService,

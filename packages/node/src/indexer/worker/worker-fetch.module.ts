@@ -12,8 +12,8 @@ import {
   WorkerCoreModule,
 } from '@subql/node-core';
 import { SubqueryProject } from '../../configure/SubqueryProject';
-import { EthereumApiService } from '../../ethereum';
-import { EthereumApiConnection } from '../../ethereum/api.connection';
+import { StarknetApiService } from '../../starknet';
+import { StarknetApiConnection } from '../../starknet/api.connection';
 import { DsProcessorService } from '../ds-processor.service';
 import { DynamicDsService } from '../dynamic-ds.service';
 import { IndexerManager } from '../indexer.manager';
@@ -29,11 +29,11 @@ import { WorkerService } from './worker.service';
       provide: ApiService,
       useFactory: async (
         project: SubqueryProject,
-        connectionPoolService: ConnectionPoolService<EthereumApiConnection>,
+        connectionPoolService: ConnectionPoolService<StarknetApiConnection>,
         eventEmitter: EventEmitter2,
         nodeConfig: NodeConfig,
       ) => {
-        const apiService = new EthereumApiService(
+        const apiService = new StarknetApiService(
           project,
           connectionPoolService,
           eventEmitter,

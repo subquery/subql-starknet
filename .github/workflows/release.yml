@@ -39,7 +39,7 @@ jobs:
   Build-Publish:
     name: Build-Publish
     needs: pre-ci
-    if: "!startsWith(needs.pre-ci.outputs.commit-message, '[SKIP CI]') && startsWith(needs.pre-ci.outputs.commit-message, '[release]') && github.repository == 'subquery/subql-ethereum'"
+    if: "!startsWith(needs.pre-ci.outputs.commit-message, '[SKIP CI]') && startsWith(needs.pre-ci.outputs.commit-message, '[release]') && github.repository == 'subquery/subql-starknet'"
     runs-on: ubuntu-latest
     steps:
       #Check out
@@ -54,14 +54,14 @@ jobs:
 
     #Identify changes
       - uses: marceloprado/has-changed-path@v1
-        id: changed-types-ethereum
+        id: changed-types-starknet
         with:
           paths: packages/types
 
       - uses: marceloprado/has-changed-path@v1
-        id: changed-common-ethereum
+        id: changed-common-starknet
         with:
-          paths: packages/common-ethereum
+          paths: packages/common-starknet
 
       - uses: marceloprado/has-changed-path@v1
         id: changed-node
@@ -74,19 +74,19 @@ jobs:
         run: yarn build
 
       #Publish to npm and github releases
-      - name: Publish Types ethereum
-        if: steps.changed-types-ethereum.outputs.changed == 'true'
+      - name: Publish Types starknet
+        if: steps.changed-types-starknet.outputs.changed == 'true'
         uses: ./.github/actions/create-release
         with:
           package-path: packages/types
           repo-token: ${{ secrets.REPO_TOKEN }}
           npm-token: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish Common ethereum
-        if: steps.changed-common-ethereum.outputs.changed == 'true'
+      - name: Publish Common starknet
+        if: steps.changed-common-starknet.outputs.changed == 'true'
         uses: ./.github/actions/create-release
         with:
-          package-path: packages/common-ethereum
+          package-path: packages/common-starknet
           repo-token: ${{ secrets.REPO_TOKEN }}
           npm-token: ${{ secrets.NPM_TOKEN }}
 

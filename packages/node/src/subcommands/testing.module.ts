@@ -20,13 +20,13 @@ import {
 } from '@subql/node-core';
 import { ConfigureModule } from '../configure/configure.module';
 import { SubqueryProject } from '../configure/SubqueryProject';
-import { EthereumApiService } from '../ethereum';
-import { EthereumApiConnection } from '../ethereum/api.connection';
 import { DsProcessorService } from '../indexer/ds-processor.service';
 import { DynamicDsService } from '../indexer/dynamic-ds.service';
 import { IndexerManager } from '../indexer/indexer.manager';
 import { ProjectService } from '../indexer/project.service';
 import { UnfinalizedBlocksService } from '../indexer/unfinalizedBlocks.service';
+import { StarknetApiService } from '../starknet';
+import { StarknetApiConnection } from '../starknet/api.connection';
 
 @Module({
   providers: [
@@ -50,11 +50,11 @@ import { UnfinalizedBlocksService } from '../indexer/unfinalizedBlocks.service';
       provide: ApiService,
       useFactory: async (
         project: SubqueryProject,
-        connectionPoolService: ConnectionPoolService<EthereumApiConnection>,
+        connectionPoolService: ConnectionPoolService<StarknetApiConnection>,
         eventEmitter: EventEmitter2,
         nodeConfig: NodeConfig,
       ) => {
-        const apiService = new EthereumApiService(
+        const apiService = new StarknetApiService(
           project,
           connectionPoolService,
           eventEmitter,

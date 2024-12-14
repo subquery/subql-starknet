@@ -1,7 +1,7 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { NOT_NULL_FILTER } from '@subql/common-ethereum';
+import { NOT_NULL_FILTER } from '@subql/common-starknet';
 import {
   BlockHeightMap,
   DictionaryResponse,
@@ -21,7 +21,7 @@ import {
   EthereumProjectDsTemplate,
   SubqueryProject,
 } from '../../../configure/SubqueryProject';
-import { EthereumApi } from '../../../ethereum';
+import { EthereumApi } from '../../../starknet';
 import {
   buildDictionaryV2QueryEntry,
   EthDictionaryV2,

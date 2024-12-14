@@ -11,4 +11,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Init release
 
 
-[Unreleased]: https://github.com/subquery/subql-ethereum/compare/node-ethereum/0.0.1...HEAD
+[Unreleased]: https://github.com/subquery/subql-starknet/compare/node-starknet/0.0.1...HEAD

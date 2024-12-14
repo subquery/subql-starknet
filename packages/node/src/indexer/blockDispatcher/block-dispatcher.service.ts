@@ -16,7 +16,7 @@ import {
   IBlock,
 } from '@subql/node-core';
 import {
-  EthereumProjectDs,
+  StarknetProjectDs,
   SubqueryProject,
 } from '../../configure/SubqueryProject';
 import { IndexerManager } from '../indexer.manager';
@@ -27,7 +27,7 @@ import { BlockContent } from '../types';
  */
 @Injectable()
 export class BlockDispatcherService
-  extends BlockDispatcher<BlockContent, EthereumProjectDs>
+  extends BlockDispatcher<BlockContent, StarknetProjectDs>
   implements OnApplicationShutdown
 {
   constructor(
@@ -36,7 +36,7 @@ export class BlockDispatcherService
     private indexerManager: IndexerManager,
     eventEmitter: EventEmitter2,
     @Inject('IProjectService')
-    projectService: IProjectService<EthereumProjectDs>,
+    projectService: IProjectService<StarknetProjectDs>,
     @Inject('IProjectUpgradeService')
     projectUpgradeService: IProjectUpgradeService,
     storeService: StoreService,

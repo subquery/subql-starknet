@@ -247,6 +247,8 @@ export interface StarknetCustomDatasource<
    * @type {K}
    */
   kind: K;
+
+  options?: SubqlStarknetProcessorOptions;
 }
 
 export type SecondLayerHandlerProcessor<

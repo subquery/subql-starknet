@@ -22,6 +22,7 @@ import {
   TransactionReceipt,
 } from 'starknet';
 import { BlockContent } from '../indexer/types';
+import { decodeGenericCalldata, decodeInvokeCalldata } from './decodeCalldata';
 
 export function calcInterval(api: ApiWrapper): number {
   // TODO find a way to get this from the blockchain
@@ -88,7 +89,7 @@ export function formatTransaction(
   block: StarknetBlock,
   txIndex: number,
 ): Omit<StarknetTransaction, 'receipt'> {
-  return {
+  const transaction = {
     hash: tx.transaction_hash,
     type: tx.type,
     version: tx.version,
@@ -100,10 +101,35 @@ export function formatTransaction(
     blockNumber: block.blockNumber,
     blockTimestamp: block.timestamp,
     transactionIndex: txIndex,
+    entryPointSelector: tx.entry_point_selector,
+    contractAddress: tx.contract_address,
     toJSON(): string {
       return JSON.stringify(omit(this, ['receipt', 'toJSON']));
     },
   } as Omit<StarknetTransaction, 'receipt'>;
+
+  // Handle "INVOKE V1 and V3"
+  if (
+    transaction.type === 'INVOKE' &&
+    transaction.version !== ('0x0' || '0x100000000000000000000000000000000')
+  ) {
+    transaction.decodedCalls = decodeInvokeCalldata(transaction.callData);
+  }
+  // Handle "L1_HANDLER" and "INVOKE V0"
+  else if (
+    transaction.contractAddress &&
+    transaction.entryPointSelector &&
+    transaction.callData
+  ) {
+    transaction.decodedCalls = [
+      decodeGenericCalldata(
+        transaction.contractAddress,
+        transaction.entryPointSelector,
+        transaction.callData,
+      ),
+    ];
+  }
+  return transaction;
 }
 
 export function formatReceipt(

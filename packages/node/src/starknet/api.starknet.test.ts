@@ -101,7 +101,7 @@ describe('Api.starknet', () => {
   });
 
   //https://starkscan.co/tx/0x0153a20567e66728f3c4ba60913a6011b9c73db9ea4d960e959923ed5afd8a24
-  it('Decode transaction calldata with contract abi (local and remote)', async () => {
+  it('Decode invoke v3 function type transaction calldata with contract abi (local and remote)', async () => {
     const tx = blockData.transactions.find(
       (t) =>
         t.hash ===
@@ -137,6 +137,40 @@ describe('Api.starknet', () => {
         selector:
           '0xc73f681176fc7b3f9693986fd7b14581e8d540519e27400e88b8713932be01',
         to: '0x4c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05',
+      },
+    ]);
+  });
+
+  //https://starkscan.co/tx/0x043ce8e6e2ad703a81701f85ce26a8fb32ad54cc2fac7685ed0b1367a4813ade
+  it('Decode L1 transaction calldata, and decode with remote abi', async () => {
+    const blockData = await fetchBlock(981920);
+    const tx = blockData.transactions.find(
+      (t) =>
+        t.hash ===
+        '0x43ce8e6e2ad703a81701f85ce26a8fb32ad54cc2fac7685ed0b1367a4813ade',
+    );
+    const parsedTransaction = await strkApi.parseTransaction(tx!, ds);
+    expect(parsedTransaction.decodedCalls).toStrictEqual([
+      {
+        calldata: [
+          '0xae0ee0a63a2ce6baeeffe56e7714fb4efe48d419',
+          '0x455448',
+          '0x1c7edb66155e3c72b27e6165d7a1912ec97a1286',
+          '0x296a93b1c3672a6093de21df2f7b665e0907abc97868e9bf52d6fea07921591',
+          '0x13883834c2e180b5',
+          '0x0',
+        ],
+        decodedArgs: {
+          amount: 1407436682812293301n,
+          depositor: 162680747805905936472113782182998614066721329798n,
+          from_address: 993696174272377493693496825928908586134624850969n,
+          l1_token: 4543560n,
+          l2_recipient:
+            1170820745623894104757945010321258484362311313101582454359316155358757655953n,
+        },
+        selector:
+          '0x1b64b1b3b690b43b9b514fb81377518f4039cd3e4f4914d8a6bdf01d679fb19',
+        to: '0x73314940630fd6dcda0d772d4c972c4e0a9946bef9dabf4ef84eda8ef542b82',
       },
     ]);
   });

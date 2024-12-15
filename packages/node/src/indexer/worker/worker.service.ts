@@ -14,7 +14,7 @@ import {
 } from '@subql/node-core';
 import { StarknetProjectDs } from '../../configure/SubqueryProject';
 import { StarknetApi } from '../../starknet';
-import SafeEthProvider from '../../starknet/safe-api';
+import SafeStarknetProvider from '../../starknet/safe-api';
 import { IndexerManager } from '../indexer.manager';
 import { BlockContent } from '../types';
 
@@ -37,7 +37,7 @@ export class WorkerService extends BaseWorkerService<
   constructor(
     private apiService: ApiService<
       StarknetApi,
-      SafeEthProvider,
+      SafeStarknetProvider,
       IBlock<BlockContent>[]
     >,
     private indexerManager: IndexerManager,

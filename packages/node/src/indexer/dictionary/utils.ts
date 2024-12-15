@@ -1,13 +1,13 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { SubqlRuntimeHandler } from '@subql/types-ethereum';
+import { SubqlRuntimeHandler } from '@subql/types-starknet';
 import { groupBy } from 'lodash';
-import { EthereumProjectDs } from '../../configure/SubqueryProject';
+import { StarknetProjectDs } from '../../configure/SubqueryProject';
 
 // Gets all the unique handlers and the contract addresses that go with them
 export function groupedDataSources(
-  dataSources: EthereumProjectDs[],
+  dataSources: StarknetProjectDs[],
 ): [SubqlRuntimeHandler, Array<string | undefined>][] {
   const addressHandlers: [string | undefined, SubqlRuntimeHandler][] =
     dataSources

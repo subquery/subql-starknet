@@ -11,9 +11,10 @@ import {
   StarknetBlockFilter,
   StarknetTransaction,
 } from '@subql/types-starknet';
+import { shortString } from 'starknet';
 import { SubqlProjectBlockFilter } from '../configure/SubqueryProject';
 import { BlockContent } from '../indexer/types';
-import { eventToTopic, hexStringEq, stringNormalizedEq } from '../utils/string';
+import { encodeSelectorToHex } from './utils.starknet';
 
 export function filterBlocksProcessor(
   block: StarknetBlock,
@@ -81,7 +82,7 @@ export function filterLogsProcessor(
   filter: StarknetLogFilter,
   address?: string,
 ): boolean {
-  if (address && !stringNormalizedEq(address, log.address)) {
+  if (address && address !== log.address) {
     return false;
   }
 
@@ -102,7 +103,10 @@ export function filterLogsProcessor(
         return true;
       }
 
-      if (!hexStringEq(eventToTopic(topic), log.topics[i])) {
+      if (
+        !shortString.isShortString(topic) &&
+        encodeSelectorToHex(topic) !== log.topics[i]
+      ) {
         return false;
       }
     }

@@ -30,8 +30,8 @@ function loadStarknetProjectManifest(file: string): StarknetProjectManifestVersi
   return projectManifest;
 }
 
-describe('test eth project.yaml', () => {
-  it('could get eth project template name from its deployment', () => {
+describe('test starknet project.yaml', () => {
+  it('could get starknet project template name from its deployment', () => {
     const manifest = loadStarknetProjectManifest(path.join(projectsDir, 'project_1.0.0.yaml'));
     const deployment = manifest.toDeployment();
     expect(deployment).toContain('name: Pool');
@@ -87,7 +87,7 @@ describe('project.yaml', () => {
     deployment.specVersion = '1.0.0';
     deployment.runner = new StarknetRunnerSpecsImpl();
 
-    nodeImp.name = '@subql/node-ethereum';
+    nodeImp.name = '@subql/node-starknet';
     nodeImp.version = '*';
     deployment.runner.node = nodeImp;
 

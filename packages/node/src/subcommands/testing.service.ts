@@ -19,13 +19,13 @@ import { IndexerManager } from '../indexer/indexer.manager';
 import { ProjectService } from '../indexer/project.service';
 import { BlockContent } from '../indexer/types';
 import { StarknetApi } from '../starknet';
-import SafeEthProvider from '../starknet/safe-api';
+import SafeStarknetProvider from '../starknet/safe-api';
 import { TestingModule } from './testing.module';
 
 @Injectable()
 export class TestingService extends BaseTestingService<
   StarknetApi,
-  SafeEthProvider,
+  SafeStarknetProvider,
   BlockContent,
   StarknetProjectDs
 > {
@@ -41,7 +41,7 @@ export class TestingService extends BaseTestingService<
       close: () => Promise<void>,
       runner: TestRunner<
         StarknetApi,
-        SafeEthProvider,
+        SafeStarknetProvider,
         BlockContent,
         StarknetProjectDs
       >,

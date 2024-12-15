@@ -8,20 +8,20 @@ import {
   DictionaryQueryEntry as DictionaryV1QueryEntry,
 } from '@subql/types-core';
 import {
-  EthereumHandlerKind,
-  EthereumLogFilter,
-  EthereumTransactionFilter,
+  StarknetHandlerKind,
+  StarknetLogFilter,
+  StarknetTransactionFilter,
   SubqlDatasource,
-} from '@subql/types-ethereum';
+} from '@subql/types-starknet';
 import JSON5 from 'json5';
 import { sortBy, uniqBy } from 'lodash';
 import fetch from 'node-fetch';
 import {
-  EthereumProjectDs,
-  EthereumProjectDsTemplate,
+  StarknetProjectDs,
+  StarknetProjectDsTemplate,
   SubqueryProject,
 } from '../../../configure/SubqueryProject';
-import { eventToTopic, functionToSighash } from '../../../utils/string';
+import { encodeSelectorToHex } from '../../../starknet/utils.starknet';
 import { yargsOptions } from '../../../yargs';
 import { groupedDataSources, validAddresses } from '../utils';
 
@@ -64,7 +64,7 @@ function applyAddresses(
 }
 
 function eventFilterToQueryEntry(
-  filter?: EthereumLogFilter,
+  filter?: StarknetLogFilter,
   addresses?: (string | undefined | null)[],
 ): DictionaryV1QueryEntry {
   const conditions: DictionaryQueryCondition[] = [];
@@ -86,7 +86,7 @@ function eventFilterToQueryEntry(
       } else {
         conditions.push({
           field,
-          value: eventToTopic(topic),
+          value: encodeSelectorToHex(topic),
           matcher: 'equalTo',
         });
       }
@@ -99,7 +99,7 @@ function eventFilterToQueryEntry(
 }
 
 function callFilterToQueryEntry(
-  filter?: EthereumTransactionFilter,
+  filter?: StarknetTransactionFilter,
   addresses?: (string | undefined | null)[],
 ): DictionaryV1QueryEntry {
   const conditions: DictionaryQueryCondition[] = [];
@@ -155,7 +155,7 @@ function callFilterToQueryEntry(
   } else if (filter.function) {
     conditions.push({
       field: 'func',
-      value: functionToSighash(filter.function),
+      value: filter.function,
       matcher: 'equalTo',
     });
   }
@@ -177,12 +177,12 @@ export function buildDictionaryV1QueryEntries(
     if (!handler.filter && !addresses?.length) return [];
 
     switch (handler.kind) {
-      case EthereumHandlerKind.Block:
+      case StarknetHandlerKind.Block:
         if (handler.filter?.modulo === undefined) {
           return [];
         }
         break;
-      case EthereumHandlerKind.Call: {
+      case StarknetHandlerKind.Call: {
         if (
           (!handler.filter ||
             !Object.values(handler.filter).filter((v) => v !== undefined)
@@ -194,7 +194,7 @@ export function buildDictionaryV1QueryEntries(
         queryEntries.push(callFilterToQueryEntry(handler.filter, addresses));
         break;
       }
-      case EthereumHandlerKind.Event:
+      case StarknetHandlerKind.Event:
         if (
           !handler.filter?.topics?.length &&
           !validAddresses(addresses).length
@@ -216,7 +216,7 @@ export function buildDictionaryV1QueryEntries(
   );
 }
 
-export class EthDictionaryV1 extends DictionaryV1<SubqlDatasource> {
+export class StarknetDictionaryV1 extends DictionaryV1<SubqlDatasource> {
   private constructor(
     project: SubqueryProject,
     nodeConfig: NodeConfig,
@@ -230,7 +230,7 @@ export class EthDictionaryV1 extends DictionaryV1<SubqlDatasource> {
     project: SubqueryProject,
     nodeConfig: NodeConfig,
     dictionaryUrl: string,
-  ): Promise<EthDictionaryV1> {
+  ): Promise<StarknetDictionaryV1> {
     /*Some dictionarys for EVM are built with other SDKs as they are chains with an EVM runtime
      * we maintain a list of aliases so we can map the evmChainId to the genesis hash of the other SDKs
      * e.g moonbeam is built with Substrate SDK but can be used as an EVM dictionary
@@ -238,7 +238,7 @@ export class EthDictionaryV1 extends DictionaryV1<SubqlDatasource> {
     const chainAliases = await this.getEvmChainId();
     const chainAlias = chainAliases[project.network.chainId];
 
-    const dictionary = new EthDictionaryV1(
+    const dictionary = new StarknetDictionaryV1(
       project,
       nodeConfig,
       dictionaryUrl,
@@ -258,7 +258,7 @@ export class EthDictionaryV1 extends DictionaryV1<SubqlDatasource> {
 
   buildDictionaryQueryEntries(
     // Add name to datasource as templates have this set
-    dataSources: (EthereumProjectDs | EthereumProjectDsTemplate)[],
+    dataSources: (StarknetProjectDs | StarknetProjectDsTemplate)[],
   ): DictionaryV1QueryEntry[] {
     return buildDictionaryV1QueryEntries(dataSources);
   }

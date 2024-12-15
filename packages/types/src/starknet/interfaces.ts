@@ -87,6 +87,7 @@ export interface StarknetContractCall {
 }
 
 export type StarknetTransaction = {
+  type: TXN_TYPE;
   hash: string;
   from: string;
   blockHash: string;
@@ -94,6 +95,10 @@ export type StarknetTransaction = {
   blockTimestamp: number;
   transactionIndex: number;
   callData: string[];
+  // entryPointSelector and contractAddress been used in L1Handler and V0 Invoke call
+  entryPointSelector?: string;
+  contractAddress?: string;
+  version?: string;
   decodedCalls?: StarknetContractCall[];
   receipt?: () => Promise<TransactionReceipt>;
   logs?: StarknetLog[];

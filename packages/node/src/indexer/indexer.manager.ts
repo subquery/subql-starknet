@@ -40,7 +40,7 @@ import {
   filterTransactionsProcessor,
   isFullBlock,
 } from '../starknet/block.starknet';
-import SafeEthProvider from '../starknet/safe-api';
+import SafeStarknetProvider from '../starknet/safe-api';
 import { DsProcessorService } from './ds-processor.service';
 import { DynamicDsService } from './dynamic-ds.service';
 import { BlockContent } from './types';
@@ -49,7 +49,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
 @Injectable()
 export class IndexerManager extends BaseIndexerManager<
   StarknetApi,
-  SafeEthProvider,
+  SafeStarknetProvider,
   BlockContent,
   ApiService,
   SubqlStarknetDataSource,
@@ -64,7 +64,7 @@ export class IndexerManager extends BaseIndexerManager<
   constructor(
     apiService: ApiService,
     nodeConfig: NodeConfig,
-    sandboxService: SandboxService<SafeEthProvider, StarknetApi>,
+    sandboxService: SandboxService<SafeStarknetProvider, StarknetApi>,
     dsProcessorService: DsProcessorService,
     dynamicDsService: DynamicDsService,
     unfinalizedBlocksService: UnfinalizedBlocksService,
@@ -92,13 +92,13 @@ export class IndexerManager extends BaseIndexerManager<
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  private async getApi(block: BlockContent): Promise<SafeEthProvider> {
+  private async getApi(block: BlockContent): Promise<SafeStarknetProvider> {
     return this.apiService.safeApi(block.blockNumber);
   }
 
   protected getDsProcessor(
     ds: SubqlStarknetDataSource,
-    safeApi: SafeEthProvider,
+    safeApi: SafeStarknetProvider,
   ): IndexerSandbox {
     return this.sandboxService.getDsProcessor(
       ds,

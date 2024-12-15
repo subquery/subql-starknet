@@ -34,7 +34,7 @@ import {
   AbiEntry,
   FunctionAbi,
 } from 'starknet';
-import { decodeCalldata } from './decodeCalldata';
+import { decodeInvokeCalldata, decodeGenericCalldata } from './decodeCalldata';
 import SafeStarknetProvider from './safe-api';
 import {
   encodeSelectorToHex,
@@ -251,7 +251,7 @@ export class StarknetApi implements ApiWrapper {
     }
   }
 
-  // This official method from document https://starknetjs.com/docs/guides/events
+  // This follow method from official document https://starknetjs.com/docs/guides/events
   async fetchBlockLogs(blockNumber: number): Promise<StarknetLogRaw[]> {
     logger.debug(`Fetch block ${blockNumber} events`);
 
@@ -291,16 +291,11 @@ export class StarknetApi implements ApiWrapper {
     }
     return allEvents;
   }
+
   private async fetchLightBlock(
     blockNumber: number,
   ): Promise<IBlock<LightStarknetBlock>> {
     const block = await this.getBlockPromise(blockNumber, false);
-    const logs = await this.client.getEvents({
-      from_block: { block_number: blockNumber },
-      to_block: { block_number: blockNumber },
-      chunk_size: 3,
-    });
-
     const lightBlock: LightStarknetBlock = {
       ...block,
     };
@@ -377,31 +372,13 @@ export class StarknetApi implements ApiWrapper {
   ): Promise<StarknetTransaction> {
     try {
       const assets = await loadAssets(ds);
-      transaction.decodedCalls = decodeCalldata(transaction.callData);
-
-      await Promise.all(
-        transaction.decodedCalls.map(async (call) => {
-          let iAbi: Abi;
-          try {
-            if (ds.options?.address === call.to && ds.options.abi) {
-              iAbi = this.buildInterface(ds.options.abi, assets);
-            } else {
-              //We could register this abi in memory improve performance, maybe just record with address instead of abi name here
-              if (!this.contractInterfaces[call.to]) {
-                iAbi = await fetchAbiFromContractAddress(this.client, call.to);
-              } else {
-                iAbi = this.contractInterfaces[call.to];
-              }
-            }
-            call.decodedArgs = StarknetApi.DecodeCallDataWithAbi(iAbi, call);
-          } catch (e: any) {
-            logger.warn(
-              `Could not decode call data with contract address ${call.to}: ${e.message}`,
-            );
-          }
-        }),
-      );
-
+      if (transaction.decodedCalls && transaction.decodedCalls.length > 0) {
+        await this.handleDecodedCallsArgs(transaction.decodedCalls, ds, assets);
+      } else {
+        logger.warn(
+          `No decoded calls found in transaction, will skip decode call data for this transaction ${transaction.hash}`,
+        );
+      }
       transaction.logs =
         transaction.logs &&
         ((await Promise.all(
@@ -413,6 +390,35 @@ export class StarknetApi implements ApiWrapper {
       logger.warn(`Failed to parse transaction data: ${e.message}`);
       return transaction;
     }
+  }
+
+  private async handleDecodedCallsArgs(
+    decodedCalls: StarknetContractCall[],
+    ds: StarknetRuntimeDatasource,
+    assets: Record<string, string>,
+  ): Promise<void> {
+    await Promise.all(
+      decodedCalls.map(async (call) => {
+        let iAbi: Abi;
+        try {
+          if (ds.options?.address === call.to && ds.options.abi) {
+            iAbi = this.buildInterface(ds.options.abi, assets);
+          } else {
+            //We could register this abi in memory improve performance, maybe just record with address instead of abi name here
+            if (!this.contractInterfaces[call.to]) {
+              iAbi = await fetchAbiFromContractAddress(this.client, call.to);
+            } else {
+              iAbi = this.contractInterfaces[call.to];
+            }
+          }
+          call.decodedArgs = StarknetApi.DecodeCallDataWithAbi(iAbi, call);
+        } catch (e: any) {
+          logger.warn(
+            `Could not decode call data with contract address ${call.to}: ${e.message}`,
+          );
+        }
+      }),
+    );
   }
 
   static DecodeCallDataWithAbi(iAbi: Abi, call: StarknetContractCall): any {

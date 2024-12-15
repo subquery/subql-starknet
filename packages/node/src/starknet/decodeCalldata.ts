@@ -1,8 +1,6 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-// This been rewritten from rust version https://github.com/9oelM/decode-starknet-calldata/blob/main/src/lib.rs
-
 import { FELT, StarknetContractCall } from '@subql/types-starknet';
 
 export class DecodeCalldataError extends Error {
@@ -12,7 +10,31 @@ export class DecodeCalldataError extends Error {
   }
 }
 
-export function decodeCalldata(calldata: FELT[]): StarknetContractCall[] {
+/***
+ * Decode the calldata for a generic contract call, like INVOKE V0 type or L1 contract call
+ * @param contractAddress
+ * @param selector
+ * @param calldata
+ */
+export function decodeGenericCalldata(
+  contractAddress: FELT,
+  selector: FELT,
+  calldata: FELT[],
+): StarknetContractCall {
+  return {
+    to: contractAddress,
+    selector: selector,
+    calldata: calldata,
+  };
+}
+
+/***
+ * Decode the INVOKE v2 & v3 calldata in contract call
+ * This been rewritten from rust version https://github.com/9oelM/decode-starknet-calldata/blob/main/src/lib.rs
+ *
+ * @param calldata
+ */
+export function decodeInvokeCalldata(calldata: FELT[]): StarknetContractCall[] {
   try {
     return decodeLegacy(calldata);
   } catch {

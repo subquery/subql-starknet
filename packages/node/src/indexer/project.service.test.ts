@@ -8,12 +8,12 @@ import { ProjectService } from './project.service';
 const HTTP_ENDPOINT = 'https://free-rpc.nstrkermind.io/mainnet-juno/v0_7';
 
 const mockApiService = (): StarknetApiService => {
-  const ethApi = new StarknetApi(HTTP_ENDPOINT, new EventEmitter2());
+  const strkApi = new StarknetApi(HTTP_ENDPOINT, new EventEmitter2());
 
   // await ethApi.init();
 
   return {
-    unsafeApi: ethApi,
+    unsafeApi: strkApi,
   } as any;
 };
 

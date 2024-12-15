@@ -28,15 +28,6 @@ export function isCustomHandler(
   return !isBaseHandler(handler);
 }
 
-const handledErrors = ['timeout'];
-// eslint-disable-next-line @typescript-eslint/require-await
-export async function retryOnFailEth<T>(
-  request: () => Promise<T>,
-  errors = handledErrors,
-): Promise<T> {
-  return retryOnFail(request, (e) => !!errors.find((t) => t === e?.reason));
-}
-
 export function onlyHasLogDataSources(
   dataSources: StarknetProjectDs[],
 ): boolean {

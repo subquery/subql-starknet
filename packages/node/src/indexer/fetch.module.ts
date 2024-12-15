@@ -23,7 +23,7 @@ import {
   BlockDispatcherService,
   WorkerBlockDispatcherService,
 } from './blockDispatcher';
-import { EthDictionaryService } from './dictionary/ethDictionary.service';
+import { StarknetDictionaryService } from './dictionary/starknetDictionary.service';
 import { DsProcessorService } from './ds-processor.service';
 import { DynamicDsService } from './dynamic-ds.service';
 import { FetchService } from './fetch.service';
@@ -125,7 +125,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
       ],
     },
     FetchService,
-    EthDictionaryService,
+    StarknetDictionaryService,
     DsProcessorService,
     DynamicDsService,
     {

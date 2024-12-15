@@ -23,7 +23,7 @@ import {
   starknetBlockHeaderToHeader,
 } from '../starknet/utils.starknet';
 import { IStarknetBlockDispatcher } from './blockDispatcher';
-import { EthDictionaryService } from './dictionary/ethDictionary.service';
+import { StarknetDictionaryService } from './dictionary/starknetDictionary.service';
 import { ProjectService } from './project.service';
 import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
 
@@ -44,7 +44,7 @@ export class FetchService extends BaseFetchService<
     @Inject('ISubqueryProject') project: SubqueryProject,
     @Inject('IBlockDispatcher')
     blockDispatcher: IStarknetBlockDispatcher,
-    dictionaryService: EthDictionaryService,
+    dictionaryService: StarknetDictionaryService,
     unfinalizedBlocksService: UnfinalizedBlocksService,
     eventEmitter: EventEmitter2,
     schedulerRegistry: SchedulerRegistry,

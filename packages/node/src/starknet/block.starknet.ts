@@ -1,7 +1,6 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { NOT_NULL_FILTER } from '@subql/common-starknet';
 import { filterBlockTimestamp } from '@subql/node-core';
 import {
   StarknetBlock,
@@ -11,10 +10,9 @@ import {
   StarknetBlockFilter,
   StarknetTransaction,
 } from '@subql/types-starknet';
-import { shortString } from 'starknet';
 import { SubqlProjectBlockFilter } from '../configure/SubqueryProject';
 import { BlockContent } from '../indexer/types';
-import { encodeSelectorToHex } from './utils.starknet';
+import { hexEq, encodeSelectorToHex, encodeEventKey } from './utils.starknet';
 
 export function filterBlocksProcessor(
   block: StarknetBlock,
@@ -36,6 +34,7 @@ export function filterBlocksProcessor(
   return true;
 }
 
+/* eslint-disable-next-line complexity */
 export function filterTransactionsProcessor(
   transaction: StarknetTransaction,
   filter?: StarknetTransactionFilter,
@@ -43,37 +42,83 @@ export function filterTransactionsProcessor(
 ): boolean {
   if (!filter) return true;
 
-  // if (
-  //   filter.to === null &&
-  //   !(transaction?.contract_address === null || transaction?.contract_address === undefined)
-  // ) {
-  //   return false;
-  // }
-  //
-  // if (filter.to && !stringNormalizedEq(filter.to, transaction.to)) {
-  //   return false;
-  // }
-  // if (filter.from && !stringNormalizedEq(filter.from, transaction.from)) {
-  //   return false;
-  // }
-  // if (
-  //   address &&
-  //   filter.to === undefined &&
-  //   !stringNormalizedEq(address, transaction.to)
-  // ) {
-  //   return false;
-  // }
-  // if (filter.function === null || filter.function === '0x') {
-  //   if (transaction.input !== '0x') {
-  //     return false;
-  //   }
-  // } else if (
-  //   filter.function !== undefined &&
-  //   transaction.input.indexOf(functionToSighash(filter.function)) !== 0
-  // ) {
-  //   return false;
-  // }
+  if (filter.type && filter.type !== transaction.type) {
+    return false;
+  }
 
+  // L1 or INVOKE V0 contract type
+  if (transaction.contractAddress) {
+    if (
+      transaction.contractAddress &&
+      address &&
+      !hexEq(address, transaction.contractAddress)
+    ) {
+      return false;
+    }
+    if (filter.to && !hexEq(filter.to, transaction.contractAddress)) {
+      return false;
+    }
+  }
+  if (transaction.entryPointSelector && filter.function) {
+    if (
+      !hexEq(transaction.entryPointSelector, filter.function) ||
+      !hexEq(
+        transaction.entryPointSelector,
+        encodeSelectorToHex(filter.function),
+      )
+    ) {
+      return false;
+    }
+  }
+  // INVOKE contract type
+  if (
+    transaction.from &&
+    filter.from &&
+    !hexEq(transaction.from, filter.from)
+  ) {
+    return false;
+  }
+  if (transaction.decodedCalls && transaction.decodedCalls?.length !== 0) {
+    if (filter.function) {
+      const index = transaction.decodedCalls?.findIndex(
+        (call) =>
+          hexEq(call.selector, filter.function!) ||
+          hexEq(call.selector, encodeSelectorToHex(filter.function!)),
+      );
+      if (index === -1) {
+        return false;
+      } // do not return true here
+    }
+    if (filter.to) {
+      const index = transaction.decodedCalls?.findIndex((call) =>
+        hexEq(call.to, filter.to!),
+      );
+      if (index === -1) {
+        return false;
+      }
+    }
+  }
+  // In case decode calls failed, we try to look into raw calldata
+  else {
+    if (filter.function) {
+      const index = transaction.callData?.findIndex(
+        (call) =>
+          call === filter.function ||
+          call === encodeSelectorToHex(filter.function!),
+      );
+      if (index === -1) {
+        return false;
+      }
+    }
+    if (filter.to) {
+      const index = transaction.callData?.findIndex((call) =>
+        hexEq(call, filter.to!),
+      );
+      if (index === -1) {
+        return false;
+      }
+    }
+  }
   return true;
 }
 
@@ -82,30 +127,28 @@ export function filterLogsProcessor(
   filter: StarknetLogFilter,
   address?: string,
 ): boolean {
-  if (address && address !== log.address) {
+  if (address && hexEq(address, log.address)) {
     return false;
   }
-
   if (!filter) return true;
+  if (
+    log.topics &&
+    log.topics.length > 0 &&
+    topicsHaveNoCommonElements(filter.topics!, log.topics)
+  ) {
+    return false;
+  }
+  return true;
+}
 
-  if (filter.topics) {
-    for (let i = 0; i < Math.min(filter.topics.length, 4); i++) {
-      const topic = filter.topics[i];
-      if (!topic) {
-        continue;
-      }
-
-      if (!log.topics[i]) {
-        return false;
-      }
-
-      if (topic === NOT_NULL_FILTER) {
-        return true;
-      }
-
+// check two topics/keys have NO element in common
+function topicsHaveNoCommonElements(array1, array2) {
+  for (const item1 of array1) {
+    for (const item2 of array2) {
       if (
-        !shortString.isShortString(topic) &&
-        encodeSelectorToHex(topic) !== log.topics[i]
+        hexEq(item1, item2) ||
+        hexEq(item1, encodeEventKey(item2)) ||
+        hexEq(item2, encodeEventKey(item1))
       ) {
         return false;
       }

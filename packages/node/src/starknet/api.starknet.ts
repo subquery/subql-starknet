@@ -37,6 +37,7 @@ import {
 import { decodeInvokeCalldata, decodeGenericCalldata } from './decodeCalldata';
 import SafeStarknetProvider from './safe-api';
 import {
+  hexEq,
   encodeSelectorToHex,
   fetchAbiFromContractAddress,
   formatBlock,
@@ -401,7 +402,11 @@ export class StarknetApi implements ApiWrapper {
       decodedCalls.map(async (call) => {
         let iAbi: Abi;
         try {
-          if (ds.options?.address === call.to && ds.options.abi) {
+          if (
+            ds.options?.address &&
+            hexEq(ds.options.address, call.to) &&
+            ds.options.abi
+          ) {
             iAbi = this.buildInterface(ds.options.abi, assets);
           } else {
             //We could register this abi in memory improve performance, maybe just record with address instead of abi name here

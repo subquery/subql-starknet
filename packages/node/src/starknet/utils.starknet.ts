@@ -17,9 +17,9 @@ import {
   Abi,
   hash,
   num,
-  ParsedEvent,
   RpcProvider,
   TransactionReceipt,
+  validateAndParseAddress,
 } from 'starknet';
 import { BlockContent } from '../indexer/types';
 import { decodeGenericCalldata, decodeInvokeCalldata } from './decodeCalldata';
@@ -184,5 +184,18 @@ export async function fetchAbiFromContractAddress(
 }
 
 export function encodeSelectorToHex(eventName: string): string {
+  return hash.getSelector(eventName);
+}
+
+export function encodeEventKey(eventName: string): string {
   return num.toHex(hash.starknetKeccak(eventName));
+}
+
+// Check address or selector hex string are equal
+export function hexEq(a: string, b: string): boolean {
+  try {
+    return validateAndParseAddress(a) === validateAndParseAddress(b);
+  } catch (e) {
+    return false;
+  }
 }

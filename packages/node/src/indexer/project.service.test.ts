@@ -5,12 +5,12 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { StarknetApi, StarknetApiService } from '../starknet';
 import { ProjectService } from './project.service';
 
-const HTTP_ENDPOINT = 'https://free-rpc.nstrkermind.io/mainnet-juno/v0_7';
+const HTTP_ENDPOINT = 'https://free-rpc.nethermind.io/mainnet-juno/v0_7';
 
-const mockApiService = (): StarknetApiService => {
+const mockApiService = async (): Promise<StarknetApiService> => {
   const strkApi = new StarknetApi(HTTP_ENDPOINT, new EventEmitter2());
 
-  // await ethApi.init();
+  await strkApi.init();
 
   return {
     unsafeApi: strkApi,
@@ -20,8 +20,8 @@ const mockApiService = (): StarknetApiService => {
 describe('ProjectService', () => {
   let projectService: ProjectService;
 
-  beforeEach(() => {
-    const apiService = mockApiService();
+  beforeEach(async () => {
+    const apiService = await mockApiService();
 
     projectService = new ProjectService(
       null as any,
@@ -40,10 +40,8 @@ describe('ProjectService', () => {
   });
 
   it('can get a block timestamps', async () => {
-    const timestamp = await (projectService as any).getBlockTimestamp(
-      4_000_000,
-    );
+    const timestamp = await (projectService as any).getBlockTimestamp(500_000);
 
-    expect(timestamp).toEqual(new Date('2017-07-09T20:52:47.000Z'));
+    expect(timestamp).toEqual(new Date('2024-01-09T03:54:22.000Z'));
   });
 });

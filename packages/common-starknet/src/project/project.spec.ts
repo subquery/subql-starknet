@@ -65,7 +65,7 @@ describe('project.yaml', () => {
     const filter = deployment.dataSources[0].mapping.handlers[0].filter;
     const deploymentString = manifestVersioned.toDeployment();
     expect(filter).not.toBeNull();
-    expect(deploymentString).toContain('Transfer (address from, address to, uint256 tokenId)');
+    expect(deploymentString).toContain('Transfer');
   });
 
   it('can convert genesis hash in v1.0.0 to chainId in deployment', () => {

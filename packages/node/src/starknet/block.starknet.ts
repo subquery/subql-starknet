@@ -89,9 +89,11 @@ export function filterTransactionsProcessor(
         return false;
       } // do not return true here
     }
-    if (filter.to) {
+    if (filter.to || address) {
+      // if filter.to is not provided, we use address as filter
+      const filterAddress = filter.to ?? address;
       const index = transaction.decodedCalls?.findIndex((call) =>
-        hexEq(call.to, filter.to!),
+        hexEq(call.to, filterAddress!),
       );
       if (index === -1) {
         return false;
@@ -127,13 +129,13 @@ export function filterLogsProcessor(
   filter: StarknetLogFilter,
   address?: string,
 ): boolean {
-  if (address && hexEq(address, log.address)) {
+  if (address && !hexEq(address, log.address)) {
     return false;
   }
   if (!filter) return true;
   if (
-    log.topics &&
-    log.topics.length > 0 &&
+    filter.topics?.length &&
+    log.topics?.length &&
     topicsHaveNoCommonElements(filter.topics!, log.topics)
   ) {
     return false;
@@ -158,8 +160,8 @@ function topicsHaveNoCommonElements(array1, array2) {
 }
 
 export function isFullBlock(block: BlockContent): block is StarknetBlock {
-  if ((block as any).transaction.length) {
-    return typeof (block as any).logs[0].transactionHash === 'string';
+  if ((block as any).transactions.length) {
+    return (block as any).transactions[0].type && (block as any).logs.length;
   }
   return false;
 }

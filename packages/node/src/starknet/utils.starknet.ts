@@ -1,12 +1,13 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
+import { SPEC } from '@starknet-io/types-js';
 import { Header, IBlock } from '@subql/node-core';
 import {
   ApiWrapper,
-  BLOCK_HEADER,
   LightStarknetBlock,
   StarknetBlock,
+  StarknetContractCall,
   StarknetLog,
   StarknetLogRaw,
   StarknetResult,
@@ -103,32 +104,39 @@ export function formatTransaction(
     transactionIndex: txIndex,
     entryPointSelector: tx.entry_point_selector,
     contractAddress: tx.contract_address,
+    parseCallData(): StarknetContractCall[] | undefined {
+      if (this.decodedCalls) {
+        return this.decodedCalls;
+      }
+
+      // Handle "INVOKE V1 and V3"
+      if (
+        transaction.type === 'INVOKE' &&
+        transaction.version !== ('0x0' || '0x100000000000000000000000000000000')
+      ) {
+        return decodeInvokeCalldata(transaction.callData);
+      }
+      // Handle "L1_HANDLER" and "INVOKE V0"
+      else if (
+        transaction.contractAddress &&
+        transaction.entryPointSelector &&
+        transaction.callData
+      ) {
+        return [
+          decodeGenericCalldata(
+            transaction.contractAddress,
+            transaction.entryPointSelector,
+            transaction.callData,
+          ),
+        ];
+      }
+      return;
+    },
     toJSON(): string {
       return JSON.stringify(omit(this, ['receipt', 'toJSON']));
     },
   } as Omit<StarknetTransaction, 'receipt'>;
 
-  // Handle "INVOKE V1 and V3"
-  if (
-    transaction.type === 'INVOKE' &&
-    transaction.version !== ('0x0' || '0x100000000000000000000000000000000')
-  ) {
-    transaction.decodedCalls = decodeInvokeCalldata(transaction.callData);
-  }
-  // Handle "L1_HANDLER" and "INVOKE V0"
-  else if (
-    transaction.contractAddress &&
-    transaction.entryPointSelector &&
-    transaction.callData
-  ) {
-    transaction.decodedCalls = [
-      decodeGenericCalldata(
-        transaction.contractAddress,
-        transaction.entryPointSelector,
-        transaction.callData,
-      ),
-    ];
-  }
   return transaction;
 }
 
@@ -151,7 +159,7 @@ export function starknetBlockToHeader(block: BlockContent): Header {
   };
 }
 
-export function starknetBlockHeaderToHeader(block: BLOCK_HEADER): Header {
+export function starknetBlockHeaderToHeader(block: SPEC.BLOCK_HEADER): Header {
   return {
     blockHeight: block.block_number,
     blockHash: block.block_hash,

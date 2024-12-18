@@ -1,9 +1,12 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
+import {BlockHash, Felt, SPEC} from '@starknet-io/types-js';
 import {BlockFilter} from '@subql/types-core';
 import {TransactionReceipt} from 'starknet';
-import {BLOCK_HASH, BLOCK_NUMBER, FELT, RESOURCE_PRICE, TXN_TYPE, BLOCK_STATUS} from './rpcSpec';
+
+export type StarknetLogRaw = SPEC.EMITTED_EVENT;
+
 export type StarknetBlockFilter = BlockFilter;
 
 /**
@@ -36,7 +39,7 @@ export interface StarknetTransactionFilter {
    * @example
    * type: 'INVOKE'
    * */
-  type?: TXN_TYPE;
+  type?: SPEC.TXN_TYPE;
 }
 
 /**
@@ -67,27 +70,27 @@ export type StarknetBlock = LightStarknetBlock & {
 
 // Should be accepted block only
 export type LightStarknetBlock = {
-  blockHash: BLOCK_HASH;
-  parentHash: BLOCK_HASH;
-  blockNumber: BLOCK_NUMBER;
-  newRoot: FELT;
+  blockHash: BlockHash;
+  parentHash: BlockHash;
+  blockNumber: SPEC.BLOCK_NUMBER;
+  newRoot: Felt;
   timestamp: number;
-  sequencerAddress: FELT;
-  l1GasPrice: RESOURCE_PRICE;
+  sequencerAddress: Felt;
+  l1GasPrice: SPEC.RESOURCE_PRICE;
   starknetVersion: string;
-  status: BLOCK_STATUS;
+  status: SPEC.BLOCK_STATUS;
   logs: StarknetLog[];
 };
 
 export interface StarknetContractCall {
-  to: FELT;
-  selector: FELT;
-  calldata: FELT[];
+  to: Felt;
+  selector: Felt;
+  calldata: Felt[];
   decodedArgs?: any;
 }
 
 export type StarknetTransaction = {
-  type: TXN_TYPE;
+  type: SPEC.TXN_TYPE;
   hash: string;
   from: string;
   blockHash: string;
@@ -99,7 +102,10 @@ export type StarknetTransaction = {
   entryPointSelector?: string;
   contractAddress?: string;
   version?: string;
+  // Store decoded calls,  also store abi parsed data/args
   decodedCalls?: StarknetContractCall[];
+  // Parse the calldata also save into local decodedCalls
+  parseCallData: () => StarknetContractCall[];
   receipt?: () => Promise<TransactionReceipt>;
   logs?: StarknetLog[];
 };

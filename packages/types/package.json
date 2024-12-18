@@ -17,6 +17,7 @@
     "/dist"
   ],
   "dependencies": {
+    "@starknet-io/types-js": "latest",
     "@subql/types-core": "^1.1.1",
     "starknet": "^6.11.0"
   }

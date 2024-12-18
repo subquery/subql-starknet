@@ -1,12 +1,8 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
+import { BlockWithTxs, BlockWithTxHashes, SPEC } from '@starknet-io/types-js';
 import { getLogger } from '@subql/node-core';
-import {
-  BlockWithTxs,
-  BlockWithTxHashes,
-  EVENTS_CHUNK,
-} from '@subql/types-starknet';
 import {
   BigNumberish,
   BlockIdentifier,
@@ -41,7 +37,7 @@ export default class SafeStarknetProvider extends RpcProvider {
     throw new Error('Method `getTransactionReceipt` not supported.');
   }
   // eslint-disable-next-line @typescript-eslint/promise-function-async
-  getEvents(filter): Promise<EVENTS_CHUNK> {
+  getEvents(filter): Promise<SPEC.EVENTS_CHUNK> {
     throw new Error('Method `getEvents` not supported.');
   }
   // eslint-disable-next-line @typescript-eslint/promise-function-async

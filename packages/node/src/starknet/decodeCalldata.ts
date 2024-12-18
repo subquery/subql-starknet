@@ -1,7 +1,8 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { FELT, StarknetContractCall } from '@subql/types-starknet';
+import { Felt } from '@starknet-io/types-js';
+import { StarknetContractCall } from '@subql/types-starknet';
 
 export class DecodeCalldataError extends Error {
   constructor(message: string) {
@@ -17,9 +18,9 @@ export class DecodeCalldataError extends Error {
  * @param calldata
  */
 export function decodeGenericCalldata(
-  contractAddress: FELT,
-  selector: FELT,
-  calldata: FELT[],
+  contractAddress: Felt,
+  selector: Felt,
+  calldata: Felt[],
 ): StarknetContractCall {
   return {
     to: contractAddress,
@@ -34,7 +35,7 @@ export function decodeGenericCalldata(
  *
  * @param calldata
  */
-export function decodeInvokeCalldata(calldata: FELT[]): StarknetContractCall[] {
+export function decodeInvokeCalldata(calldata: Felt[]): StarknetContractCall[] {
   try {
     return decodeLegacy(calldata);
   } catch {
@@ -42,14 +43,14 @@ export function decodeInvokeCalldata(calldata: FELT[]): StarknetContractCall[] {
   }
 }
 
-function decodeLegacy(calldata: FELT[]): StarknetContractCall[] {
+function decodeLegacy(calldata: Felt[]): StarknetContractCall[] {
   const calls: StarknetContractCall[] = [];
   const callsLength = parseBigInt(calldata[0]);
 
   let offset = 1;
   const callBuilders: {
-    to: FELT;
-    selector: FELT;
+    to: Felt;
+    selector: Felt;
     dataOffset: number;
     dataLen: number;
   }[] = [];
@@ -57,8 +58,8 @@ function decodeLegacy(calldata: FELT[]): StarknetContractCall[] {
   for (let i = 0; i < callsLength; i++) {
     const to = calldata[offset];
     const selector = calldata[offset + 1];
-    const dataOffset = parseBigInt(calldata[offset + 2]);
-    const dataLen = parseBigInt(calldata[offset + 3]);
+    const dataOffset = calldata[offset + 2];
+    const dataLen = calldata[offset + 3];
 
     callBuilders.push({
       to,
@@ -93,7 +94,7 @@ function decodeLegacy(calldata: FELT[]): StarknetContractCall[] {
   return calls;
 }
 
-function decodeNew(calldata: FELT[]): StarknetContractCall[] {
+function decodeNew(calldata: Felt[]): StarknetContractCall[] {
   const calls: StarknetContractCall[] = [];
   const callsLength = parseBigInt(calldata[0]);
 
@@ -117,7 +118,7 @@ function decodeNew(calldata: FELT[]): StarknetContractCall[] {
   return calls;
 }
 
-function parseBigInt(value: FELT): bigint {
+function parseBigInt(value: Felt): bigint {
   try {
     return BigInt(value);
   } catch {

@@ -11,7 +11,6 @@ export {
   SubqlCustomHandler,
   SubqlHandler,
   StarknetHandlerKind,
-  StarknetRuntimeDatasource as StarknetRuntimeDataSource,
   StarknetCustomDatasource as StarknetCustomDataSource,
   SubqlDatasource as SubqlStarknetDataSource,
   StarknetBlockFilter,

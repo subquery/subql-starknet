@@ -107,6 +107,8 @@ describe('Api.starknet', () => {
         t.hash ===
         '0x153a20567e66728f3c4ba60913a6011b9c73db9ea4d960e959923ed5afd8a24',
     );
+    // Expect before parse (or been passed a filter), decodedCalls is undefined
+    expect(tx!.decodedCalls).toBeUndefined();
     const parsedTransaction = await strkApi.parseTransaction(tx!, ds);
     expect(parsedTransaction.decodedCalls).toStrictEqual([
       {

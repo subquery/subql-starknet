@@ -63,6 +63,9 @@ describe('block filters', () => {
         ),
       ).toBeTruthy();
 
+      // Expect filtered match transaction will attach will decodedCalls
+      expect(tx!.decodedCalls?.length).toBe(4);
+
       // filter function selector with both text and hex
       expect(
         filterTransactionsProcessor(
@@ -107,6 +110,29 @@ describe('block filters', () => {
           to: '0x047aaaaad',
         }),
       ).toBeFalsy();
+    });
+
+    it('decodeCalls only on filtered tx', async () => {
+      // https://starkscan.co/tx/0x00b3173b7a65b32fc8669da8f4676a7ef10c6f58ddd3159db7c0cd3de1025443
+      const block = await fetchBlock(986480);
+      const tx = block.transactions.find(
+        (tx) =>
+          tx.hash ===
+          '0xb3173b7a65b32fc8669da8f4676a7ef10c6f58ddd3159db7c0cd3de1025443',
+      );
+      // Filter should be failed, and it should not decode calls
+      expect(
+        filterTransactionsProcessor(
+          tx!,
+          {
+            type: 'INVOKE',
+            function: 'mockFn',
+          },
+          '0x0xxxxx',
+        ),
+      ).toBeFalsy();
+
+      expect(tx!.decodedCalls).toBeUndefined();
     });
 
     it('filter L1 / Invoke v0 transaction', async () => {

@@ -6,21 +6,19 @@ import fs from 'fs';
 import http from 'http';
 import https from 'https';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { BlockWithTxs, SPEC } from '@starknet-io/types-js';
 import { getLogger, IBlock, timeout } from '@subql/node-core';
 import {
   ApiWrapper,
   StarknetBlock,
   StarknetRuntimeDatasource,
   IStarknetEndpointConfig,
-  BLOCK_WITH_TXS,
-  BlockWithTxs,
   LightStarknetBlock,
   StarknetLogRaw,
   StarknetResult,
   StarknetTransaction,
   StarknetLog,
   StarknetContractCall,
-  BLOCK_HEADER,
 } from '@subql/types-starknet';
 import {
   AbiInterfaces,
@@ -34,7 +32,6 @@ import {
   AbiEntry,
   FunctionAbi,
 } from 'starknet';
-import { decodeInvokeCalldata, decodeGenericCalldata } from './decodeCalldata';
 import SafeStarknetProvider from './safe-api';
 import {
   hexEq,
@@ -158,6 +155,8 @@ export class StarknetApi implements ApiWrapper {
     if (block === null) {
       throw new Error(`Getting genesis block returned null from block 1`);
     }
+    // @ts-ignore
+    // TODO, @starknet-io/types-js is not align with starknet rpc types, follow this ticket https://github.com/starknet-io/types-js/issues/31
     return block;
   }
 
@@ -166,14 +165,17 @@ export class StarknetApi implements ApiWrapper {
    * we will try to get the latest block, if it is rejected, we will get the latest accepted block
    * @returns {Promise<BLOCK_HEADER>}
    */
-  async getFinalizedBlock(): Promise<BLOCK_HEADER> {
+  async getFinalizedBlock(): Promise<SPEC.BLOCK_HEADER> {
     const [latestBlock, latestAccepted] = await Promise.all([
       this.client.getBlock('latest'),
       await this.getFinalizedBlockHeight(),
     ]);
-    let b: BLOCK_HEADER = latestBlock;
+    // @ts-ignore
+    let b: SPEC.BLOCK_HEADER = latestBlock;
     if (latestBlock.status === 'REJECTED') {
-      b = (await this.getBlockByHeightOrHash(latestAccepted)) as BLOCK_WITH_TXS;
+      b = (await this.getBlockByHeightOrHash(
+        latestAccepted,
+      )) as SPEC.BLOCK_WITH_TXS;
     }
     return b;
   }
@@ -199,6 +201,7 @@ export class StarknetApi implements ApiWrapper {
   async getBlockByHeightOrHash(
     heightOrHash: number | string,
   ): Promise<BlockWithTxs> {
+    // @ts-ignore
     return this.client.getBlockWithTxs(heightOrHash);
   }
 
@@ -373,6 +376,10 @@ export class StarknetApi implements ApiWrapper {
   ): Promise<StarknetTransaction> {
     try {
       const assets = await loadAssets(ds);
+      // If decoded calls not exist, try to parse first
+      if (!transaction.decodedCalls) {
+        transaction.decodedCalls = transaction.parseCallData();
+      }
       if (transaction.decodedCalls && transaction.decodedCalls.length > 0) {
         await this.handleDecodedCallsArgs(transaction.decodedCalls, ds, assets);
       } else {

@@ -78,25 +78,35 @@ export function filterTransactionsProcessor(
   ) {
     return false;
   }
-  if (transaction.decodedCalls && transaction.decodedCalls?.length !== 0) {
+
+  // Only decode calls lazily if filter applies
+  const decodedCalls = transaction.parseCallData();
+
+  if (decodedCalls && decodedCalls?.length !== 0) {
     if (filter.function) {
-      const index = transaction.decodedCalls?.findIndex(
+      const index = decodedCalls?.findIndex(
         (call) =>
           hexEq(call.selector, filter.function!) ||
           hexEq(call.selector, encodeSelectorToHex(filter.function!)),
       );
       if (index === -1) {
         return false;
-      } // do not return true here
+      } else {
+        // Only filtered calls are stored, reduce memory usage
+        transaction.decodedCalls = decodedCalls;
+      }
+      // do not return true here
     }
     if (filter.to || address) {
       // if filter.to is not provided, we use address as filter
       const filterAddress = filter.to ?? address;
-      const index = transaction.decodedCalls?.findIndex((call) =>
+      const index = decodedCalls?.findIndex((call) =>
         hexEq(call.to, filterAddress!),
       );
       if (index === -1) {
         return false;
+      } else {
+        transaction.decodedCalls = decodedCalls;
       }
     }
   }

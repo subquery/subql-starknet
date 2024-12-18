@@ -11,7 +11,6 @@ import {
   BaseFetchService,
   ApiService,
   getModulos,
-  getLogger,
   Header,
   StoreCacheService,
 } from '@subql/node-core';

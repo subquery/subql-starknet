@@ -107,7 +107,7 @@ export class BlockHandler implements SubqlBlockHandler {
 }
 
 export class CallHandler implements SubqlCallHandler {
-  @forbidNonWhitelisted({from: '', to: '', function: ''})
+  @forbidNonWhitelisted({from: '', to: '', function: '', type: ''})
   @IsOptional()
   @ValidateNested()
   @Type(() => TransactionFilter)

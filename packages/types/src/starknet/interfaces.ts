@@ -3,7 +3,7 @@
 
 import {BlockHash, Felt, SPEC} from '@starknet-io/types-js';
 import {BlockFilter} from '@subql/types-core';
-import {TransactionReceipt} from 'starknet';
+import {ParsedEvent, TransactionReceipt} from 'starknet';
 
 export type StarknetLogRaw = SPEC.EMITTED_EVENT;
 
@@ -59,9 +59,19 @@ export interface StarknetLogFilter {
   topics?: Array<string | null | undefined>;
 }
 
-export interface StarknetResult extends ReadonlyArray<any> {
-  readonly [key: string]: any;
-}
+export type StarknetResult = ParsedEvent;
+
+// export interface StarknetResult extends ReadonlyArray<any> {
+//   readonly [key: string]: any;
+// }
+
+// type ParsedEvent = {
+//   [name: string]: ParsedStruct;
+// } & {
+//   block_hash?: BlockHash$1;
+//   block_number?: BlockNumber;
+//   transaction_hash?: TransactionHash$1;
+// };
 
 export type StarknetBlock = LightStarknetBlock & {
   transactions: StarknetTransaction[];

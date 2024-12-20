@@ -6,12 +6,15 @@ import {
   BaseUnfinalizedBlocksService,
   Header,
   NodeConfig,
-  mainThreadOnly,
   StoreCacheService,
 } from '@subql/node-core';
 import { StarknetNodeConfig } from '../configure/NodeConfig';
 import { StarknetApiService as ApiService } from '../starknet/api.service.starknet';
-import { starknetBlockToHeader } from '../starknet/utils.starknet';
+import {
+  formatBlock,
+  starknetBlockHeaderToHeader,
+  starknetBlockToHeader,
+} from '../starknet/utils.starknet';
 import { BlockContent } from './types';
 
 @Injectable()
@@ -28,17 +31,18 @@ export class UnfinalizedBlocksService extends BaseUnfinalizedBlocksService<Block
   }
 
   protected async getFinalizedHead(): Promise<Header> {
-    // @ts-ignore
-    return Promise.resolve(undefined);
+    return starknetBlockHeaderToHeader(
+      await this.apiService.api.getFinalizedBlock(),
+    );
   }
 
   protected async getHeaderForHash(hash: string): Promise<Header> {
-    // @ts-ignore
-    return Promise.resolve(undefined);
+    const block = await this.apiService.api.getBlockByHeightOrHash(hash);
+    return starknetBlockToHeader(formatBlock(block));
   }
 
   protected async getHeaderForHeight(height: number): Promise<Header> {
-    // @ts-ignore
-    return Promise.resolve(undefined);
+    const block = await this.apiService.api.getBlockByHeightOrHash(height);
+    return starknetBlockToHeader(formatBlock(block));
   }
 }

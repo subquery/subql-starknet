@@ -112,6 +112,32 @@ describe('block filters', () => {
       ).toBeFalsy();
     });
 
+    it('should filter tx with multiple conditions', async () => {
+      const block_997058 = await fetchBlock(997058);
+      // https://starkscan.co/tx/0x055588e82f864f830c4d1d1117e6e8d61a917ef18cf79961af001dc321d96cb3
+      const txWithdraw = block_997058.transactions.find(
+        (tx) =>
+          tx.hash ===
+          '0x55588e82f864f830c4d1d1117e6e8d61a917ef18cf79961af001dc321d96cb3',
+      );
+      expect(
+        filterTransactionsProcessor(txWithdraw!, {
+          to: '0x04c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05',
+          function: 'withdraw',
+          type: 'INVOKE',
+        }),
+      ).toBeTruthy();
+
+      expect(
+        filterTransactionsProcessor(txWithdraw!, {
+          to: '0x04c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05',
+          function:
+            '0x015511cc3694f64379908437d6d64458dc76d02482052bfb8a5b33a72c054c77', // with extra 0 padding
+          type: 'INVOKE',
+        }),
+      ).toBeTruthy();
+    });
+
     it('decodeCalls only on filtered tx', async () => {
       // https://starkscan.co/tx/0x00b3173b7a65b32fc8669da8f4676a7ef10c6f58ddd3159db7c0cd3de1025443
       const block = await fetchBlock(986480);

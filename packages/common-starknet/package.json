@@ -16,9 +16,11 @@
   "dependencies": {
     "@subql/common": "^5.1.1",
     "@subql/types-starknet": "workspace:*",
+    "@typechain/starknet": "latest",
     "js-yaml": "^4.1.0",
     "pino": "^6.13.3",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "typechain": "latest"
   },
   "peerDependencies": {
     "class-transformer": "*",

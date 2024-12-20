@@ -264,18 +264,28 @@ export class StarknetApi implements ApiWrapper {
     const allEvents: StarknetLogRaw[] = [];
 
     while (continuationToken) {
-      const eventsRes = await this.client.getEvents({
-        from_block: {
-          block_number: blockNumber,
-        },
-        to_block: {
-          block_number: blockNumber,
-        },
-        chunk_size: DEFAULT_EVENT_CHUNK_SIZE,
-        continuation_token:
-          continuationToken === '0' ? undefined : continuationToken,
-      });
-
+      let eventsRes;
+      try {
+        eventsRes = await this.client.getEvents({
+          from_block: {
+            block_number: blockNumber,
+          },
+          to_block: {
+            block_number: blockNumber,
+          },
+          chunk_size: DEFAULT_EVENT_CHUNK_SIZE,
+          continuation_token:
+            continuationToken === '0' ? undefined : continuationToken,
+        });
+      } catch (e: any) {
+        if (!eventsRes) {
+          throw new Error(
+            `Fetch block ${blockNumber} events failed, ${e.message}`,
+          );
+        } else {
+          throw e;
+        }
+      }
       const nbEvents = eventsRes.events.length;
       continuationToken = eventsRes.continuation_token;
       logger.debug(

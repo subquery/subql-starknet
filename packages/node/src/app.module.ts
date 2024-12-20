@@ -9,7 +9,9 @@ import { ConfigureModule } from './configure/configure.module';
 import { FetchModule } from './indexer/fetch.module';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { version: starknetSdkVersion } = require('starknet/package.json');
+// TODO, require('starknet/package.json')
+// Package subpath './package.json' is not defined by "exports" in /Users/xxx/subql-starknet/node_modules/starknet/package.json
+const { version: starknetSdkVersion } = { version: '^6' };
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version: packageVersion } = require('../package.json');
 

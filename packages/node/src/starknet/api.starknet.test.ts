@@ -56,6 +56,12 @@ describe('Api.starknet', () => {
     blockData = await fetchBlock(979358);
   });
 
+  it('should get finalized block', async () => {
+    const finalized = await strkApi.getFinalizedBlock();
+    expect(finalized).toBeDefined();
+    expect(finalized.block_number).toBeGreaterThan(979358);
+  });
+
   it('Should format transaction in logs', () => {
     expect(typeof blockData.logs[0].transaction.blockNumber).toBe('number');
     expect(typeof blockData.logs[0].transaction.transactionIndex).toBe(

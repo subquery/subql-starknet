@@ -128,6 +128,7 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
     StarknetDictionaryService,
     DsProcessorService,
     DynamicDsService,
+    StarknetApiService,
     {
       useClass: ProjectService,
       provide: 'IProjectService',

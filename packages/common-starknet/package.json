@@ -27,6 +27,7 @@
     "class-validator": "*"
   },
   "devDependencies": {
+    "@types/ejs": "^3.1.2",
     "@types/js-yaml": "^4.0.4",
     "@types/lodash": "^4",
     "@types/pino": "^6.3.12",

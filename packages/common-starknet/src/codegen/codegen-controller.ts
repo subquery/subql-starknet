@@ -11,7 +11,6 @@ import {StarknetHandlerKind, StarknetRuntimeDatasource} from '@subql/types-stark
 import {Data} from 'ejs';
 import {runTypeChain, glob, parseContractPath} from 'typechain';
 import {isCustomDs, isRuntimeDs, NOT_NULL_FILTER} from '../project';
-import {loadReadAbi} from './utils';
 
 const RECONSTRUCTED_FACTORIES_TS = path.resolve(__dirname, '../../templates/factories-index.ts.ejs');
 const RECONSTRUCTED_CONTRACTS_TS = path.resolve(__dirname, '../../templates/contracts-index.ts.ejs');
@@ -19,7 +18,7 @@ const ABI_INTERFACE_TEMPLATE_PATH = path.resolve(__dirname, '../../templates/abi
 const ABI_INTERFACES_ROOT_DIR = 'src/types/abi-interfaces';
 const CONTRACTS_DIR = 'src/types/contracts'; //generated
 const FACTORIES_DIR = path.join(CONTRACTS_DIR, 'factories'); // generated
-const TYPECHAIN_TARGET = 'StarknetTarget';
+const TYPECHAIN_TARGET = 'starknet';
 
 function validateAbi(datasources: StarknetRuntimeDatasource[], projectPath: string) {
   const issues: string[] = [];
@@ -99,7 +98,7 @@ function validateAbi(datasources: StarknetRuntimeDatasource[], projectPath: stri
 //   return `${abiObject.name}_${inputToSnake}_`;
 // }
 
-function inputsToArgs(inputs: ABI[]): string {
+function inputsToArgs(inputs: any[]): string {
   const args = inputs
     .map((input) => {
       if (input.components) {
@@ -146,11 +145,22 @@ export function prepareSortedAssets(
   return sortedAssets;
 }
 
+export interface AbiRenderProps {
+  name: string;
+  events: string[];
+  functions: {typeName: string; functionName: string}[];
+}
+// export function joinInputAbiName(abiObject: ABI): string {
+//   // example: "TextChanged_bytes32_string_string_string_Event", Event name/Function type name will be joined in ejs
+//   const inputToSnake = abiObject.inputs.map((obj) => obj.type.replace(/\[\]/g, '_arr').toLowerCase()).join('_');
+//   return `${abiObject.name}_${inputToSnake}_`;
+// }
+
 // maybe refactor to use fragments ? ( can do that after the v6 migrate
 export function prepareAbiJob(
   sortedAssets: Record<string, string>,
   projectPath: string,
-  loadReadAbi: (filePath: string) => AbiInterface[] | {abi: AbiInterface[]}
+  loadReadAbi: (filePath: string) => ABI
 ): AbiRenderProps[] {
   const renderInterfaceJobs: AbiRenderProps[] = [];
   Object.entries(sortedAssets).forEach(([key, value]) => {
@@ -160,51 +170,42 @@ export function prepareAbiJob(
     // because they have different input, and following ether typegen rules, name also changed
     // we need to find duplicates, and update its name rather than just unify them.
 
-    let abiArray: AbiInterface[] = [];
-
-    if (!Array.isArray(readAbi)) {
-      if (!readAbi.abi) {
-        throw new Error(`Provided ABI is not a valid ABI or Artifact`);
-      }
-      abiArray = readAbi.abi;
-    } else {
-      abiArray = readAbi;
-    }
+    const abiArray = readAbi;
 
     if (!abiArray.length) {
       throw new Error(`Invalid abi is provided at asset: ${key}, ${value}, ${abiArray.length}`);
     }
 
-    const duplicateEventNames = abiArray
-      .filter((abiObject) => abiObject.type === 'event')
-      .map((obj) => obj.name)
-      .filter((name, index, arr) => arr.indexOf(name) !== index);
-    const duplicateFunctionNames = abiArray
-      .filter((abiObject) => abiObject.type === 'function')
-      .map((obj) => obj.name)
-      .filter((name, index, arr) => arr.indexOf(name) !== index);
-    abiArray.map((abiObject) => {
-      if (abiObject.type === 'function') {
-        let typeName = abiObject.name;
-        let functionName = abiObject.name;
-        if (duplicateFunctionNames.includes(abiObject.name)) {
-          functionName = `${abiObject.name}${inputsToArgs(abiObject.inputs)}`;
-          typeName = joinInputAbiName(abiObject);
-        }
-        renderProps.functions.push({typeName, functionName});
-      }
-      if (abiObject.type === 'event') {
-        let name = abiObject.name;
-        if (duplicateEventNames.includes(abiObject.name)) {
-          name = joinInputAbiName(abiObject);
-        }
-        renderProps.events.push(name);
-      }
-    });
-    // avoid empty json
-    if (!!renderProps.events || !!renderProps.functions) {
-      renderInterfaceJobs.push(renderProps);
-    }
+    // const duplicateEventNames = abiArray
+    //   .filter((abiObject) => abiObject.type === 'event')
+    //   .map((obj) => obj.name)
+    //   .filter((name, index, arr) => arr.indexOf(name) !== index);
+    // const duplicateFunctionNames = abiArray
+    //   .filter((abiObject) => abiObject.type === 'function')
+    //   .map((obj) => obj.name)
+    //   .filter((name, index, arr) => arr.indexOf(name) !== index);
+    // abiArray.map((abiObject) => {
+    //   if (abiObject.type === 'function') {
+    //     let typeName = abiObject.name;
+    //     let functionName = abiObject.name;
+    //     if (duplicateFunctionNames.includes(abiObject.name)) {
+    //       functionName = `${abiObject.name}${inputsToArgs(abiObject.inputs)}`;
+    //       typeName = joinInputAbiName(abiObject);
+    //     }
+    //     renderProps.functions.push({typeName, functionName});
+    //   }
+    //   if (abiObject.type === 'event') {
+    //     let name = abiObject.name;
+    //     if (duplicateEventNames.includes(abiObject.name)) {
+    //       name = joinInputAbiName(abiObject);
+    //     }
+    //     renderProps.events.push(name);
+    //   }
+    // });
+    // // avoid empty json
+    // if (!!renderProps.events || !!renderProps.functions) {
+    //   renderInterfaceJobs.push(renderProps);
+    // }
   });
   return renderInterfaceJobs;
 }
@@ -228,7 +229,7 @@ export async function generateAbis(
     assets: d?.assets ? (d.assets instanceof Map ? d.assets : new Map(Object.entries(d.assets))) : undefined,
   })) as StarknetRuntimeDatasource[];
 
-  validateAbi(datasources, projectPath);
+  // validateAbi(datasources, projectPath);
 
   const sortedAssets = prepareSortedAssets(datasources, projectPath);
 
@@ -242,47 +243,49 @@ export async function generateAbis(
     // Typechain generate interfaces under CONTRACTS_DIR
     // Run typechain for individual paths, if provided glob paths are the same,
     // it will generate incorrect file structures, and fail to generate contracts for certain abis
-    await Promise.all(
-      allFiles.map((file) =>
-        runTypeChain({
-          cwd: projectPath,
-          filesToProcess: [file],
-          allFiles: [file],
-          outDir: CONTRACTS_DIR,
-          target: TYPECHAIN_TARGET,
-        })
-      )
-    );
-    const factoryFiles = fs.readdirSync(path.join(projectPath, FACTORIES_DIR));
-    const abiNames = getAbiNames(factoryFiles);
-    // factories index
-    await Promise.all([
-      // Restructure factories/index.ts
-      renderTemplate(RECONSTRUCTED_FACTORIES_TS, path.join(projectPath, FACTORIES_DIR, 'index.ts'), {
-        props: {abiNames},
-      }),
-      // Restructure contracts/index.ts
-      renderTemplate(RECONSTRUCTED_CONTRACTS_TS, path.join(projectPath, CONTRACTS_DIR, 'index.ts'), {
-        props: {abiNames},
-      }),
-    ]);
+
+    // await Promise.all(
+    //   allFiles.map((file) =>
+    //     runTypeChain({
+    //       cwd: projectPath,
+    //       filesToProcess: [file],
+    //       allFiles: [file],
+    //       outDir: CONTRACTS_DIR,
+    //       target: TYPECHAIN_TARGET,
+    //     })
+    //
+    //   )
+    // );
+    // const factoryFiles = fs.readdirSync(path.join(projectPath, FACTORIES_DIR));
+    // const abiNames = getAbiNames(factoryFiles);
+    // // factories index
+    // await Promise.all([
+    //   // Restructure factories/index.ts
+    //   renderTemplate(RECONSTRUCTED_FACTORIES_TS, path.join(projectPath, FACTORIES_DIR, 'index.ts'), {
+    //     props: {abiNames},
+    //   }),
+    //   // Restructure contracts/index.ts
+    //   renderTemplate(RECONSTRUCTED_CONTRACTS_TS, path.join(projectPath, CONTRACTS_DIR, 'index.ts'), {
+    //     props: {abiNames},
+    //   }),
+    // ]);
 
     // Iterate here as we have to make sure type chain generated successful,
     // also avoid duplicate generate same abi interfaces
-    const renderAbiJobs = prepareAbiJob(sortedAssets, projectPath, loadReadAbi);
-    await Promise.all(
-      renderAbiJobs.map((renderProps) => {
-        console.log(`* Abi Interface ${renderProps.name} generated`);
-        return renderTemplate(
-          ABI_INTERFACE_TEMPLATE_PATH,
-          path.join(projectPath, ABI_INTERFACES_ROOT_DIR, `${renderProps.name}.ts`),
-          {
-            props: {abi: renderProps},
-            helper: {upperFirst},
-          }
-        );
-      })
-    );
+    // const renderAbiJobs = prepareAbiJob(sortedAssets, projectPath, loadReadAbi);
+    // await Promise.all(
+    //   renderAbiJobs.map((renderProps) => {
+    //     console.log(`* Abi Interface ${renderProps.name} generated`);
+    //     return renderTemplate(
+    //       ABI_INTERFACE_TEMPLATE_PATH,
+    //       path.join(projectPath, ABI_INTERFACES_ROOT_DIR, `${renderProps.name}.ts`),
+    //       {
+    //         props: {abi: renderProps},
+    //         helper: {upperFirst},
+    //       }
+    //     );
+    //   })
+    // );
   } catch (e: any) {
     console.error(`! Unable to generate abi interface. ${e.message}`);
   }

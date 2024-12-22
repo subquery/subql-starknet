@@ -1,7 +1,10 @@
-specVersion: '1.0.0'
-name: 'example'
-
-version: '0.0.1'
+# // Auto-generated , DO NOT EDIT
+specVersion: 1.0.0
+version: 0.0.1
+name: starknet-starter
+description: >-
+  This project can be use as a starting point for developing your new Starknet
+  SubQuery project
 runner:
   node:
     name: '@subql/node-starknet'
@@ -9,43 +12,28 @@ runner:
   query:
     name: '@subql/query'
     version: '*'
-description: ''
-repository: ''
 schema:
-  file: './schema.graphql'
+  file: ./schema.graphql
 network:
-  chainId: '1'
-  endpoint: 'aaa'
-  dictionary: ''
-
-customDs:
-  assets:
-    abi:
-      file: ./erc20.json
-    artifact:
-      file: ./abis/Erc20.sol/erc20.json
+  chainId: '0x534e5f4d41494e'
+  endpoint:
+    - https://starknet-mainnet.public.blastapi.io/rpc/v0_7
 dataSources:
   - kind: starknet/Runtime
+    startBlock: 995339
     options:
-      abi: Erc20
+      abi: zkLend
+      address: '0x04c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05'
     assets:
-      Erc20:
-        file: './abis/erc20.json'
-    startBlock: 1
+      zkLend:
+        file: ./abis/zkLend.abi.json
     mapping:
-      file: ''
+      file: ./dist/index.js
       handlers:
-        - handler: handleTransaction
-          kind: starknet/BlockHandler
-  - kind: starknet/Runtime
-    options:
-      abi: 'artifactErc20'
-    assets:
-      'artifactErc20':
-        file: './abis/Erc20.sol/Erc20.json'
-    startBlock: 1
-    mapping:
-      file: ''
-      handlers:
-        - handler: handleTransaction
-          kind: starknet/BlockHandler
+        - kind: starknet/TransactionHandler
+          handler: handleTransaction
+          filter:
+            to: '0x04c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05'
+            type: INVOKE
+            function: withdraw
+repository: https://github.com/subquery/starknet-subql-starter

@@ -61,18 +61,6 @@ export interface StarknetLogFilter {
 
 export type StarknetResult = ParsedEvent;
 
-// export interface StarknetResult extends ReadonlyArray<any> {
-//   readonly [key: string]: any;
-// }
-
-// type ParsedEvent = {
-//   [name: string]: ParsedStruct;
-// } & {
-//   block_hash?: BlockHash$1;
-//   block_number?: BlockNumber;
-//   transaction_hash?: TransactionHash$1;
-// };
-
 export type StarknetBlock = LightStarknetBlock & {
   transactions: StarknetTransaction[];
   logs: StarknetLog[];
@@ -92,11 +80,11 @@ export type LightStarknetBlock = {
   logs: StarknetLog[];
 };
 
-export interface StarknetContractCall {
+export interface StarknetContractCall<DA = Record<string, any>> {
   to: Felt;
   selector: Felt;
   calldata: Felt[];
-  decodedArgs?: any;
+  decodedArgs?: DA;
 }
 
 export type StarknetTransaction = {

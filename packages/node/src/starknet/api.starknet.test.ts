@@ -5,6 +5,7 @@ import path from 'path';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   StarknetBlock,
+  StarknetContractCall,
   StarknetDatasourceKind,
   StarknetHandlerKind,
   StarknetRuntimeDatasource,
@@ -116,7 +117,12 @@ describe('Api.starknet', () => {
     // Expect before parse (or been passed a filter), decodedCalls is undefined
     expect(tx!.decodedCalls).toBeUndefined();
     const parsedTransaction = await strkApi.parseTransaction(tx!, ds);
-    expect(parsedTransaction.decodedCalls).toStrictEqual([
+    expect(
+      parsedTransaction.decodedCalls as StarknetContractCall<{
+        amount: bigint;
+        spender: bigint;
+      }>[],
+    ).toStrictEqual([
       {
         calldata: [
           '0x4c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05',

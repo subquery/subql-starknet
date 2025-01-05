@@ -1,0 +1,39 @@
+# // Auto-generated , DO NOT EDIT
+specVersion: 1.0.0
+version: 0.0.1
+name: starknet-starter
+description: >-
+  This project can be use as a starting point for developing your new Starknet
+  SubQuery project
+runner:
+  node:
+    name: '@subql/node-starknet'
+    version: '*'
+  query:
+    name: '@subql/query'
+    version: '*'
+schema:
+  file: ./schema.graphql
+network:
+  chainId: '0x534e5f4d41494e'
+  endpoint:
+    - https://starknet-mainnet.public.blastapi.io/rpc/v0_7
+dataSources:
+  - kind: starknet/Runtime
+    startBlock: 995339
+    options:
+      abi: zkLend
+      address: '0x04c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05'
+    assets:
+      zkLend:
+        file: ./abis/zkLend.abi.json
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - kind: starknet/TransactionHandler
+          handler: handleTransaction
+          filter:
+            to: '0x04c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05'
+            type: INVOKE
+            function: withdraw
+repository: https://github.com/subquery/starknet-subql-starter

@@ -1,0 +1,1355 @@
+{
+  "abi": [
+    {
+      "name": "IMarketImpl",
+      "type": "impl",
+      "interface_name": "zklend::interfaces::IMarket"
+    },
+    {
+      "name": "core::bool",
+      "type": "enum",
+      "variants": [
+        {
+          "name": "False",
+          "type": "()"
+        },
+        {
+          "name": "True",
+          "type": "()"
+        }
+      ]
+    },
+    {
+      "name": "zklend::interfaces::MarketReserveData",
+      "type": "struct",
+      "members": [
+        {
+          "name": "enabled",
+          "type": "core::bool"
+        },
+        {
+          "name": "decimals",
+          "type": "core::felt252"
+        },
+        {
+          "name": "z_token_address",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "interest_rate_model",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "collateral_factor",
+          "type": "core::felt252"
+        },
+        {
+          "name": "borrow_factor",
+          "type": "core::felt252"
+        },
+        {
+          "name": "reserve_factor",
+          "type": "core::felt252"
+        },
+        {
+          "name": "last_update_timestamp",
+          "type": "core::felt252"
+        },
+        {
+          "name": "lending_accumulator",
+          "type": "core::felt252"
+        },
+        {
+          "name": "debt_accumulator",
+          "type": "core::felt252"
+        },
+        {
+          "name": "current_lending_rate",
+          "type": "core::felt252"
+        },
+        {
+          "name": "current_borrowing_rate",
+          "type": "core::felt252"
+        },
+        {
+          "name": "raw_total_debt",
+          "type": "core::felt252"
+        },
+        {
+          "name": "flash_loan_fee",
+          "type": "core::felt252"
+        },
+        {
+          "name": "liquidation_bonus",
+          "type": "core::felt252"
+        },
+        {
+          "name": "debt_limit",
+          "type": "core::felt252"
+        },
+        {
+          "name": "deposit_limit",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "name": "core::array::Span::<core::felt252>",
+      "type": "struct",
+      "members": [
+        {
+          "name": "snapshot",
+          "type": "@core::array::Array::<core::felt252>"
+        }
+      ]
+    },
+    {
+      "name": "zklend::interfaces::IMarket",
+      "type": "interface",
+      "items": [
+        {
+          "name": "get_reserve_data",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "zklend::interfaces::MarketReserveData"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "name": "get_lending_accumulator",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "core::felt252"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "name": "get_debt_accumulator",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "core::felt252"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "name": "get_pending_treasury_amount",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "core::felt252"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "name": "get_total_debt_for_token",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "core::felt252"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "name": "get_user_debt_for_token",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "user",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "core::felt252"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "name": "get_user_flags",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "user",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "core::felt252"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "name": "is_user_undercollateralized",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "user",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "apply_borrow_factor",
+              "type": "core::bool"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "core::bool"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "name": "is_collateral_enabled",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "user",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "core::bool"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "name": "user_has_debt",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "user",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "core::bool"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "name": "deposit",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "amount",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "withdraw",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "amount",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "withdraw_all",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "borrow",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "amount",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "repay",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "amount",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "repay_for",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "amount",
+              "type": "core::felt252"
+            },
+            {
+              "name": "beneficiary",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "repay_all",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "enable_collateral",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "disable_collateral",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "liquidate",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "user",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "debt_token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "amount",
+              "type": "core::felt252"
+            },
+            {
+              "name": "collateral_token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "flash_loan",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "receiver",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "amount",
+              "type": "core::felt252"
+            },
+            {
+              "name": "calldata",
+              "type": "core::array::Span::<core::felt252>"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "upgrade",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "new_implementation",
+              "type": "core::starknet::class_hash::ClassHash"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "add_reserve",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "z_token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "interest_rate_model",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "collateral_factor",
+              "type": "core::felt252"
+            },
+            {
+              "name": "borrow_factor",
+              "type": "core::felt252"
+            },
+            {
+              "name": "reserve_factor",
+              "type": "core::felt252"
+            },
+            {
+              "name": "flash_loan_fee",
+              "type": "core::felt252"
+            },
+            {
+              "name": "liquidation_bonus",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "set_treasury",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "new_treasury",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "set_interest_rate_model",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "interest_rate_model",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "set_collateral_factor",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "collateral_factor",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "set_borrow_factor",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "borrow_factor",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "set_reserve_factor",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "reserve_factor",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "set_debt_limit",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "limit",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "set_deposit_limit",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "token",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "limit",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "transfer_ownership",
+          "type": "function",
+          "inputs": [
+            {
+              "name": "new_owner",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "name": "renounce_ownership",
+          "type": "function",
+          "inputs": [],
+          "outputs": [],
+          "state_mutability": "external"
+        }
+      ]
+    },
+    {
+      "name": "constructor",
+      "type": "constructor",
+      "inputs": [
+        {
+          "name": "owner",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "oracle",
+          "type": "core::starknet::contract_address::ContractAddress"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::NewReserve",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "z_token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "decimals",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "interest_rate_model",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "collateral_factor",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "borrow_factor",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "reserve_factor",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "flash_loan_fee",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "liquidation_bonus",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::TreasuryUpdate",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "new_treasury",
+          "type": "core::starknet::contract_address::ContractAddress"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::AccumulatorsSync",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "lending_accumulator",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "debt_accumulator",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::InterestRatesSync",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "lending_rate",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "borrowing_rate",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::InterestRateModelUpdate",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "interest_rate_model",
+          "type": "core::starknet::contract_address::ContractAddress"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::CollateralFactorUpdate",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "collateral_factor",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::BorrowFactorUpdate",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "borrow_factor",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::ReserveFactorUpdate",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "reserve_factor",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::DebtLimitUpdate",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "limit",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::DepositLimitUpdate",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "limit",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::Deposit",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "user",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "face_amount",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::Withdrawal",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "user",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "face_amount",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::Borrowing",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "user",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "raw_amount",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "face_amount",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::Repayment",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "repayer",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "beneficiary",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "raw_amount",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "face_amount",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::Liquidation",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "liquidator",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "user",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "debt_token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "debt_raw_amount",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "debt_face_amount",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "collateral_token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "collateral_amount",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::FlashLoan",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "initiator",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "receiver",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "amount",
+          "type": "core::felt252"
+        },
+        {
+          "kind": "data",
+          "name": "fee",
+          "type": "core::felt252"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::CollateralEnabled",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "user",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::CollateralDisabled",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "user",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "token",
+          "type": "core::starknet::contract_address::ContractAddress"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::ContractUpgraded",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "new_class_hash",
+          "type": "core::starknet::class_hash::ClassHash"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "zklend::market::Market::OwnershipTransferred",
+      "type": "event",
+      "members": [
+        {
+          "kind": "data",
+          "name": "previous_owner",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "kind": "data",
+          "name": "new_owner",
+          "type": "core::starknet::contract_address::ContractAddress"
+        }
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "zklend::market::Market::Event",
+      "type": "event",
+      "variants": [
+        {
+          "kind": "nested",
+          "name": "NewReserve",
+          "type": "zklend::market::Market::NewReserve"
+        },
+        {
+          "kind": "nested",
+          "name": "TreasuryUpdate",
+          "type": "zklend::market::Market::TreasuryUpdate"
+        },
+        {
+          "kind": "nested",
+          "name": "AccumulatorsSync",
+          "type": "zklend::market::Market::AccumulatorsSync"
+        },
+        {
+          "kind": "nested",
+          "name": "InterestRatesSync",
+          "type": "zklend::market::Market::InterestRatesSync"
+        },
+        {
+          "kind": "nested",
+          "name": "InterestRateModelUpdate",
+          "type": "zklend::market::Market::InterestRateModelUpdate"
+        },
+        {
+          "kind": "nested",
+          "name": "CollateralFactorUpdate",
+          "type": "zklend::market::Market::CollateralFactorUpdate"
+        },
+        {
+          "kind": "nested",
+          "name": "BorrowFactorUpdate",
+          "type": "zklend::market::Market::BorrowFactorUpdate"
+        },
+        {
+          "kind": "nested",
+          "name": "ReserveFactorUpdate",
+          "type": "zklend::market::Market::ReserveFactorUpdate"
+        },
+        {
+          "kind": "nested",
+          "name": "DebtLimitUpdate",
+          "type": "zklend::market::Market::DebtLimitUpdate"
+        },
+        {
+          "kind": "nested",
+          "name": "DepositLimitUpdate",
+          "type": "zklend::market::Market::DepositLimitUpdate"
+        },
+        {
+          "kind": "nested",
+          "name": "Deposit",
+          "type": "zklend::market::Market::Deposit"
+        },
+        {
+          "kind": "nested",
+          "name": "Withdrawal",
+          "type": "zklend::market::Market::Withdrawal"
+        },
+        {
+          "kind": "nested",
+          "name": "Borrowing",
+          "type": "zklend::market::Market::Borrowing"
+        },
+        {
+          "kind": "nested",
+          "name": "Repayment",
+          "type": "zklend::market::Market::Repayment"
+        },
+        {
+          "kind": "nested",
+          "name": "Liquidation",
+          "type": "zklend::market::Market::Liquidation"
+        },
+        {
+          "kind": "nested",
+          "name": "FlashLoan",
+          "type": "zklend::market::Market::FlashLoan"
+        },
+        {
+          "kind": "nested",
+          "name": "CollateralEnabled",
+          "type": "zklend::market::Market::CollateralEnabled"
+        },
+        {
+          "kind": "nested",
+          "name": "CollateralDisabled",
+          "type": "zklend::market::Market::CollateralDisabled"
+        },
+        {
+          "kind": "nested",
+          "name": "ContractUpgraded",
+          "type": "zklend::market::Market::ContractUpgraded"
+        },
+        {
+          "kind": "nested",
+          "name": "OwnershipTransferred",
+          "type": "zklend::market::Market::OwnershipTransferred"
+        }
+      ]
+    }
+  ],
+
+  "entry_points_by_type": {
+    "EXTERNAL": [
+      {
+        "selector": "0x52580a92c73f4428f1a260c5d768ef462b25955307de00f99957df119865d",
+        "function_idx": 31
+      },
+      {
+        "selector": "0x2df8b64b01b01dabf4e58179b8db38cfcd33cae7d6c651a01a961ea07fa924",
+        "function_idx": 27
+      },
+      {
+        "selector": "0x5e70f5618a5819edcf5225f37d01485ed62110516ead9d1a51bfcf852f4264",
+        "function_idx": 28
+      },
+      {
+        "selector": "0x9a5cfe84c6a8cc2b56f00eaee8d16213efe35a1f5a48d6764c75987c38dabe",
+        "function_idx": 20
+      },
+      {
+        "selector": "0xad257770e86a03742ebe0a615fb19503d9c891d118daa82163867444c08680",
+        "function_idx": 14
+      },
+      {
+        "selector": "0xc73f681176fc7b3f9693986fd7b14581e8d540519e27400e88b8713932be01",
+        "function_idx": 10
+      },
+      {
+        "selector": "0xf2f7c15cbe06c8d94597cd91fd7f3369eae842359235712def5584f8d270cd",
+        "function_idx": 21
+      },
+      {
+        "selector": "0x12abce083fdc0cacb5380b038508c18f124cfa51b701a986627e799a33c52f5",
+        "function_idx": 29
+      },
+      {
+        "selector": "0x14c128f88d28702aaebb2f6ec461981ef9c8e0339f417eb86b9b9889c0ffdaa",
+        "function_idx": 1
+      },
+      {
+        "selector": "0x15511cc3694f64379908437d6d64458dc76d02482052bfb8a5b33a72c054c77",
+        "function_idx": 11
+      },
+      {
+        "selector": "0x2092776db1d8d71af1e68c1d7928e30857c0359e0ff3e9f3fdd48e4f0d52f44",
+        "function_idx": 26
+      },
+      {
+        "selector": "0x215caaa8893bbc3c9add8f8c639a3465eb4f0ed388f56b8fe0b1262bdfc45fb",
+        "function_idx": 4
+      },
+      {
+        "selector": "0x21b6c8773d8ce0f21a9db1c122c4a6d4f0cd17f2ec69498100436ec12cc50ea",
+        "function_idx": 25
+      },
+      {
+        "selector": "0x23a5d856c0f7a9708da33ae2699cc05ca61980fe9d572215411f3aaba7c28e2",
+        "function_idx": 19
+      },
+      {
+        "selector": "0x24c0df9edd76e4748a0b3753b7f1423c18e83221abab3889c71ad1455a966c4",
+        "function_idx": 6
+      },
+      {
+        "selector": "0x24fb8526777cce3c30ab762cfab7381ef98159cdb3f4ff6e84d927499169246",
+        "function_idx": 7
+      },
+      {
+        "selector": "0x25ef281318882b51ddd12a3d97cc7a1d669b16b45251ae6d4bafc1971b1db41",
+        "function_idx": 2
+      },
+      {
+        "selector": "0x271680756697a04d1447ad4c21d53bdf15966bdc5b78bd52d4fc2153aa76bda",
+        "function_idx": 17
+      },
+      {
+        "selector": "0x275dc81fcd5c700205ff6dc320e9d54ed3f0ace21177d591d6d5d259ee1d7c2",
+        "function_idx": 12
+      },
+      {
+        "selector": "0x28195699573bcbab4d07f301dcd806cc9f295e56641a5b49ff9bedf4975fd60",
+        "function_idx": 8
+      },
+      {
+        "selector": "0x29aadd472b61fcf9aa60df07298cf46cf56f89d2e71990a13a6762ea45b4698",
+        "function_idx": 3
+      },
+      {
+        "selector": "0x2a3bb1eaa05b77c4b0eeee0116a3177c6d62319dd7149ae148185d9e09de74a",
+        "function_idx": 30
+      },
+      {
+        "selector": "0x2e0a6e98aba72b82c683d1ce8aba80a32635e7db1cd52861afd216a89426b4e",
+        "function_idx": 0
+      },
+      {
+        "selector": "0x2e4f91b348ce8ed070a1f0a08ba02a3a0a1471671ce1878ce7362f8df47ed13",
+        "function_idx": 23
+      },
+      {
+        "selector": "0x2eaf85580680398e97a33576b09d1013387652201641de3fcf03d416ea09fe5",
+        "function_idx": 15
+      },
+      {
+        "selector": "0x2f68935fe2620d447e6dee46fb77624aee380c157f7675e9e4220599f4a04bd",
+        "function_idx": 18
+      },
+      {
+        "selector": "0x2f87bb821a1c1ad3c2c226efac39b9d415c9b34020d1a50d145bb3ef7248ce4",
+        "function_idx": 16
+      },
+      {
+        "selector": "0x2f9b787c59acf04e59fc1cff1fae9ea5e4622308ad4c50f65b4b6fcfdb8a112",
+        "function_idx": 24
+      },
+      {
+        "selector": "0x3943907ef0ef6f9d2e2408b05e520a66daaf74293dbf665e5a20b117676170e",
+        "function_idx": 13
+      },
+      {
+        "selector": "0x3bfd3393856d095fd71dba2179d944801097892efe65497117bbc8fca0cd524",
+        "function_idx": 9
+      },
+      {
+        "selector": "0x3d084091d388f0c0426030b714bb608cd10bc4cc66e19bf9098cf907a60eaa3",
+        "function_idx": 22
+      },
+      {
+        "selector": "0x3efc317fde7ab5b4c23acb4d16ef9d4729e2304b72832ec4203e9190977aafc",
+        "function_idx": 5
+      }
+    ],
+    "L1_HANDLER": [],
+    "CONSTRUCTOR": [
+      {
+        "selector": "0x28ffe4ff0f226a9107253e17a904099aa4f63a02a5621de0576e5aa71bc5194",
+        "function_idx": 32
+      }
+    ]
+  }
+}

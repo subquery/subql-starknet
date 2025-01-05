@@ -1,0 +1,63 @@
+{
+  "name": "@subql/node-starknet",
+  "version": "0.0.1",
+  "description": "",
+  "author": "Jay Ji",
+  "license": "GPL-3.0",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "rm -rf dist && tsc -b",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start": "nest start",
+    "start:dev": "nodemon",
+    "start:prod": "node dist/main",
+    "changelog:release": "echo \"Updating changelog $npm_package_version\" && npx chan release $npm_package_version --git-url \"https://github.com/subquery/subql-starknet\" --release-prefix=\"node-starknet/\""
+  },
+  "homepage": "https://github.com/subquery/subql",
+  "repository": "github:subquery/subql",
+  "bin": {
+    "subql-node-starknet": "./bin/run"
+  },
+  "dependencies": {
+    "@nestjs/common": "^9.4.0",
+    "@nestjs/core": "^9.4.0",
+    "@nestjs/event-emitter": "^2.0.0",
+    "@nestjs/platform-express": "^9.4.0",
+    "@nestjs/schedule": "^3.0.1",
+    "@subql/common": "^5.1.1",
+    "@subql/common-starknet": "workspace:*",
+    "@subql/node-core": "^14.1.2",
+    "@subql/testing": "^2.2.1",
+    "@subql/types-starknet": "workspace:*",
+    "cacheable-lookup": "6",
+    "eventemitter2": "^6.4.5",
+    "json5": "^2.2.3",
+    "lodash": "^4.17.21",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "starknet": "^6.11.0",
+    "yargs": "^16.2.0"
+  },
+  "peerDependencies": {
+    "@subql/utils": "*"
+  },
+  "devDependencies": {
+    "@nestjs/schematics": "^9.2.0",
+    "@nestjs/testing": "^9.4.0",
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.4.0",
+    "@types/lodash": "^4.14.178",
+    "@types/pino": "^6.3.12",
+    "@types/tar": "^6.1.1",
+    "@types/yargs": "^16.0.4",
+    "dotenv": "^15.0.1",
+    "nodemon": "^2.0.15"
+  },
+  "resolutions": {
+    "node-fetch": "2.6.7"
+  },
+  "files": [
+    "/dist",
+    "/bin"
+  ]
+}

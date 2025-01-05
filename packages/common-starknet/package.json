@@ -1,0 +1,38 @@
+{
+  "name": "@subql/common-starknet",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "build": "rm -rf dist && tsc -b",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "changelog:release": "echo \"Updating changelog $npm_package_version\" && npx chan release $npm_package_version --git-url \"https://github.com/subquery/subql-starknet\" --release-prefix=\"common-starknet/\""
+  },
+  "homepage": "https://github.com/subquery/subql",
+  "repository": "github:subquery/subql",
+  "author": "Jay Ji",
+  "main": "dist/index.js",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@subql/common": "^5.1.1",
+    "@subql/types-starknet": "workspace:*",
+    "@typechain/starknet": "latest",
+    "js-yaml": "^4.1.0",
+    "pino": "^6.13.3",
+    "reflect-metadata": "^0.1.13",
+    "typechain": "latest"
+  },
+  "peerDependencies": {
+    "class-transformer": "*",
+    "class-validator": "*"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.2",
+    "@types/js-yaml": "^4.0.4",
+    "@types/lodash": "^4",
+    "@types/pino": "^6.3.12",
+    "@types/rimraf": "3.0.2",
+    "ejs": "3.1.10",
+    "lodash": "4.17.21"
+  }
+}

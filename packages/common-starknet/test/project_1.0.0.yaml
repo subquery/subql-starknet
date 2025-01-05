@@ -1,0 +1,127 @@
+specVersion: '1.0.0'
+
+name: 'starknet-subql-starter'
+version: '0.0.1'
+runner:
+  node:
+    name: '@subql/node-starknet'
+    version: '*'
+  query:
+    name: '@subql/query'
+    version: '*'
+description: 'This project can be use as a starting point for developing your new Starknet SubQuery project'
+repository: 'https://github.com/subquery/starknet-subql-starter'
+
+schema:
+  file: './schema.graphql'
+
+network:
+  #  endpoint: "fill it in"
+  chainId: '0x534e5f4d41494e'
+  dictionary: 'https://strk-dict.api.onfinality.io/'
+  endpoint: 'https://free-rpc.nethermind.io/mainnet-juno/v0_7'
+
+dataSources:
+  - kind: starknet/Runtime
+    startBlock: 12369621
+    options:
+      # Must be a key of assets
+      abi: Factory
+      address: '0x1F98431c8aD98523631AE4a59f267346ea31F984'
+    assets:
+      Factory:
+        file: './abis/Factory.json'
+      ERC20:
+        file: './abis/ERC20.json'
+      ERC20SymbolBytes:
+        file: './abis/ERC20SymbolBytes.json'
+      ERC20NameBytes:
+        file: './abis/ERC20NameBytes.json'
+      Pool:
+        file: './abis/pool.json'
+    mapping:
+      file: './dist/index.js'
+      handlers:
+        - handler: handlePoolCreated
+          kind: starknet/LogHandler
+          filter:
+            topics:
+              - PoolCreated
+    # starknet/contract
+  - kind: starknet/Runtime
+    startBlock: 12369651
+    options:
+      abi: NonfungiblePositionManager
+      address: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'
+    assets:
+      NonfungiblePositionManager:
+        file: ./abis/NonfungiblePositionManager.json
+      Pool:
+        file: ./abis/pool.json
+      Factory:
+        file: ./abis/factory.json
+      ERC20:
+        file: ./abis/ERC20.json
+    mapping:
+      file: './dist/index.js'
+      handlers:
+        - handler: handleIncreaseLiquidity
+          kind: starknet/LogHandler
+          filter:
+            topics:
+              - IncreaseLiquidity
+        - handler: handleDecreaseLiquidity
+          kind: starknet/LogHandler
+          filter:
+            topics:
+              - DecreaseLiquidity
+        - handler: handleCollect
+          kind: starknet/LogHandler
+          filter:
+            topics:
+              - Collect
+        - handler: handleTransfer
+          kind: starknet/LogHandler
+          filter:
+            topics:
+              - Transfer
+templates:
+  - name: Pool
+    kind: starknet/Runtime
+    options:
+      abi: Pool
+    assets:
+      Pool:
+        file: './abis/pool.json'
+      Factory:
+        file: './abis/factory.json'
+      ERC20:
+        file: './abis/ERC20.json'
+    mapping:
+      file: './dist/index.js'
+      handlers:
+        - handler: handleInitialize
+          kind: starknet/LogHandler
+          filter:
+            topics:
+              - Initialize
+        - handler: handleSwap
+          kind: starknet/LogHandler
+          filter:
+            topics:
+              - Swap
+        - handler: handleMint
+          kind: starknet/LogHandler
+          filter:
+            topics:
+              - Mint
+        - handler: handleBurn
+          kind: starknet/LogHandler
+          filter:
+            topics:
+              - Burn
+        - handler: handleFlash
+          kind: starknet/LogHandler
+          filter:
+            topics:
+              - Flash

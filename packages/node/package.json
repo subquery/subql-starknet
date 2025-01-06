@@ -1,6 +1,6 @@
 {
   "name": "@subql/node-starknet",
-  "version": "0.0.2-2",
+  "version": "0.0.2-3",
   "description": "",
   "author": "Jay Ji",
   "license": "GPL-3.0",
@@ -60,5 +60,5 @@
     "/dist",
     "/bin"
   ],
-  "stableVersion": "0.0.2-1"
+  "stableVersion": "0.0.2-2"
 }

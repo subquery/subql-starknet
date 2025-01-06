@@ -5,7 +5,6 @@ import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   NodeConfig,
-  StoreCacheService,
   StoreService,
   IProjectService,
   BlockDispatcher,
@@ -14,13 +13,16 @@ import {
   IProjectUpgradeService,
   PoiSyncService,
   IBlock,
+  IStoreModelProvider,
 } from '@subql/node-core';
+import { StarknetBlock } from '@subql/types-starknet';
 import {
   StarknetProjectDs,
   SubqueryProject,
 } from '../../configure/SubqueryProject';
+import { isFullBlock } from '../../starknet/block.starknet';
 import { IndexerManager } from '../indexer.manager';
-import { BlockContent } from '../types';
+import { BlockContent, getBlockSize } from '../types';
 
 /**
  * @description Intended to behave the same as WorkerBlockDispatcherService but doesn't use worker threads or any parallel processing
@@ -40,7 +42,7 @@ export class BlockDispatcherService
     @Inject('IProjectUpgradeService')
     projectUpgradeService: IProjectUpgradeService,
     storeService: StoreService,
-    storeCacheService: StoreCacheService,
+    @Inject('IStoreModelProvider') storeModelProvider: IStoreModelProvider,
     poiSyncService: PoiSyncService,
     @Inject('ISubqueryProject') project: SubqueryProject,
   ) {
@@ -50,7 +52,7 @@ export class BlockDispatcherService
       projectService,
       projectUpgradeService,
       storeService,
-      storeCacheService,
+      storeModelProvider,
       poiSyncService,
       project,
       apiService.fetchBlocks.bind(apiService),
@@ -64,5 +66,9 @@ export class BlockDispatcherService
       block,
       await this.projectService.getDataSources(block.getHeader().blockHeight),
     );
+  }
+
+  protected getBlockSize(block: IBlock<BlockContent>): number {
+    return getBlockSize(block.block);
   }
 }

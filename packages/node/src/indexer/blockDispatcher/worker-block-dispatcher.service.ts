@@ -7,7 +7,6 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   NodeConfig,
   StoreService,
-  StoreCacheService,
   IProjectService,
   WorkerBlockDispatcher,
   ConnectionPoolStateManager,
@@ -16,8 +15,10 @@ import {
   InMemoryCacheService,
   createIndexerWorker,
   MonitorServiceInterface,
+  IStoreModelProvider,
 } from '@subql/node-core';
 import { StarknetBlock } from '@subql/types-starknet';
+import { Header } from '../../../.yalc/@subql/node-core';
 import {
   StarknetProjectDs,
   SubqueryProject,
@@ -46,7 +47,7 @@ export class WorkerBlockDispatcherService
     projectUpgadeService: IProjectUpgradeService,
     cacheService: InMemoryCacheService,
     storeService: StoreService,
-    storeCacheService: StoreCacheService,
+    @Inject('IStoreModelProvider') storeModelProvider: IStoreModelProvider,
     poiSyncService: PoiSyncService,
     @Inject('ISubqueryProject') project: SubqueryProject,
     dynamicDsService: DynamicDsService,
@@ -60,7 +61,7 @@ export class WorkerBlockDispatcherService
       projectService,
       projectUpgadeService,
       storeService,
-      storeCacheService,
+      storeModelProvider,
       poiSyncService,
       project,
       () =>
@@ -88,7 +89,7 @@ export class WorkerBlockDispatcherService
   protected async fetchBlock(
     worker: IndexerWorker,
     height: number,
-  ): Promise<void> {
-    await worker.fetchBlock(height, 0 /* Unused with starknet*/);
+  ): Promise<Header> {
+    return worker.fetchBlock(height, 0 /* Unused with starknet*/);
   }
 }

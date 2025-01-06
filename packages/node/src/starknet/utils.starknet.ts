@@ -82,7 +82,7 @@ export function formatLog(
       return rawTransaction;
     },
   });
-  return formattedLog as unknown as StarknetLog<StarknetResult>;
+  return formattedLog as unknown as StarknetLog;
 }
 
 export function formatTransaction(
@@ -171,7 +171,7 @@ export function starknetBlockHeaderToHeader(block: SPEC.BLOCK_HEADER): Header {
 export function reverseToRawLog(log: StarknetLog): StarknetLogRaw {
   return {
     block_hash: log.blockHash,
-    keys: log.topics,
+    keys: [...log.topics],
     from_address: log.address,
     transaction_hash: log.transactionHash,
     block_number: log.blockNumber,

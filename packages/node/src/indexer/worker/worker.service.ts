@@ -11,14 +11,16 @@ import {
   BaseWorkerService,
   IProjectUpgradeService,
   IBlock,
+  Header,
 } from '@subql/node-core';
 import { StarknetProjectDs } from '../../configure/SubqueryProject';
 import { StarknetApi } from '../../starknet';
 import SafeStarknetProvider from '../../starknet/safe-api';
+import { starknetBlockToHeader } from '../../starknet/utils.starknet';
 import { IndexerManager } from '../indexer.manager';
-import { BlockContent } from '../types';
+import { BlockContent, getBlockSize } from '../types';
 
-export type FetchBlockResponse = { parentHash: string } | undefined;
+export type FetchBlockResponse = Header;
 
 export type WorkerStatusResponse = {
   threadId: number;
@@ -58,8 +60,9 @@ export class WorkerService extends BaseWorkerService<
     return block;
   }
 
-  protected toBlockResponse(block: BlockContent): { parentHash: string } {
+  protected toBlockResponse(block: BlockContent): Header {
     return {
+      ...starknetBlockToHeader(block),
       parentHash: block.parentHash,
     };
   }
@@ -69,5 +72,9 @@ export class WorkerService extends BaseWorkerService<
     dataSources: SubqlStarknetDataSource[],
   ): Promise<ProcessBlockResponse> {
     return this.indexerManager.indexBlock(block, dataSources);
+  }
+
+  getBlockSize(block: IBlock<BlockContent>): number {
+    return getBlockSize(block.block);
   }
 }

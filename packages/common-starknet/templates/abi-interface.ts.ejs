@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Auto-generated , DO NOT EDIT
-import {StarknetLog, StarknetTransaction} from "@subql/types-Starknet";
+import {StarknetLog, StarknetTransaction} from "@subql/types-starknet";
 
 import {<% props.abi.events.forEach(function(event){ %><%= event %>Event, <% }); %><%=props.abi.name%>} from '../contracts/<%=props.abi.name%>'
 

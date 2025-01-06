@@ -10,7 +10,7 @@ import {
   ApiService,
   getLogger,
 } from '@subql/node-core';
-import { StarknetBlock, SubqlDatasource } from '@subql/types-Starknet';
+import { StarknetBlock, SubqlDatasource } from '@subql/types-starknet';
 import { SubqueryProject } from '../../configure/SubqueryProject';
 import { StarknetApiService } from '../../starknet';
 import { StarknetDictionaryV1 } from './v1';

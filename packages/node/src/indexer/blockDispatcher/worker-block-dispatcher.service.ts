@@ -16,9 +16,9 @@ import {
   createIndexerWorker,
   MonitorServiceInterface,
   IStoreModelProvider,
+  Header,
 } from '@subql/node-core';
 import { StarknetBlock } from '@subql/types-starknet';
-import { Header } from '../../../.yalc/@subql/node-core';
 import {
   StarknetProjectDs,
   SubqueryProject,

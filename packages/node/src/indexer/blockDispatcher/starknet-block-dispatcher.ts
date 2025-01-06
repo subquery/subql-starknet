@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { IBlockDispatcher } from '@subql/node-core';
-import { StarknetBlock } from '@subql/types-Starknet';
+import { StarknetBlock } from '@subql/types-starknet';
 
 export interface IStarknetBlockDispatcher
   extends IBlockDispatcher<StarknetBlock> {

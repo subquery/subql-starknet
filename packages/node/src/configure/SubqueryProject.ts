@@ -15,7 +15,7 @@ import {
   RuntimeDatasourceTemplate,
   CustomDatasourceTemplate,
   StarknetBlockFilter,
-} from '@subql/types-Starknet';
+} from '@subql/types-starknet';
 
 const { version: packageVersion } = require('../../package.json');
 

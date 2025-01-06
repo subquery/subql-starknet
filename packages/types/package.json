@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "@starknet-io/types-js": "latest",
-    "@subql/types-core": "^1.1.1",
+    "@subql/types-core": "^2.0.0",
     "starknet": "^6.11.0"
   },
   "stableVersion": "0.0.2-0"

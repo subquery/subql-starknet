@@ -12,7 +12,7 @@ import {
   ApiService,
   getModulos,
   Header,
-  StoreCacheService,
+  IStoreModelProvider,
 } from '@subql/node-core';
 import { StarknetBlock, SubqlDatasource } from '@subql/types-starknet';
 import { SubqueryProject } from '../configure/SubqueryProject';
@@ -40,25 +40,23 @@ export class FetchService extends BaseFetchService<
     private apiService: ApiService,
     nodeConfig: NodeConfig,
     @Inject('IProjectService') projectService: ProjectService,
-    @Inject('ISubqueryProject') project: SubqueryProject,
     @Inject('IBlockDispatcher')
     blockDispatcher: IStarknetBlockDispatcher,
     dictionaryService: StarknetDictionaryService,
     unfinalizedBlocksService: UnfinalizedBlocksService,
     eventEmitter: EventEmitter2,
     schedulerRegistry: SchedulerRegistry,
-    storeCacheService: StoreCacheService,
+    @Inject('IStoreModelProvider') storeModelProvider: IStoreModelProvider,
   ) {
     super(
       nodeConfig,
       projectService,
-      project.network,
       blockDispatcher,
       dictionaryService,
       eventEmitter,
       schedulerRegistry,
       unfinalizedBlocksService,
-      storeCacheService,
+      storeModelProvider,
     );
   }
 

@@ -257,8 +257,6 @@ export class StarknetApi implements ApiWrapper {
 
   // This follow method from official document https://starknetjs.com/docs/guides/events
   async fetchBlockLogs(blockNumber: number): Promise<StarknetLogRaw[]> {
-    logger.debug(`Fetch block ${blockNumber} events`);
-
     let continuationToken: string | undefined = '0';
     let chunkNum = 1;
     const allEvents: StarknetLogRaw[] = [];
@@ -288,15 +286,6 @@ export class StarknetApi implements ApiWrapper {
       }
       const nbEvents = eventsRes.events.length;
       continuationToken = eventsRes.continuation_token;
-      logger.debug(
-        'event chunk nb =',
-        chunkNum,
-        '.',
-        nbEvents,
-        'events recovered.',
-        'continuation_token =',
-        continuationToken,
-      );
       for (let i = 0; i < nbEvents; i++) {
         const event = eventsRes.events[i];
         allEvents.push(event);

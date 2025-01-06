@@ -6,7 +6,7 @@ import {
   BaseUnfinalizedBlocksService,
   Header,
   NodeConfig,
-  StoreCacheService,
+  IStoreModelProvider,
 } from '@subql/node-core';
 import { StarknetNodeConfig } from '../configure/NodeConfig';
 import { StarknetApiService as ApiService } from '../starknet/api.service.starknet';
@@ -25,9 +25,9 @@ export class UnfinalizedBlocksService extends BaseUnfinalizedBlocksService<Block
   constructor(
     private readonly apiService: ApiService,
     nodeConfig: NodeConfig,
-    storeCache: StoreCacheService,
+    @Inject('IStoreModelProvider') storeModelProvider: IStoreModelProvider,
   ) {
-    super(new StarknetNodeConfig(nodeConfig), storeCache);
+    super(new StarknetNodeConfig(nodeConfig), storeModelProvider);
   }
 
   protected async getFinalizedHead(): Promise<Header> {
@@ -41,7 +41,7 @@ export class UnfinalizedBlocksService extends BaseUnfinalizedBlocksService<Block
     return starknetBlockToHeader(formatBlock(block));
   }
 
-  protected async getHeaderForHeight(height: number): Promise<Header> {
+  async getHeaderForHeight(height: number): Promise<Header> {
     const block = await this.apiService.api.getBlockByHeightOrHash(height);
     return starknetBlockToHeader(formatBlock(block));
   }

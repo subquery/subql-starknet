@@ -6,16 +6,55 @@ import { getLogger } from '@subql/node-core';
 import {
   BigNumberish,
   BlockIdentifier,
+  Call,
+  CompiledSierra,
   GetTransactionReceiptResponse,
+  LegacyContractClass,
   RpcProvider,
   waitForTransactionOptions,
 } from 'starknet';
+import spec from 'starknet-types-07';
 
 const logger = getLogger('safe.api.starknet');
 
 export default class SafeStarknetProvider extends RpcProvider {
   constructor(private baseApi: RpcProvider, private blockHeight: number) {
     super();
+  }
+
+  async getStorageAt(
+    contractAddress: BigNumberish,
+    key: BigNumberish,
+    blockIdentifier?: BlockIdentifier,
+  ): Promise<string> {
+    return this.baseApi.getStorageAt(contractAddress, key, this.blockHeight);
+  }
+  async getClass(
+    classHash: BigNumberish,
+    blockIdentifier?: BlockIdentifier,
+  ): Promise<LegacyContractClass | CompiledSierra> {
+    return this.baseApi.getClass(classHash, this.blockHeight);
+  }
+  async getClassAt(
+    contractAddress: BigNumberish,
+    blockIdentifier?: BlockIdentifier,
+  ): Promise<LegacyContractClass | CompiledSierra> {
+    return this.baseApi.getClassAt(contractAddress, this.blockHeight);
+  }
+
+  async estimateMessageFee(
+    message: spec.L1Message,
+    blockIdentifier?: BlockIdentifier,
+  ): Promise<spec.FeeEstimate> {
+    // @ts-ignore
+    return this.baseApi.estimateMessageFee(message, this.blockHeight);
+  }
+
+  async callContract(
+    call: Call,
+    blockIdentifier?: BlockIdentifier,
+  ): Promise<string[]> {
+    return this.baseApi.callContract(call, this.blockHeight);
   }
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async

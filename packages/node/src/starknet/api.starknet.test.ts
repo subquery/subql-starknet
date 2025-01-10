@@ -72,7 +72,7 @@ describe('Api.starknet', () => {
   });
 
   it('should have the ability to get receipts via transactions from all types', async () => {
-    console.log(await blockData.transactions[0].receipt?.());
+    expect(await blockData.transactions[0].receipt?.()).toBeDefined();
 
     expect(typeof blockData.transactions[0].receipt).toEqual('function');
     expect(typeof blockData.logs[0].transaction.receipt).toEqual('function');

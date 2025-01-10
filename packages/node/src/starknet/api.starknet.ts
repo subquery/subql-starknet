@@ -222,7 +222,6 @@ export class StarknetApi implements ApiWrapper {
   async getTransactionReceipt(
     transactionHash: string,
   ): Promise<TransactionReceipt> {
-    console.log('hash', transactionHash);
     const receipt = await this.client.getTransactionReceipt(transactionHash);
     return formatReceipt(receipt);
   }

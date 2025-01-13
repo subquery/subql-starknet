@@ -241,7 +241,9 @@ export class StarknetApi implements ApiWrapper {
           // Format done
           ...formatTransaction(tx, block, index),
           receipt: () =>
-            this.getTransactionReceipt(tx.hash).then((r) => formatReceipt(r)),
+            this.getTransactionReceipt(tx.transaction_hash).then((r) =>
+              formatReceipt(r),
+            ),
           logs: block.logs.filter(
             (l) => l.transactionHash === tx.transaction_hash,
           ),

@@ -2904,7 +2904,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@subql/common@npm:5.2.2, @subql/common@npm:^5.2.2":
+"@subql/common@npm:5.2.3-0":
+  version: 5.2.3-0
+  resolution: "@subql/common@npm:5.2.3-0"
+  dependencies:
+    "@subql/types-core": 2.0.0
+    axios: ^0.28.0
+    class-transformer: ^0.5.1
+    class-validator: ^0.14.1
+    form-data: ^4.0.1
+    js-yaml: ^4.1.0
+    reflect-metadata: ^0.1.14
+    semver: ^7.6.3
+    update-notifier: ^5.1.0
+  checksum: cf0a6aef0933427d6015d41049bbcf85f139a94d6dc414d0d344d47c4020131c4e44da982546d49d48bef3b529df2b3ec009efdfa19f6f40d6dd542e419f570c
+  languageName: node
+  linkType: hard
+
+"@subql/common@npm:^5.2.2":
   version: 5.2.2
   resolution: "@subql/common@npm:5.2.2"
   dependencies:
@@ -2921,15 +2938,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@subql/node-core@npm:^16.1.0":
-  version: 16.1.0
-  resolution: "@subql/node-core@npm:16.1.0"
+"@subql/node-core@npm:16.1.1-1":
+  version: 16.1.1-1
+  resolution: "@subql/node-core@npm:16.1.1-1"
   dependencies:
     "@apollo/client": ^3.11.2
     "@nestjs/common": ^9.4.0
     "@nestjs/event-emitter": ^2.0.0
     "@nestjs/schedule": ^3.0.1
-    "@subql/common": 5.2.2
+    "@subql/common": 5.2.3-0
     "@subql/testing": 2.2.2
     "@subql/types": 3.11.4
     "@subql/utils": 2.17.0
@@ -2949,7 +2966,7 @@ __metadata:
     toposort-class: ^1.0.1
     vm2: ^3.9.19
     yargs: ^16.2.0
-  checksum: 470bd98966674d7102815a4c8595f35b3e8c1351a3f52cce0e49469b3f1f49ea6d98dcc0898e491b239bf14864e50b54a79c97ba843af65f052340dc8e098a60
+  checksum: 3de90a2b88ee68ccd83f12fb4a5384e569212ebdd921649c5923b7f3acac6b014213d76e904331ea9cfe0900f6128fd99552d3186817c988e2d209638e80cc12
   languageName: node
   linkType: hard
 
@@ -2966,7 +2983,7 @@ __metadata:
     "@nestjs/testing": ^9.4.0
     "@subql/common": ^5.2.2
     "@subql/common-starknet": "workspace:*"
-    "@subql/node-core": ^16.1.0
+    "@subql/node-core": 16.1.1-1
     "@subql/testing": ^2.2.2
     "@subql/types-starknet": "workspace:*"
     "@types/express": ^4.17.13

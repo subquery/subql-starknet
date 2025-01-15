@@ -91,13 +91,14 @@ export function formatTransaction(
   txIndex: number,
 ): Omit<StarknetTransaction, 'receipt'> {
   const transaction = {
+    ...tx,
     hash: tx.transaction_hash,
     type: tx.type,
     version: tx.version,
     nonce: tx.nonce,
     maxFee: tx.max_fee,
-    from: tx.sender_address,
-    callData: tx.calldata,
+    from: getTxContractAddress(tx),
+    calldata: tx.calldata,
     blockHash: block.blockHash,
     blockNumber: block.blockNumber,
     blockTimestamp: block.timestamp,
@@ -114,19 +115,19 @@ export function formatTransaction(
         transaction.type === 'INVOKE' &&
         transaction.version !== ('0x0' || '0x100000000000000000000000000000000')
       ) {
-        return decodeInvokeCalldata(transaction.callData);
+        return decodeInvokeCalldata(transaction.calldata);
       }
       // Handle "L1_HANDLER" and "INVOKE V0"
       else if (
         transaction.contractAddress &&
         transaction.entryPointSelector &&
-        transaction.callData
+        transaction.calldata
       ) {
         return [
           decodeGenericCalldata(
             transaction.contractAddress,
             transaction.entryPointSelector,
-            transaction.callData,
+            transaction.calldata,
           ),
         ];
       }
@@ -136,8 +137,20 @@ export function formatTransaction(
       return JSON.stringify(omit(this, ['receipt', 'toJSON']));
     },
   } as Omit<StarknetTransaction, 'receipt'>;
-
   return transaction;
+}
+
+export function getTxContractAddress(tx: Record<string, any>): string {
+  if (tx.type === 'DEPLOY' || tx.type === 'DEPLOY_ACCOUNT') {
+    const result = hash.calculateContractAddressFromHash(
+      tx.contract_address_salt,
+      tx.class_hash,
+      tx.constructor_calldata,
+      0,
+    );
+    return result;
+  }
+  return tx.contract_address ?? tx.sender_address;
 }
 
 export function formatReceipt(

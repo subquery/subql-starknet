@@ -68,7 +68,7 @@ describe('Api.starknet', () => {
     expect(typeof blockData.logs[0].transaction.transactionIndex).toBe(
       'number',
     );
-    expect(blockData.logs[0].transaction.callData.length).toBeGreaterThan(1);
+    expect(blockData.logs[0].transaction.calldata.length).toBeGreaterThan(1);
   });
 
   it('should have the ability to get receipts via transactions from all types', async () => {

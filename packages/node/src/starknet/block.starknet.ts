@@ -113,7 +113,7 @@ export function filterTransactionsProcessor(
   // In case decode calls failed, we try to look into raw calldata
   else {
     if (filter.function) {
-      const index = transaction.callData?.findIndex(
+      const index = transaction.calldata?.findIndex(
         (call) =>
           call === filter.function ||
           call === encodeSelectorToHex(filter.function!),
@@ -123,7 +123,7 @@ export function filterTransactionsProcessor(
       }
     }
     if (filter.to) {
-      const index = transaction.callData?.findIndex((call) =>
+      const index = transaction.calldata?.findIndex((call) =>
         hexEq(call, filter.to!),
       );
       if (index === -1) {
@@ -171,7 +171,7 @@ function topicsHaveNoCommonElements(array1, array2) {
 
 export function isFullBlock(block: BlockContent): block is StarknetBlock {
   if ((block as any).transactions.length) {
-    return (block as any).transactions[0].type && (block as any).logs.length;
+    return (block as any).transactions[0].type;
   }
   return false;
 }

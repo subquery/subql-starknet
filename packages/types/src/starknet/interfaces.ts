@@ -90,12 +90,13 @@ export interface StarknetContractCall<DA = Record<string, any>> {
 export type StarknetTransaction = {
   type: SPEC.TXN_TYPE;
   hash: string;
+  // This is sender_address or contract_address
   from: string;
   blockHash: string;
   blockNumber: number;
   blockTimestamp: number;
   transactionIndex: number;
-  callData: string[];
+  calldata: string[];
   // entryPointSelector and contractAddress been used in L1Handler and V0 Invoke call
   entryPointSelector?: string;
   contractAddress?: string;

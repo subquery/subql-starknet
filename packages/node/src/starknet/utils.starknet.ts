@@ -10,7 +10,6 @@ import {
   StarknetContractCall,
   StarknetLog,
   StarknetLogRaw,
-  StarknetResult,
   StarknetTransaction,
 } from '@subql/types-starknet';
 import { omit } from 'lodash';
@@ -85,6 +84,30 @@ export function formatLog(
   return formattedLog as unknown as StarknetLog;
 }
 
+/***
+ * @param tx
+ * @param block
+ * @param txIndex
+ *  Explanation for from, to, selector, calldata with different tx type
+ *  When apply filter please refer to the following:
+ *
+ *  1. L1_HANDLER
+ *    from is the Contract Address (contract been called)
+ *    entryPointSelector (method)
+ *    within decodedCalls, to is same as from, selector is the entryPointSelector
+ *  2. DEPLOY_ACCOUNT
+ *    from is the contract_address, also is the new account address
+ *  3. DECLARE
+ *    from is the sender_address
+ *  4. DEPLOY
+ *    from is the sender_address
+ *  5. INVOKE V1 and V3
+ *    from is the sender_address
+ *    within decodedCalls, to is the contract been called, selector is the method
+ *  6. INVOKE V0
+ *    from is the Contract Address (contract been called)
+ *    entryPointSelector is the method been called
+ */
 export function formatTransaction(
   tx: Record<string, any>,
   block: StarknetBlock,

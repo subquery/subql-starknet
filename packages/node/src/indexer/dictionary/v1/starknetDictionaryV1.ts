@@ -1,7 +1,6 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { NOT_NULL_FILTER } from '@subql/common-starknet';
 import { NodeConfig, DictionaryV1, getLogger } from '@subql/node-core';
 import {
   DictionaryQueryCondition,
@@ -13,21 +12,16 @@ import {
   StarknetTransactionFilter,
   SubqlDatasource,
 } from '@subql/types-starknet';
-import JSON5 from 'json5';
 import { sortBy, uniqBy } from 'lodash';
-import fetch from 'node-fetch';
+import { num } from 'starknet';
 import {
   StarknetProjectDs,
   StarknetProjectDsTemplate,
   SubqueryProject,
 } from '../../../configure/SubqueryProject';
-import { encodeSelectorToHex } from '../../../starknet/utils.starknet';
+import { encodeSelectorToHex, hexEq } from '../../../starknet/utils.starknet';
 import { yargsOptions } from '../../../yargs';
 import { groupedDataSources, validAddresses } from '../utils';
-
-const CHAIN_ALIASES_URL =
-  'https://raw.githubusercontent.com/subquery/templates/main/chainAliases.json5';
-
 const logger = getLogger('dictionary-v1');
 
 // Adds the addresses to the query conditions if valid
@@ -69,31 +63,19 @@ function eventFilterToQueryEntry(
 ): DictionaryV1QueryEntry {
   const conditions: DictionaryQueryCondition[] = [];
   applyAddresses(conditions, addresses);
+  // No null not needed, can use [] instead
   if (filter?.topics) {
-    for (let i = 0; i < Math.min(filter.topics.length, 4); i++) {
-      const topic = filter.topics[i];
-      if (!topic) {
-        continue;
-      }
-      const field = `topics${i}`;
-
-      if (topic === NOT_NULL_FILTER) {
-        conditions.push({
-          field,
-          value: false,
-          matcher: 'isNull',
-        });
-      } else {
-        conditions.push({
-          field,
-          value: encodeSelectorToHex(topic),
-          matcher: 'equalTo',
-        });
-      }
-    }
+    const hexTopics: string[] = filter.topics
+      .filter((topic) => topic !== null && topic !== undefined)
+      .map((topic) => (num.isHex(topic) ? topic : encodeSelectorToHex(topic)));
+    conditions.push({
+      field: 'topics',
+      value: hexTopics,
+      matcher: 'contains',
+    });
   }
   return {
-    entity: 'evmLogs',
+    entity: 'logs',
     conditions,
   };
 }
@@ -110,14 +92,12 @@ function callFilterToQueryEntry(
       condition.field = 'to';
     }
   }
-
   if (!filter) {
     return {
-      entity: 'evmTransactions',
+      entity: 'calls',
       conditions,
     };
   }
-
   if (filter.from) {
     conditions.push({
       field: 'from',
@@ -125,6 +105,14 @@ function callFilterToQueryEntry(
       matcher: 'equalTo',
     });
   }
+  if (filter.type) {
+    conditions.push({
+      field: 'type',
+      value: filter.type,
+      matcher: 'equalTo',
+    });
+  }
+
   const optionsAddresses = conditions.find((c) => c.field === 'to');
   if (!optionsAddresses) {
     if (filter.to) {
@@ -145,7 +133,6 @@ function callFilterToQueryEntry(
       `TransactionFilter 'to' conflict with 'address' in data source options`,
     );
   }
-
   if (filter.function === null || filter.function === '0x') {
     conditions.push({
       field: 'func',
@@ -155,12 +142,14 @@ function callFilterToQueryEntry(
   } else if (filter.function) {
     conditions.push({
       field: 'func',
-      value: filter.function,
+      value: num.isHex(filter.function)
+        ? filter.function
+        : encodeSelectorToHex(filter.function),
       matcher: 'equalTo',
     });
   }
   return {
-    entity: 'evmTransactions',
+    entity: 'calls',
     conditions,
   };
 }
@@ -221,9 +210,8 @@ export class StarknetDictionaryV1 extends DictionaryV1<SubqlDatasource> {
     project: SubqueryProject,
     nodeConfig: NodeConfig,
     dictionaryUrl: string,
-    chainId?: string,
   ) {
-    super(dictionaryUrl, chainId ?? project.network.chainId, nodeConfig);
+    super(dictionaryUrl, project.network.chainId, nodeConfig);
   }
 
   static async create(
@@ -231,29 +219,13 @@ export class StarknetDictionaryV1 extends DictionaryV1<SubqlDatasource> {
     nodeConfig: NodeConfig,
     dictionaryUrl: string,
   ): Promise<StarknetDictionaryV1> {
-    /*Some dictionarys for EVM are built with other SDKs as they are chains with an EVM runtime
-     * we maintain a list of aliases so we can map the evmChainId to the genesis hash of the other SDKs
-     * e.g moonbeam is built with Substrate SDK but can be used as an EVM dictionary
-     */
-    const chainAliases = await this.getEvmChainId();
-    const chainAlias = chainAliases[project.network.chainId];
-
     const dictionary = new StarknetDictionaryV1(
       project,
       nodeConfig,
       dictionaryUrl,
-      chainAlias,
     );
     await dictionary.init();
     return dictionary;
-  }
-
-  private static async getEvmChainId(): Promise<Record<string, string>> {
-    const response = await fetch(CHAIN_ALIASES_URL);
-
-    const raw = await response.text();
-    // We use JSON5 here because the file has comments in it
-    return JSON5.parse(raw);
   }
 
   buildDictionaryQueryEntries(

@@ -136,18 +136,16 @@ describe('buildDictionaryV1QueryEntries', () => {
       const result = buildDictionaryV1QueryEntries([ds]);
 
       expect(result).toEqual([
-        [
-          {
-            conditions: [
-              {
-                field: 'type',
-                matcher: 'equalTo',
-                value: 'L1_HANDLER',
-              },
-            ],
-            entity: 'calls',
-          },
-        ],
+        {
+          conditions: [
+            {
+              field: 'type',
+              matcher: 'equalTo',
+              value: 'L1_HANDLER',
+            },
+          ],
+          entity: 'calls',
+        },
       ]);
     });
 

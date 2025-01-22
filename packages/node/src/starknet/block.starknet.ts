@@ -17,7 +17,6 @@ import { hexEq, encodeSelectorToHex, encodeEventKey } from './utils.starknet';
 export function filterBlocksProcessor(
   block: StarknetBlock,
   filter: StarknetBlockFilter,
-  address?: string,
 ): boolean {
   if (filter?.modulo && block.blockNumber % filter.modulo !== 0) {
     return false;

@@ -86,8 +86,9 @@ export function filterTransactionsProcessor(
     if (filter.function) {
       const index = decodedCalls?.findIndex(
         (call) =>
-          hexEq(call.selector, filter.function!) ||
-          hexEq(call.selector, encodeSelectorToHex(filter.function!)),
+          typeof filter.function === 'string' &&
+          (hexEq(call.selector, filter.function) ||
+            hexEq(call.selector, encodeSelectorToHex(filter.function))),
       );
       if (index === -1) {
         return false;
@@ -100,8 +101,8 @@ export function filterTransactionsProcessor(
     if (filter.to || address) {
       // if filter.to is not provided, we use address as filter
       const filterAddress = filter.to ?? address;
-      const index = decodedCalls?.findIndex((call) =>
-        hexEq(call.to, filterAddress!),
+      const index = decodedCalls?.findIndex(
+        (call) => filterAddress && hexEq(call.to, filterAddress),
       );
       if (index === -1) {
         return false;
@@ -115,16 +116,17 @@ export function filterTransactionsProcessor(
     if (filter.function) {
       const index = transaction.calldata?.findIndex(
         (call) =>
-          call === filter.function ||
-          call === encodeSelectorToHex(filter.function!),
+          typeof filter.function === 'string' &&
+          (call === filter.function ||
+            call === encodeSelectorToHex(filter.function)),
       );
       if (index === -1) {
         return false;
       }
     }
     if (filter.to) {
-      const index = transaction.calldata?.findIndex((call) =>
-        hexEq(call, filter.to!),
+      const index = transaction.calldata?.findIndex(
+        (call) => typeof filter.to === 'string' && hexEq(call, filter.to),
       );
       if (index === -1) {
         return false;
@@ -146,7 +148,7 @@ export function filterLogsProcessor(
   if (
     filter.topics?.length &&
     log.topics?.length &&
-    topicsHaveNoCommonElements(filter.topics!, log.topics)
+    topicsHaveNoCommonElements(filter.topics, log.topics)
   ) {
     return false;
   }

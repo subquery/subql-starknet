@@ -214,7 +214,7 @@ export class StarknetApi implements ApiWrapper {
 
       const formattedTransactions = rawBlock.transactions.map((tx, index) => {
         const formattedTransaction = formatTransaction(
-          tx.transaction,
+          tx,
           formattedBlock,
           index,
         );

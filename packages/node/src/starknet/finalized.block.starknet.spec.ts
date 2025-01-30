@@ -61,7 +61,7 @@ describe('FinalizedBlockService', () => {
 
   // **Test 1: `findFirstAcceptedOnL1`**
   it('should find the first ACCEPTED_ON_L1 block', async () => {
-    const result = await service.findFirstAcceptedOnL1();
+    const result = await (service as any).findFirstAcceptedOnL1();
     expect(result).toBeDefined();
     expect(result?.block_number).toBe(1);
     expect(result?.status).toBe('ACCEPTED_ON_L1');
@@ -69,7 +69,7 @@ describe('FinalizedBlockService', () => {
 
   // **Test 2: `binarySearchAcceptedOnL1`**
   it('should find the latest ACCEPTED_ON_L1 block via binary search', async () => {
-    const result = await service.binarySearchAcceptedOnL1(1, 10);
+    const result = await (service as any).binarySearchAcceptedOnL1(1, 10);
     expect(result).toBeDefined();
     expect(result?.block_number).toBe(7);
     expect(result?.status).toBe('ACCEPTED_ON_L1');

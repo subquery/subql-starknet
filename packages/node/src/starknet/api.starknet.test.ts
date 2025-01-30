@@ -57,6 +57,16 @@ describe('Api.starknet', () => {
     blockData = await fetchBlock(979358);
   });
 
+  it('should get finalized block and best block', async () => {
+    const finalized = await strkApi.getFinalizedBlock();
+    const best = await strkApi.getBestBlockHeight();
+
+    expect(finalized).toBeDefined();
+    expect(best).toBeDefined();
+
+    expect(best).toBeGreaterThan(finalized.block_number);
+  });
+
   it('should get finalized block', async () => {
     const finalized = await strkApi.getFinalizedBlock();
     expect(finalized).toBeDefined();

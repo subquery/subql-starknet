@@ -30,6 +30,7 @@ import {
   transaction,
 } from 'starknet';
 import { SPEC } from 'starknet-types-07';
+import { FinalizedBlockService } from './finalized.block.starknet';
 import SafeStarknetProvider from './safe-api';
 import {
   hexEq,
@@ -75,6 +76,7 @@ export class StarknetApi implements ApiWrapper {
   private contractInterfaces: Record<string, Abi> = {};
   private chainId?: string;
   private specVersion?: string;
+  private finalizedBlockService?: FinalizedBlockService;
 
   // Starknet POS
   private _supportsFinalization = true;
@@ -110,6 +112,10 @@ export class StarknetApi implements ApiWrapper {
         (connection.headers as any)[name] = value;
       });
       this.client = new RpcProvider(connection);
+      this.finalizedBlockService = new FinalizedBlockService(
+        this.getBlockByHeightOrHash.bind(this),
+        logger,
+      );
     } else {
       throw new Error(`Unsupported protocol: ${protocol}`);
     }
@@ -159,27 +165,16 @@ export class StarknetApi implements ApiWrapper {
    * Get the latest block (with its header)
    * @returns {Promise<BLOCK_HEADER>}
    */
-  async getFinalizedBlock(): Promise<Partial<SPEC.BLOCK_HEADER>> {
-    // we can not direct use this.client.getBlockLatestAccepted(), because its return missing parent block hash，but we still can retrieve the block number.
-    // In the meantime we also fetch the latest block, if it is rejected, we will get the latest accepted and fetch more details
-    const [latestBlock, latestAccepted] = await Promise.all([
-      this.client.getBlock('latest'),
-      this.getFinalizedBlockHeight(),
-    ]);
-
-    // If latest block been reject, we need to fetch the latest accepted block
-    if (latestBlock.status === 'REJECTED') {
-      const block = await this.getBlockByHeightOrHash(latestAccepted);
-      return {
-        block_hash: block.block_hash,
-        block_number: block.block_number,
-        parent_hash: block.parent_hash,
-      };
-    }
-    return latestBlock;
+  async getFinalizedBlock(): Promise<SPEC.BLOCK_WITH_RECEIPTS> {
+    const block = await this.finalizedBlockService!.getFinalizedBlock();
+    return block;
   }
 
   async getFinalizedBlockHeight(): Promise<number> {
+    return (await this.getFinalizedBlock()).block_number;
+  }
+
+  async getBestBlockHeight(): Promise<number> {
     return (await this.client.getBlockLatestAccepted()).block_number;
   }
 

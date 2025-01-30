@@ -15,7 +15,6 @@ import {
   IStoreModelProvider,
 } from '@subql/node-core';
 import { StarknetBlock, SubqlDatasource } from '@subql/types-starknet';
-import { SubqueryProject } from '../configure/SubqueryProject';
 import { StarknetApi } from '../starknet';
 import {
   calcInterval,
@@ -70,7 +69,7 @@ export class FetchService extends BaseFetchService<
   }
 
   protected async getBestHeight(): Promise<number> {
-    return (await this.getFinalizedHeader()).blockHeight;
+    return this.api.getBestBlockHeight();
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await

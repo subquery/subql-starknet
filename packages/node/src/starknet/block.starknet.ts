@@ -86,7 +86,7 @@ export function filterTransactionsProcessor(
     if (filter.function) {
       const index = decodedCalls?.findIndex(
         (call) =>
-          typeof filter.function === 'string' &&
+          !!filter.function &&
           (hexEq(call.selector, filter.function) ||
             hexEq(call.selector, encodeSelectorToHex(filter.function))),
       );
@@ -116,7 +116,7 @@ export function filterTransactionsProcessor(
     if (filter.function) {
       const index = transaction.calldata?.findIndex(
         (call) =>
-          typeof filter.function === 'string' &&
+          !!filter.function &&
           (call === filter.function ||
             call === encodeSelectorToHex(filter.function)),
       );
@@ -126,7 +126,7 @@ export function filterTransactionsProcessor(
     }
     if (filter.to) {
       const index = transaction.calldata?.findIndex(
-        (call) => typeof filter.to === 'string' && hexEq(call, filter.to),
+        (call) => !!filter.to && hexEq(call, filter.to),
       );
       if (index === -1) {
         return false;

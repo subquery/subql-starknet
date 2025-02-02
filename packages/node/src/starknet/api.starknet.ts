@@ -16,7 +16,6 @@ import {
   StarknetTransaction,
   StarknetLog,
   StarknetContractCall,
-  isFulfilledBlock,
 } from '@subql/types-starknet';
 import {
   ProviderInterface,
@@ -27,7 +26,6 @@ import {
   Abi,
   AbiEntry,
   FunctionAbi,
-  transaction,
 } from 'starknet';
 import { SPEC } from 'starknet-types-07';
 import { FinalizedBlockService } from './finalized.block.starknet';
@@ -41,6 +39,7 @@ import {
   formatLog,
   formatTransaction,
   reverseToRawLog,
+  isFinalizedBlock,
 } from './utils.starknet';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -76,7 +75,7 @@ export class StarknetApi implements ApiWrapper {
   private contractInterfaces: Record<string, Abi> = {};
   private chainId?: string;
   private specVersion?: string;
-  private finalizedBlockService?: FinalizedBlockService;
+  private finalizedBlockService: FinalizedBlockService;
 
   // Starknet POS
   private _supportsFinalization = true;
@@ -99,26 +98,26 @@ export class StarknetApi implements ApiWrapper {
     const protocolStr = protocol.replace(':', '');
 
     logger.info(`Api host: ${hostname}, method: ${protocolStr}`);
-    if (protocolStr === 'https' || protocolStr === 'http') {
-      const connection: RpcProviderOptions | ProviderInterface = {
-        nodeUrl: this.endpoint,
-        headers: {
-          'User-Agent': `Subquery-Node ${packageVersion}`,
-          ...config?.headers,
-        },
-        batch: this.config?.batchSize ?? false,
-      };
-      searchParams.forEach((value, name) => {
-        (connection.headers as any)[name] = value;
-      });
-      this.client = new RpcProvider(connection);
-      this.finalizedBlockService = new FinalizedBlockService(
-        this.getBlockByHeightOrHash.bind(this),
-        logger,
-      );
-    } else {
+
+    if (protocolStr !== 'https' && protocolStr !== 'http') {
       throw new Error(`Unsupported protocol: ${protocol}`);
     }
+    const connection: RpcProviderOptions | ProviderInterface = {
+      nodeUrl: this.endpoint,
+      headers: {
+        'User-Agent': `Subquery-Node ${packageVersion}`,
+        ...config?.headers,
+      },
+      batch: this.config?.batchSize ?? false,
+    };
+    searchParams.forEach((value, name) => {
+      (connection.headers as any)[name] = value;
+    });
+    this.client = new RpcProvider(connection);
+    this.finalizedBlockService = new FinalizedBlockService(
+      this.getBlockByHeightOrHash.bind(this),
+      logger,
+    );
   }
 
   private get genesisBlock(): Record<string, any> {
@@ -166,7 +165,7 @@ export class StarknetApi implements ApiWrapper {
    * @returns {Promise<BLOCK_HEADER>}
    */
   async getFinalizedBlock(): Promise<SPEC.BLOCK_WITH_RECEIPTS> {
-    const block = await this.finalizedBlockService!.getFinalizedBlock();
+    const block = await this.finalizedBlockService.getFinalizedBlock();
     return block;
   }
 
@@ -196,7 +195,7 @@ export class StarknetApi implements ApiWrapper {
     heightOrHash: number | string,
   ): Promise<SPEC.BLOCK_WITH_RECEIPTS> {
     const block = await this.client.getBlockWithReceipts(heightOrHash);
-    if (!isFulfilledBlock(block)) {
+    if (!isFinalizedBlock(block)) {
       throw `Block ${block} is not a fulfilled block, its parent is ${block.parent_hash}`;
     }
     return block;

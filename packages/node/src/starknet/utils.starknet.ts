@@ -257,3 +257,14 @@ export function hexEq(a: string, b: string): boolean {
     return false;
   }
 }
+
+// check if block is finalized
+export function isFinalizedBlock(
+  block: SPEC.BLOCK_WITH_RECEIPTS | SPEC.PENDING_BLOCK_WITH_RECEIPTS,
+): block is SPEC.BLOCK_WITH_RECEIPTS {
+  return (
+    'status' in block &&
+    block.status !== 'PENDING' &&
+    block.status !== 'REJECTED'
+  );
+}

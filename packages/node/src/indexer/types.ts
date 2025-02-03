@@ -7,6 +7,9 @@ import { isFullBlock } from '../starknet/block.starknet';
 export type BlockContent = StarknetBlock | LightStarknetBlock;
 
 export function getBlockSize(block: BlockContent): number {
-  // TODO. not sure if this is the right way to determine the block size
-  return isFullBlock(block) ? (block as StarknetBlock).transactions.length : 0;
+  return isFullBlock(block)
+    ? block.transactions
+        .map((tx) => tx.receipt.execution_resources.steps)
+        .reduce((sum, steps) => sum + steps, 0)
+    : block.transactions.length;
 }

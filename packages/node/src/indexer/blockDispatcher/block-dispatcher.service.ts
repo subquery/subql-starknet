@@ -15,12 +15,10 @@ import {
   IBlock,
   IStoreModelProvider,
 } from '@subql/node-core';
-import { StarknetBlock } from '@subql/types-starknet';
 import {
   StarknetProjectDs,
   SubqueryProject,
 } from '../../configure/SubqueryProject';
-import { isFullBlock } from '../../starknet/block.starknet';
 import { IndexerManager } from '../indexer.manager';
 import { BlockContent, getBlockSize } from '../types';
 

@@ -19,9 +19,6 @@ import { BlockContent } from './types';
 
 @Injectable()
 export class UnfinalizedBlocksService extends BaseUnfinalizedBlocksService<BlockContent> {
-  private supportsFinalization?: boolean;
-  private startupCheck = true;
-
   constructor(
     private readonly apiService: ApiService,
     nodeConfig: NodeConfig,
@@ -38,6 +35,7 @@ export class UnfinalizedBlocksService extends BaseUnfinalizedBlocksService<Block
 
   protected async getHeaderForHash(hash: string): Promise<Header> {
     const block = await this.apiService.api.getBlockByHeightOrHash(hash);
+
     return starknetBlockToHeader(formatBlock(block));
   }
 

@@ -57,6 +57,16 @@ describe('Api.starknet', () => {
     blockData = await fetchBlock(979358);
   });
 
+  it('should get finalized block and best block', async () => {
+    const finalized = await strkApi.getFinalizedBlock();
+    const best = await strkApi.getBestBlockHeight();
+
+    expect(finalized).toBeDefined();
+    expect(best).toBeDefined();
+
+    expect(best).toBeGreaterThan(finalized.block_number);
+  });
+
   it('should get finalized block', async () => {
     const finalized = await strkApi.getFinalizedBlock();
     expect(finalized).toBeDefined();
@@ -71,18 +81,18 @@ describe('Api.starknet', () => {
     expect(blockData.logs[0].transaction.calldata.length).toBeGreaterThan(1);
   });
 
-  it('should have the ability to get receipts via transactions from all types', async () => {
-    expect(await blockData.transactions[0].receipt?.()).toBeDefined();
+  it('should have the ability to get receipts via transactions from all types', () => {
+    expect(blockData.transactions[0].receipt).toBeDefined();
 
-    expect(typeof blockData.transactions[0].receipt).toEqual('function');
-    expect(typeof blockData.logs[0].transaction.receipt).toEqual('function');
+    expect(typeof blockData.transactions[0].receipt).toEqual('object');
+    expect(typeof blockData.logs[0].transaction.receipt).toEqual('object');
     expect(typeof blockData.logs[0].transaction.from).toEqual('string');
     expect(typeof blockData.transactions[1].logs![0].transaction.from).toEqual(
       'string',
     );
     expect(
       typeof blockData.transactions[1].logs![0].transaction.receipt,
-    ).toEqual('function');
+    ).toEqual('object');
   });
 
   //https://starkscan.co/tx/0x0153a20567e66728f3c4ba60913a6011b9c73db9ea4d960e959923ed5afd8a24

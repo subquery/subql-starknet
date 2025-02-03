@@ -1,7 +1,7 @@
 // Copyright 2020-2024 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import {BlockWithTxs} from '@starknet-io/types-js';
+import {SPEC} from 'starknet-types-07';
 
 export interface ApiWrapper {
   init: () => Promise<void>;
@@ -9,5 +9,5 @@ export interface ApiWrapper {
   getChainId: () => string;
   getSpecVersion: () => string;
   getFinalizedBlockHeight: () => Promise<number>;
-  getBlockByHeightOrHash: (hashOrHeight: number | string) => Promise<BlockWithTxs>;
+  getBlockByHeightOrHash: (hashOrHeight: number | string) => Promise<SPEC.BLOCK_WITH_RECEIPTS>;
 }

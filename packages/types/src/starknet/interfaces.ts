@@ -5,7 +5,14 @@ import {BlockHash, Felt, SPEC} from '@starknet-io/types-js';
 import {BlockFilter} from '@subql/types-core';
 import {ParsedEvent, TransactionReceipt} from 'starknet';
 
-export type StarknetLogRaw = SPEC.EMITTED_EVENT;
+export type StarknetLogRaw = SPEC.EVENT;
+
+export type StarknetFullTx = {
+  transaction: SPEC.TXN;
+  receipt: SPEC.TXN_RECEIPT;
+};
+
+export type StarknetTransactionRaw = StarknetFullTx | SPEC.TXN_HASH;
 
 export type StarknetBlockFilter = BlockFilter;
 
@@ -61,7 +68,7 @@ export interface StarknetLogFilter {
 
 export type StarknetResult = ParsedEvent;
 
-export type StarknetBlock = LightStarknetBlock & {
+export type StarknetBlock = Omit<LightStarknetBlock, 'transactions'> & {
   transactions: StarknetTransaction[];
   logs: StarknetLog[];
 };
@@ -78,6 +85,7 @@ export type LightStarknetBlock = {
   starknetVersion: string;
   status: SPEC.BLOCK_STATUS;
   logs: StarknetLog[];
+  transactions: SPEC.TXN_HASH[];
 };
 
 export interface StarknetContractCall<DA = Record<string, any>> {
@@ -90,6 +98,8 @@ export interface StarknetContractCall<DA = Record<string, any>> {
 export type StarknetTransaction = {
   type: SPEC.TXN_TYPE;
   hash: string;
+  nonce: number;
+  maxFee: number;
   // This is sender_address or contract_address
   from: string;
   blockHash: string;
@@ -104,8 +114,8 @@ export type StarknetTransaction = {
   // Store decoded calls,  also store abi parsed data/args
   decodedCalls?: StarknetContractCall[];
   // Parse the calldata also save into local decodedCalls
-  parseCallData: () => StarknetContractCall[];
-  receipt?: () => Promise<TransactionReceipt>;
+  parseCallData: () => StarknetContractCall[] | undefined;
+  receipt: TransactionReceipt;
   logs?: StarknetLog[];
 };
 
@@ -117,6 +127,7 @@ export type StarknetLog<T extends StarknetResult = StarknetResult> = {
   blockNumber: number;
   transactionHash: string;
   transactionIndex: number;
+  logIndex: number;
   args?: T;
   block: StarknetBlock;
   transaction: StarknetTransaction;

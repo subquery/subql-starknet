@@ -3,35 +3,32 @@
 
 import assert from 'assert';
 import fs from 'fs';
-import http from 'http';
-import https from 'https';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { BlockWithTxs, SPEC } from '@starknet-io/types-js';
-import { getLogger, IBlock, timeout } from '@subql/node-core';
+import { BlockWithTxs } from '@starknet-io/types-js';
+import { getLogger, IBlock } from '@subql/node-core';
 import {
   ApiWrapper,
   StarknetBlock,
   StarknetRuntimeDatasource,
   IStarknetEndpointConfig,
   LightStarknetBlock,
-  StarknetLogRaw,
   StarknetResult,
   StarknetTransaction,
   StarknetLog,
   StarknetContractCall,
 } from '@subql/types-starknet';
 import {
-  AbiInterfaces,
   ProviderInterface,
   RpcProvider,
   RpcProviderOptions,
-  TransactionReceipt,
   events,
   CallData,
   Abi,
   AbiEntry,
   FunctionAbi,
 } from 'starknet';
+import { SPEC } from 'starknet-types-07';
+import { FinalizedBlockService } from './finalized.block.starknet';
 import SafeStarknetProvider from './safe-api';
 import {
   hexEq,
@@ -40,17 +37,15 @@ import {
   formatBlock,
   formatBlockUtil,
   formatLog,
-  formatReceipt,
   formatTransaction,
   reverseToRawLog,
+  isFinalizedBlock,
 } from './utils.starknet';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version: packageVersion } = require('../../package.json');
 
 const logger = getLogger('api.starknet');
-
-const DEFAULT_EVENT_CHUNK_SIZE = 1000;
 
 async function loadAssets(
   ds: StarknetRuntimeDatasource,
@@ -80,6 +75,7 @@ export class StarknetApi implements ApiWrapper {
   private contractInterfaces: Record<string, Abi> = {};
   private chainId?: string;
   private specVersion?: string;
+  private finalizedBlockService: FinalizedBlockService;
 
   // Starknet POS
   private _supportsFinalization = true;
@@ -102,22 +98,26 @@ export class StarknetApi implements ApiWrapper {
     const protocolStr = protocol.replace(':', '');
 
     logger.info(`Api host: ${hostname}, method: ${protocolStr}`);
-    if (protocolStr === 'https' || protocolStr === 'http') {
-      const connection: RpcProviderOptions | ProviderInterface = {
-        nodeUrl: this.endpoint,
-        headers: {
-          'User-Agent': `Subquery-Node ${packageVersion}`,
-          ...config?.headers,
-        },
-        batch: this.config?.batchSize ?? false,
-      };
-      searchParams.forEach((value, name, searchParams) => {
-        (connection.headers as any)[name] = value;
-      });
-      this.client = new RpcProvider(connection);
-    } else {
+
+    if (protocolStr !== 'https' && protocolStr !== 'http') {
       throw new Error(`Unsupported protocol: ${protocol}`);
     }
+    const connection: RpcProviderOptions | ProviderInterface = {
+      nodeUrl: this.endpoint,
+      headers: {
+        'User-Agent': `Subquery-Node ${packageVersion}`,
+        ...config?.headers,
+      },
+      batch: this.config?.batchSize ?? false,
+    };
+    searchParams.forEach((value, name) => {
+      (connection.headers as any)[name] = value;
+    });
+    this.client = new RpcProvider(connection);
+    this.finalizedBlockService = new FinalizedBlockService(
+      this.getBlockByHeightOrHash.bind(this),
+      logger,
+    );
   }
 
   private get genesisBlock(): Record<string, any> {
@@ -162,25 +162,18 @@ export class StarknetApi implements ApiWrapper {
 
   /***
    * Get the latest block (with its header)
-   * we will try to get the latest block, if it is rejected, we will get the latest accepted block
    * @returns {Promise<BLOCK_HEADER>}
    */
-  async getFinalizedBlock(): Promise<SPEC.BLOCK_HEADER> {
-    const [latestBlock, latestAccepted] = await Promise.all([
-      this.client.getBlock('latest'),
-      await this.getFinalizedBlockHeight(),
-    ]);
-    // @ts-ignore
-    let b: SPEC.BLOCK_HEADER = latestBlock;
-    if (latestBlock.status === 'REJECTED') {
-      b = (await this.getBlockByHeightOrHash(
-        latestAccepted,
-      )) as SPEC.BLOCK_WITH_TXS;
-    }
-    return b;
+  async getFinalizedBlock(): Promise<SPEC.BLOCK_WITH_RECEIPTS> {
+    const block = await this.finalizedBlockService.getFinalizedBlock();
+    return block;
   }
 
   async getFinalizedBlockHeight(): Promise<number> {
+    return (await this.getFinalizedBlock()).block_number;
+  }
+
+  async getBestBlockHeight(): Promise<number> {
     return (await this.client.getBlockLatestAccepted()).block_number;
   }
 
@@ -200,55 +193,45 @@ export class StarknetApi implements ApiWrapper {
 
   async getBlockByHeightOrHash(
     heightOrHash: number | string,
-  ): Promise<BlockWithTxs> {
-    // @ts-ignore
-    return this.client.getBlockWithTxs(heightOrHash);
-  }
-
-  private async getBlockPromise(num: number, includeTx = true): Promise<any> {
-    const rawBlock = includeTx
-      ? await this.client.getBlockWithTxs(num)
-      : await this.client.getBlockWithTxHashes(num);
-
-    if (!rawBlock) {
-      throw new Error(`Failed to fetch block ${num}`);
+  ): Promise<SPEC.BLOCK_WITH_RECEIPTS> {
+    const block = await this.client.getBlockWithReceipts(heightOrHash);
+    if (!isFinalizedBlock(block)) {
+      throw `Block ${block} is not a fulfilled block, its parent is ${block.parent_hash}`;
     }
-
-    const block = formatBlock(rawBlock);
-
     return block;
-  }
-
-  async getTransactionReceipt(
-    transactionHash: string,
-  ): Promise<TransactionReceipt> {
-    const receipt = await this.client.getTransactionReceipt(transactionHash);
-    return formatReceipt(receipt);
   }
 
   async fetchBlock(blockNumber: number): Promise<IBlock<StarknetBlock>> {
     try {
-      const block: StarknetBlock = await this.getBlockPromise(
-        blockNumber,
-        true,
-      );
-      const logsRaw = await this.fetchBlockLogs(blockNumber);
+      const rawBlock = await this.getBlockByHeightOrHash(blockNumber);
+      const formattedBlock = formatBlock(rawBlock);
 
-      block.logs = logsRaw.map((l) => formatLog(l, block));
-      // Cast as Tx still raw here
-      block.transactions = (block.transactions as Record<string, any>).map(
-        (tx, index) => ({
-          // Format done
-          ...formatTransaction(tx, block, index),
-          receipt: () =>
-            this.getTransactionReceipt(tx.transaction_hash).then((r) =>
-              formatReceipt(r),
-            ),
-          logs: block.logs.filter(
-            (l) => l.transactionHash === tx.transaction_hash,
+      const formattedTransactions = rawBlock.transactions.map((tx, index) => {
+        const formattedTransaction = formatTransaction(
+          tx,
+          formattedBlock,
+          index,
+        );
+        return {
+          ...formattedTransaction,
+          logs: tx.receipt.events.map((l, logIndex) =>
+            formatLog(l, logIndex, formattedTransaction, formattedBlock),
           ),
-        }),
+        };
+      });
+
+      const logs: StarknetLog[] = formattedTransactions.flatMap((tx) =>
+        tx.logs.map((l) => ({
+          ...l,
+          transaction: tx,
+        })),
       );
+
+      const block: StarknetBlock = {
+        ...formattedBlock,
+        transactions: formattedTransactions,
+        logs,
+      };
 
       this.eventEmitter.emit('fetchBlock');
       return formatBlockUtil(block);
@@ -257,52 +240,22 @@ export class StarknetApi implements ApiWrapper {
     }
   }
 
-  // This follow method from official document https://starknetjs.com/docs/guides/events
-  async fetchBlockLogs(blockNumber: number): Promise<StarknetLogRaw[]> {
-    let continuationToken: string | undefined = '0';
-    let chunkNum = 1;
-    const allEvents: StarknetLogRaw[] = [];
-
-    while (continuationToken) {
-      let eventsRes;
-      try {
-        eventsRes = await this.client.getEvents({
-          from_block: {
-            block_number: blockNumber,
-          },
-          to_block: {
-            block_number: blockNumber,
-          },
-          chunk_size: DEFAULT_EVENT_CHUNK_SIZE,
-          continuation_token:
-            continuationToken === '0' ? undefined : continuationToken,
-        });
-      } catch (e: any) {
-        if (!eventsRes) {
-          throw new Error(
-            `Fetch block ${blockNumber} events failed, ${e.message}`,
-          );
-        } else {
-          throw e;
-        }
-      }
-      const nbEvents = eventsRes.events.length;
-      continuationToken = eventsRes.continuation_token;
-      for (let i = 0; i < nbEvents; i++) {
-        const event = eventsRes.events[i];
-        allEvents.push(event);
-      }
-      chunkNum++;
-    }
-    return allEvents;
-  }
-
   private async fetchLightBlock(
     blockNumber: number,
   ): Promise<IBlock<LightStarknetBlock>> {
-    const block = await this.getBlockPromise(blockNumber, false);
+    const block = (await this.client.getBlockWithTxHashes(
+      blockNumber,
+    )) as SPEC.BLOCK_WITH_TX_HASHES;
     const lightBlock: LightStarknetBlock = {
       ...block,
+      blockHash: block.block_hash,
+      blockNumber: block.block_number,
+      parentHash: block.parent_hash,
+      newRoot: block.new_root,
+      sequencerAddress: block.sequencer_address,
+      l1GasPrice: block.l1_gas_price,
+      starknetVersion: block.starknet_version,
+      logs: [],
     };
     return formatBlockUtil<LightStarknetBlock>(lightBlock);
   }
@@ -314,7 +267,9 @@ export class StarknetApi implements ApiWrapper {
   async fetchBlocksLight(
     bufferBlocks: number[],
   ): Promise<IBlock<LightStarknetBlock>[]> {
-    return Promise.all(bufferBlocks.map(async (num) => this.fetchBlock(num)));
+    return Promise.all(
+      bufferBlocks.map(async (num) => this.fetchLightBlock(num)),
+    );
   }
 
   get api(): RpcProvider {

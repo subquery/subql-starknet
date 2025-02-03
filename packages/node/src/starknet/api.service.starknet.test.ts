@@ -81,13 +81,6 @@ describe('ApiService', () => {
     ).resolves.toHaveLength(4);
   });
 
-  it('can fetch block events with height', async () => {
-    //https://starkscan.co/block/500000#events
-    await expect(apiService.api.fetchBlockLogs(500000)).resolves.toHaveLength(
-      637,
-    );
-  });
-
   it('can get the finalized height', async () => {
     const height = (await apiService.api.getFinalizedBlock()).block_number;
 

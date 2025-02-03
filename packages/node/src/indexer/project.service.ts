@@ -75,7 +75,7 @@ export class ProjectService extends BaseProjectService<
   protected async getBlockTimestamp(height: number): Promise<Date> {
     const block = await this.apiService.unsafeApi.api.getBlock(height);
 
-    return new Date(block.timestamp * 1000); // TODO test and make sure its in MS not S
+    return new Date(block.timestamp * 1000);
   }
 
   protected onProjectChange(project: SubqueryProject): void | Promise<void> {

@@ -11,6 +11,7 @@ import {
   StarknetLog,
   StarknetLogRaw,
   StarknetTransaction,
+  StarknetTransactionRaw,
 } from '@subql/types-starknet';
 import { omit } from 'lodash';
 import {
@@ -29,7 +30,11 @@ export function calcInterval(api: ApiWrapper): number {
   return 6000;
 }
 
-export function formatBlock(block: any): StarknetBlock {
+export function formatBlock(
+  block: SPEC.BLOCK_WITH_RECEIPTS | SPEC.BLOCK_WITH_TX_HASHES,
+): Omit<StarknetBlock, 'transactions'> & {
+  transactions: StarknetTransactionRaw[];
+} {
   return {
     blockHash: block.block_hash,
     parentHash: block.parent_hash,
@@ -42,7 +47,7 @@ export function formatBlock(block: any): StarknetBlock {
     status: block.status,
     logs: [], // Filled in at starknetBlockWrapped constructor
     transactions: block.transactions, // Transaction still raw here, will format in fetchBlock
-  } as StarknetBlock;
+  };
 }
 
 export function formatBlockUtil<
@@ -56,31 +61,27 @@ export function formatBlockUtil<
 
 export function formatLog(
   log: StarknetLogRaw,
-  block: StarknetBlock,
+  logIndex: number,
+  tx: StarknetTransaction,
+  block: Omit<StarknetBlock, 'transactions'> & {
+    transactions: StarknetTransactionRaw[];
+  },
 ): StarknetLog {
   const formattedLog = {
-    block,
     address: log.from_address,
     topics: log.keys,
     blockNumber: block.blockNumber,
     blockHash: block.blockHash,
-    transactionHash: log.transaction_hash,
+    transactionHash: tx.hash,
     data: log.data,
+    logIndex: logIndex,
+    block: block,
+    transaction: tx,
+    transactionIndex: tx.transactionIndex,
     toJSON(): string {
       return JSON.stringify(omit(this, ['transaction', 'block', 'toJSON']));
     },
   };
-
-  // Define this afterwards as the spread on `...log` breaks defining a getter
-  Object.defineProperty(formattedLog, 'transaction', {
-    get: () => {
-      const rawTransaction = block.transactions?.find(
-        (tx) => tx.hash === log.transaction_hash,
-      );
-
-      return rawTransaction;
-    },
-  });
   return formattedLog as unknown as StarknetLog;
 }
 
@@ -110,24 +111,29 @@ export function formatLog(
  */
 export function formatTransaction(
   tx: Record<string, any>,
-  block: StarknetBlock,
+  block:
+    | StarknetBlock
+    | (Omit<StarknetBlock, 'transactions'> & {
+        transactions: StarknetTransactionRaw[];
+      }),
   txIndex: number,
-): Omit<StarknetTransaction, 'receipt'> {
+): StarknetTransaction {
   const transaction = {
-    ...tx,
-    hash: tx.transaction_hash,
-    type: tx.type,
-    version: tx.version,
-    nonce: tx.nonce,
-    maxFee: tx.max_fee,
-    from: getTxContractAddress(tx),
-    calldata: tx.calldata,
+    ...tx.transaction,
+    hash: tx.transaction.transaction_hash,
+    type: tx.transaction.type,
+    version: tx.transaction.version,
+    nonce: tx.transaction.nonce,
+    maxFee: tx.transaction.max_fee,
+    from: getTxContractAddress(tx.transaction),
+    calldata: tx.transaction.calldata,
     blockHash: block.blockHash,
     blockNumber: block.blockNumber,
     blockTimestamp: block.timestamp,
     transactionIndex: txIndex,
-    entryPointSelector: tx.entry_point_selector,
-    contractAddress: tx.contract_address,
+    entryPointSelector: tx.transaction.entry_point_selector,
+    contractAddress: tx.transaction.contract_address,
+    receipt: formatReceipt(tx.receipt),
     parseCallData(): StarknetContractCall[] | undefined {
       if (this.decodedCalls) {
         return this.decodedCalls;
@@ -136,7 +142,8 @@ export function formatTransaction(
       // Handle "INVOKE V1 and V3"
       if (
         transaction.type === 'INVOKE' &&
-        transaction.version !== ('0x0' || '0x100000000000000000000000000000000')
+        transaction.version !== '0x0' &&
+        transaction.version !== '0x100000000000000000000000000000000'
       ) {
         return decodeInvokeCalldata(transaction.calldata);
       }
@@ -159,7 +166,7 @@ export function formatTransaction(
     toJSON(): string {
       return JSON.stringify(omit(this, ['receipt', 'toJSON']));
     },
-  } as Omit<StarknetTransaction, 'receipt'>;
+  } as StarknetTransaction;
   return transaction;
 }
 
@@ -187,7 +194,13 @@ export function formatReceipt(
   } as unknown as TransactionReceipt;
 }
 
-export function starknetBlockToHeader(block: BlockContent): Header {
+export function starknetBlockToHeader(
+  block:
+    | BlockContent
+    | (Omit<StarknetBlock, 'transactions'> & {
+        transactions: StarknetTransactionRaw[];
+      }),
+): Header {
   return {
     blockHeight: block.blockNumber,
     blockHash: block.blockHash,
@@ -195,16 +208,18 @@ export function starknetBlockToHeader(block: BlockContent): Header {
   };
 }
 
-export function starknetBlockHeaderToHeader(block: SPEC.BLOCK_HEADER): Header {
+export function starknetBlockHeaderToHeader(
+  block: Partial<SPEC.BLOCK_HEADER>,
+): Header {
   return {
-    blockHeight: block.block_number,
-    blockHash: block.block_hash,
+    blockHeight: block.block_number!,
+    blockHash: block.block_hash!,
     parentHash: block.parent_hash,
   };
 }
 
 //TODO, only used to phrase abi event
-export function reverseToRawLog(log: StarknetLog): StarknetLogRaw {
+export function reverseToRawLog(log: StarknetLog): SPEC.EMITTED_EVENT {
   return {
     block_hash: log.blockHash,
     keys: [...log.topics],
@@ -242,4 +257,15 @@ export function hexEq(a: string, b: string): boolean {
   } catch (e) {
     return false;
   }
+}
+
+// check if block is finalized
+export function isFinalizedBlock(
+  block: SPEC.BLOCK_WITH_RECEIPTS | SPEC.PENDING_BLOCK_WITH_RECEIPTS,
+): block is SPEC.BLOCK_WITH_RECEIPTS {
+  return (
+    'status' in block &&
+    block.status !== 'PENDING' &&
+    block.status !== 'REJECTED'
+  );
 }

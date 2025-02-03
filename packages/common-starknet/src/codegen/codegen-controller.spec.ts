@@ -38,7 +38,7 @@ describe('Codegen spec', () => {
 
     await expect(
       generateAbis([ds], PROJECT_PATH, undefined as any, undefined as any, undefined as any)
-    ).rejects.toThrow(/Asset: "zkLend" not found in project/);
+    ).rejects.toThrow('Error: Asset zkLend, file ./abis/xxx.json does not exist');
   });
 
   it('render correct codegen from ejs', async () => {

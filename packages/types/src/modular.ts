@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import {INetworkCommonModule} from '@subql/types-core';
-import {Data} from 'ejs';
 import {AbiInterfaces} from 'starknet';
 import {StarknetCustomDatasource, SubqlDatasource, StarknetRuntimeDatasource} from './project';
 

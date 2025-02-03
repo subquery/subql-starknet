@@ -10,7 +10,6 @@ import {
   isCustomDs,
   isRuntimeDs,
 } from '@subql/common-starknet';
-import { retryOnFail } from '@subql/node-core';
 import {
   StarknetProjectDs,
   SubqueryProject,

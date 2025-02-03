@@ -8,7 +8,7 @@ const myArgs = process.argv.slice(2);
 const pJson = require(`${myArgs[0]}/package.json`)
 
 const version = pJson.version;
-const repoName = pJson.name; 
+const repoName = pJson.name;
 
 const packageName = repoName.split('/');
 
@@ -21,7 +21,7 @@ function checkForBetaVersion(version) {
 function gatherReleaseInfo(logPath) {
     const changeLogs = fs.readFileSync(logPath, 'utf8');
     const regex = /## \[([0-9]+(\.[0-9]+)+)] - [0-9]{4}-[0-9]{2}-[0-9]{2}/i;
-    
+
     let lines = changeLogs.split(/\n/);
     let foundChangelog = false;
     let releaseInfo = '';
@@ -32,7 +32,7 @@ function gatherReleaseInfo(logPath) {
            i = j;
            j = lines.length;
            foundChangelog = true;
-       } 
+       }
     }
 
     lines = lines.slice(i);
@@ -42,8 +42,8 @@ function gatherReleaseInfo(logPath) {
             if(j == 0){
                releaseInfo += `${lines[j]}`+ '\n';
                continue;
-            }        
-    
+            }
+
             if(!regex.test(lines[j])){
                 releaseInfo += `${lines[j]}`+ '\n';
             } else {
@@ -51,12 +51,12 @@ function gatherReleaseInfo(logPath) {
             }
         }
     }
-    
+
     if(releaseInfo === ''){
         core.setFailed("No release info found, either missing in changelog or changelog is formatted incorrectly")
     }
 
-    console.log("Gathered release info...")  
+    console.log("Gathered release info...")
     return releaseInfo;
 }
 
@@ -68,7 +68,7 @@ async function publishRelease(releaseInfo) {
         },
         owner: 'subquery',
         name: `[${version}] ${repoName}`,
-        repo: 'subql-ethereum',
+        repo: 'subql-starknet',
         tag_name: `${packageName[1]}/${version}`,
         target_commitish: `${myArgs[1]}`,
         body: releaseInfo
@@ -76,9 +76,9 @@ async function publishRelease(releaseInfo) {
         core.setFailed(err)
     })
 
-    console.log("Release Created...")  
+    console.log("Release Created...")
 }
- 
+
 checkForBetaVersion(version);
 
 const releaseInfo = gatherReleaseInfo(`${myArgs[0]}/CHANGELOG.md`);

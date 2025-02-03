@@ -81,13 +81,16 @@ export function filterTransactionsProcessor(
 
   // Only decode calls lazily if filter applies
   const decodedCalls = transaction.parseCallData();
+  const func = filter.function;
+  const to = filter.to;
 
   if (decodedCalls && decodedCalls?.length !== 0) {
-    if (filter.function) {
-      const index = decodedCalls?.findIndex(
-        (call) =>
-          hexEq(call.selector, filter.function!) ||
-          hexEq(call.selector, encodeSelectorToHex(filter.function!)),
+    if (func !== undefined) {
+      const index = decodedCalls?.findIndex((call) =>
+        func === null
+          ? call.selector === null
+          : hexEq(call.selector, func) ||
+            hexEq(call.selector, encodeSelectorToHex(func)),
       );
       if (index === -1) {
         return false;
@@ -97,11 +100,14 @@ export function filterTransactionsProcessor(
       }
       // do not return true here
     }
-    if (filter.to || address) {
-      // if filter.to is not provided, we use address as filter
-      const filterAddress = filter.to ?? address;
-      const index = decodedCalls?.findIndex(
-        (call) => filterAddress && hexEq(call.to, filterAddress),
+    if (to !== undefined || address) {
+      // If filter.to is undefined, we use address as filter
+      // We also handle when filter.to is null
+      const filterAddress = to !== undefined ? to : address;
+      const index = decodedCalls?.findIndex((call) =>
+        filterAddress === null
+          ? call.to === null
+          : filterAddress && hexEq(call.to, filterAddress),
       );
       if (index === -1) {
         return false;
@@ -112,19 +118,19 @@ export function filterTransactionsProcessor(
   }
   // In case decode calls failed, we try to look into raw calldata
   else {
-    if (filter.function) {
-      const index = transaction.calldata?.findIndex(
-        (call) =>
-          call === filter.function! ||
-          call === encodeSelectorToHex(filter.function!),
+    if (func !== undefined) {
+      const index = transaction.calldata?.findIndex((call) =>
+        func === null
+          ? call === null
+          : call === func || call === encodeSelectorToHex(func),
       );
       if (index === -1) {
         return false;
       }
     }
-    if (filter.to) {
+    if (to !== undefined) {
       const index = transaction.calldata?.findIndex((call) =>
-        hexEq(call, filter.to!),
+        to === null ? call === null : hexEq(call, to),
       );
       if (index === -1) {
         return false;

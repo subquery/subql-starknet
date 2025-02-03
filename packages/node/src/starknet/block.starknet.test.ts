@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { StarknetBlock } from '@subql/types-starknet';
+import { StarknetBlock, StarknetTransaction } from '@subql/types-starknet';
 import { StarknetApi } from './api.starknet';
 import {
   filterLogsProcessor,
@@ -17,7 +17,6 @@ jest.setTimeout(100000);
 describe('block filters', () => {
   let strkApi: StarknetApi;
   const eventEmitter = new EventEmitter2();
-  let blockData: StarknetBlock;
 
   const fetchBlock = async (height: number) => {
     const block = await strkApi.fetchBlock(height);
@@ -110,6 +109,61 @@ describe('block filters', () => {
           to: '0x047aaaaad',
         }),
       ).toBeFalsy();
+
+      //Filter with function is "null"
+      expect(
+        filterTransactionsProcessor(tx!, {
+          function: null,
+        }),
+      ).toBeFalsy();
+
+      //Filter with to is "null"
+      expect(
+        filterTransactionsProcessor(tx!, {
+          to: null,
+        }),
+      ).toBeFalsy();
+    });
+
+    it('filter with tx function or to is null', () => {
+      const mockTx1 = {
+        calldata: ['0xmock', null],
+        parseCallData: jest.fn(),
+      } as unknown as StarknetTransaction;
+      //Filter with function is "null"
+      expect(
+        filterTransactionsProcessor(mockTx1, {
+          function: null,
+        }),
+      ).toBeTruthy();
+
+      //Filter with to is "null"
+      expect(
+        filterTransactionsProcessor(mockTx1, {
+          to: null,
+        }),
+      ).toBeTruthy();
+
+      // test with decode calls
+      const mockTx2 = {
+        parseCallData: () => {
+          return [{ to: null, selector: null, calldata: [] }];
+        },
+      } as unknown as StarknetTransaction;
+
+      //Filter with function is "null"
+      expect(
+        filterTransactionsProcessor(mockTx2, {
+          function: null,
+        }),
+      ).toBeTruthy();
+
+      //Filter with to is "null"
+      expect(
+        filterTransactionsProcessor(mockTx2, {
+          to: null,
+        }),
+      ).toBeTruthy();
     });
 
     it('should filter tx with multiple conditions', async () => {

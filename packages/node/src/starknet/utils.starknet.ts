@@ -142,7 +142,8 @@ export function formatTransaction(
       // Handle "INVOKE V1 and V3"
       if (
         transaction.type === 'INVOKE' &&
-        transaction.version !== ('0x0' || '0x100000000000000000000000000000000')
+        transaction.version !== '0x0' &&
+        transaction.version !== '0x100000000000000000000000000000000'
       ) {
         return decodeInvokeCalldata(transaction.calldata);
       }

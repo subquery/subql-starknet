@@ -1,6 +1,6 @@
 {
   "name": "@subql/common-starknet",
-  "version": "0.0.2-4",
+  "version": "1.0.0",
   "description": "",
   "scripts": {
     "build": "rm -rf dist && tsc -b",

@@ -6,10 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-
-## [0.0.1] - 2024-12-10
+## [5.7.0] - 2025-02-03
 ### Added
 - Init release
 
-
-[Unreleased]: https://github.com/subquery/subql-starknet/compare/node-starknet/0.0.1...HEAD
+[Unreleased]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.7.0...HEAD
+[5.7.0]: https://github.com/subquery/subql-starknet/releases/tag/node-starknet/5.7.0

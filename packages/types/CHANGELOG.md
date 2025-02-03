@@ -6,9 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2025-02-03
+### Fixed
+- Fix previous release failed
+
 ## [1.0.0] - 2025-02-03
 ### Added
 - Init release
 
-[Unreleased]: https://github.com/subquery/subql-starknet/compare/types-starknet/1.0.0...HEAD
+[Unreleased]: https://github.com/subquery/subql-starknet/compare/types-starknet/1.0.1...HEAD
+[1.0.1]: https://github.com/subquery/subql-starknet/compare/types-starknet/1.0.0...types-starknet/1.0.1
 [1.0.0]: https://github.com/subquery/subql-starknet/releases/tag/types-starknet/1.0.0

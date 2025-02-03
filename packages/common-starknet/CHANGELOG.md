@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2025-02-03
+### Fixed
+- Fix previous release failed due to broken pipeline (#19)
+
 ## [1.0.1] - 2025-02-03
 ### Fixed
 - Fix previous release failed
@@ -14,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Init release
 
-[Unreleased]: https://github.com/subquery/subql-starknet/compare/common-starknet/1.0.1...HEAD
+[Unreleased]: https://github.com/subquery/subql-starknet/compare/common-starknet/1.0.2...HEAD
+[1.0.2]: https://github.com/subquery/subql-starknet/compare/common-starknet/1.0.1...common-starknet/1.0.2
 [1.0.1]: https://github.com/subquery/subql-starknet/compare/common-starknet/1.0.0...common-starknet/1.0.1
 [1.0.0]: https://github.com/subquery/subql-starknet/releases/tag/common-starknet/1.0.0

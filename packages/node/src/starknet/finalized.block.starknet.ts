@@ -40,6 +40,8 @@ export class FinalizedBlockService {
         return blockInfo;
       }
 
+      if (currentBlockNumber === 1) return undefined;
+
       // Ensure we never go below zero
       currentBlockNumber = Math.max(1, currentBlockNumber - INIT_BINARY_JUMP);
     }

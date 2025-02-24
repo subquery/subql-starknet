@@ -28,7 +28,10 @@ import {
   FunctionAbi,
 } from 'starknet';
 import { SPEC } from 'starknet-types-07';
-import { FinalizedBlockService } from './finalized.block.starknet';
+import {
+  FinalizedBlockService,
+  HEADER_WITH_STATUS,
+} from './finalized.block.starknet';
 import SafeStarknetProvider from './safe-api';
 import {
   hexEq,
@@ -164,7 +167,7 @@ export class StarknetApi implements ApiWrapper {
    * Get the latest block (with its header)
    * @returns {Promise<BLOCK_HEADER>}
    */
-  async getFinalizedBlock(): Promise<SPEC.BLOCK_WITH_RECEIPTS> {
+  async getFinalizedBlock(): Promise<HEADER_WITH_STATUS> {
     const block = await this.finalizedBlockService.getFinalizedBlock();
     return block;
   }

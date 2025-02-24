@@ -4,15 +4,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { NETWORK_FAMILY } from '@subql/common';
-import {
-  NodeConfig,
-  DictionaryService,
-  ApiService,
-  getLogger,
-} from '@subql/node-core';
+import { NodeConfig, DictionaryService, getLogger } from '@subql/node-core';
 import { StarknetBlock, SubqlDatasource } from '@subql/types-starknet';
 import { SubqueryProject } from '../../configure/SubqueryProject';
-import { StarknetApiService } from '../../starknet';
 import { StarknetDictionaryV1 } from './v1';
 
 const logger = getLogger('dictionary');
@@ -26,7 +20,6 @@ export class StarknetDictionaryService extends DictionaryService<
     @Inject('ISubqueryProject') protected project: SubqueryProject,
     nodeConfig: NodeConfig,
     eventEmitter: EventEmitter2,
-    @Inject(ApiService) private apiService: StarknetApiService,
   ) {
     super(project.network.chainId, nodeConfig, eventEmitter);
   }
@@ -39,8 +32,7 @@ export class StarknetDictionaryService extends DictionaryService<
     }
 
     const dictionaryEndpoints = await this.getDictionaryEndpoints(
-      // @ts-ignore, todo: fix this after dictionary available
-      NETWORK_FAMILY.Starknet,
+      NETWORK_FAMILY.starknet,
       this.project.network,
     );
 

@@ -36,6 +36,7 @@ const mockBlocks: Record<number | string, SPEC.BLOCK_WITH_RECEIPTS> = {
   3: createMockBlock(3, 'ACCEPTED_ON_L1'),
   2: createMockBlock(2, 'ACCEPTED_ON_L1'),
   1: createMockBlock(1, 'ACCEPTED_ON_L1'),
+  0: createMockBlock(0, 'ACCEPTED_ON_L1'),
 };
 
 const mockBlockService = {
@@ -63,7 +64,7 @@ describe('FinalizedBlockService', () => {
   it('should find the first ACCEPTED_ON_L1 block', async () => {
     const result = await (service as any).findFirstAcceptedOnL1();
     expect(result).toBeDefined();
-    expect(result?.block_number).toBe(1);
+    expect(result?.block_number).toBe(0);
     expect(result?.status).toBe('ACCEPTED_ON_L1');
   });
 
@@ -106,5 +107,28 @@ describe('FinalizedBlockService', () => {
     const result = await service.getFinalizedBlock();
     expect(result).toBeDefined();
     expect(result.block_number).toBe(8); // Now should update to block 8
+  });
+
+  // No blocks are accepted on L1 with devnets
+  it('works with devnet', async () => {
+    const blocks = {
+      latest: createMockBlock(4, 'ACCEPTED_ON_L2'),
+      4: createMockBlock(4, 'ACCEPTED_ON_L2'),
+      3: createMockBlock(3, 'ACCEPTED_ON_L2'),
+      2: createMockBlock(2, 'ACCEPTED_ON_L2'),
+      1: createMockBlock(1, 'ACCEPTED_ON_L2'),
+      0: createMockBlock(0, 'ACCEPTED_ON_L2'),
+    };
+
+    service = new FinalizedBlockService(
+      (hashOrNumber: number | string): any => {
+        return blocks[hashOrNumber];
+      },
+      mockLogger,
+    );
+
+    const result = await service.getFinalizedBlock();
+    expect(result).toBeDefined();
+    expect(result.block_number).toBe(0);
   });
 });

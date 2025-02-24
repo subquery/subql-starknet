@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Update `@subql/common` (#21)
+
+### Fixed
+- Dictionary network family being invalid (#21)
+- Block finalization with devnets (#21)
 
 ## [5.7.2] - 2025-02-03
 ### Fixed

@@ -28,11 +28,9 @@ export class UnfinalizedBlocksService extends BaseUnfinalizedBlocksService<Block
   }
 
   protected async getFinalizedHead(): Promise<Header> {
-    const block = await this.apiService.api.getFinalizedBlock();
-    if (!block) {
-      return undefined as any;
-    }
-    return starknetBlockHeaderToHeader(block);
+    return starknetBlockHeaderToHeader(
+      await this.apiService.api.getFinalizedBlock(),
+    );
   }
 
   protected async getHeaderForHash(hash: string): Promise<Header> {

@@ -95,6 +95,30 @@ describe('Api.starknet', () => {
     ).toEqual('object');
   });
 
+  // Validate some of the variations from different transaction types
+  it('should correctly format a transaction', async () => {
+    const tx_invoke_v3 = blockData.transactions[0];
+
+    expect(tx_invoke_v3.hash).toBeDefined();
+    expect(tx_invoke_v3.nonce).toBeDefined();
+    expect(typeof tx_invoke_v3.nonce).toBe('string');
+    expect(tx_invoke_v3.maxFee).toBeUndefined();
+
+    const tx_invoke_v1 = blockData.transactions[5];
+
+    expect(tx_invoke_v1.hash).toBeDefined();
+    expect(tx_invoke_v1.maxFee).toBeDefined();
+    expect(typeof tx_invoke_v1.maxFee).toBe('string');
+
+    const block = await fetchBlock(1407);
+    // TX HASH 0x65e9ac447be4bbd256c407703c8baf9c4e862195d924a5fe3c42d138f3a0d38
+    const declare_tx = block.transactions[11];
+
+    expect(declare_tx).toBeDefined();
+    expect(declare_tx.maxFee).not.toBeDefined();
+    expect(declare_tx.nonce).not.toBeDefined();
+  });
+
   //https://starkscan.co/tx/0x0153a20567e66728f3c4ba60913a6011b9c73db9ea4d960e959923ed5afd8a24
   it('Decode logs', async () => {
     const tx = blockData.transactions.find(

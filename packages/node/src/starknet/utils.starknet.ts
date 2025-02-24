@@ -110,7 +110,10 @@ export function formatLog(
  *    entryPointSelector is the method been called
  */
 export function formatTransaction(
-  tx: Record<string, any>,
+  tx: {
+    transaction: SPEC.TXN;
+    receipt: SPEC.TXN_RECEIPT;
+  },
   block:
     | StarknetBlock
     | (Omit<StarknetBlock, 'transactions'> & {
@@ -118,21 +121,38 @@ export function formatTransaction(
       }),
   txIndex: number,
 ): StarknetTransaction {
+  // Any type specific properties are cast here, this should hopefully find any types issues int he future.
   const transaction = {
     ...tx.transaction,
-    hash: tx.transaction.transaction_hash,
+    hash: tx.receipt.transaction_hash,
     type: tx.transaction.type,
     version: tx.transaction.version,
-    nonce: tx.transaction.nonce,
-    maxFee: tx.transaction.max_fee,
+    nonce: (
+      tx.transaction as Exclude<
+        SPEC.TXN,
+        SPEC.DECLARE_TXN_V0 | SPEC.INVOKE_TXN_V0 | SPEC.DEPLOY_TXN
+      >
+    ).nonce,
+    maxFee: (
+      tx.transaction as Exclude<
+        SPEC.TXN,
+        | SPEC.DECLARE_TXN_V3
+        | SPEC.INVOKE_TXN_V3
+        | SPEC.BROADCASTED_DECLARE_TXN_V3
+        | SPEC.DEPLOY_ACCOUNT_TXN_V3
+        | SPEC.L1_HANDLER_TXN
+        | SPEC.DEPLOY_TXN
+      >
+    ).max_fee,
     from: getTxContractAddress(tx.transaction),
-    calldata: tx.transaction.calldata,
+    calldata: (tx.transaction as SPEC.INVOKE_TXN).calldata ?? [],
     blockHash: block.blockHash,
     blockNumber: block.blockNumber,
     blockTimestamp: block.timestamp,
     transactionIndex: txIndex,
-    entryPointSelector: tx.transaction.entry_point_selector,
-    contractAddress: tx.transaction.contract_address,
+    entryPointSelector: (tx.transaction as SPEC.INVOKE_TXN_V0)
+      .entry_point_selector,
+    contractAddress: (tx.transaction as SPEC.INVOKE_TXN_V0).contract_address,
     receipt: formatReceipt(tx.receipt),
     parseCallData(): StarknetContractCall[] | undefined {
       if (this.decodedCalls) {
@@ -166,11 +186,11 @@ export function formatTransaction(
     toJSON(): string {
       return JSON.stringify(omit(this, ['receipt', 'toJSON']));
     },
-  } as StarknetTransaction;
+  } satisfies StarknetTransaction & { toJSON: () => string };
   return transaction;
 }
 
-export function getTxContractAddress(tx: Record<string, any>): string {
+export function getTxContractAddress(tx: SPEC.TXN): string {
   if (tx.type === 'DEPLOY' || tx.type === 'DEPLOY_ACCOUNT') {
     const result = hash.calculateContractAddressFromHash(
       tx.contract_address_salt,
@@ -180,12 +200,21 @@ export function getTxContractAddress(tx: Record<string, any>): string {
     );
     return result;
   }
-  return tx.contract_address ?? tx.sender_address;
+  return (
+    (tx as SPEC.INVOKE_TXN_V0 | SPEC.L1_HANDLER_TXN).contract_address ??
+    (
+      tx as Exclude<
+        SPEC.TXN,
+        | SPEC.INVOKE_TXN_V0
+        | SPEC.L1_HANDLER_TXN
+        | SPEC.DEPLOY_TXN
+        | SPEC.DEPLOY_ACCOUNT_TXN
+      >
+    ).sender_address
+  );
 }
 
-export function formatReceipt(
-  receipt: Record<string, any>,
-): TransactionReceipt {
+export function formatReceipt(receipt: SPEC.TXN_RECEIPT): TransactionReceipt {
   return {
     ...receipt,
     toJSON(): string {
@@ -208,12 +237,10 @@ export function starknetBlockToHeader(
   };
 }
 
-export function starknetBlockHeaderToHeader(
-  block: Partial<SPEC.BLOCK_HEADER>,
-): Header {
+export function starknetBlockHeaderToHeader(block: SPEC.BLOCK_HEADER): Header {
   return {
-    blockHeight: block.block_number!,
-    blockHash: block.block_hash!,
+    blockHeight: block.block_number,
+    blockHash: block.block_hash,
     parentHash: block.parent_hash,
   };
 }

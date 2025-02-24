@@ -98,8 +98,8 @@ export interface StarknetContractCall<DA = Record<string, any>> {
 export type StarknetTransaction = {
   type: SPEC.TXN_TYPE;
   hash: string;
-  nonce: number;
-  maxFee: number;
+  nonce?: Felt;
+  maxFee?: Felt;
   // This is sender_address or contract_address
   from: string;
   blockHash: string;

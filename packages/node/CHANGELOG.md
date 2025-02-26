@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Dictionary network family being invalid (#21)
 - Block finalization with devnets (#21)
+- Transaction hash possibly being undefined (#22)
 
 ## [5.7.2] - 2025-02-03
 ### Fixed

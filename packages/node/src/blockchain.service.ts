@@ -29,9 +29,7 @@ import { StarknetApiService } from './starknet';
 import SafeStarknetProvider from './starknet/safe-api';
 import {
   calcInterval,
-  formatBlock,
   starknetBlockHeaderToHeader,
-  starknetBlockToHeader,
 } from './starknet/utils.starknet';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -48,7 +46,7 @@ export class BlockchainService
       StarknetCustomDatasource,
       SubqueryProject,
       SafeStarknetProvider,
-      LightStarknetBlock, // TODO light block content
+      LightStarknetBlock,
       StarknetBlock,
       IIndexerWorker
     >

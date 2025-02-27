@@ -47,7 +47,7 @@ export class StarknetApiService extends ApiService<
   };
   private nodeConfig: StarknetNodeConfig;
 
-  constructor(
+  private constructor(
     @Inject('ISubqueryProject') private project: SubqueryProject,
     connectionPoolService: ConnectionPoolService<StarknetApiConnection>,
     eventEmitter: EventEmitter2,
@@ -59,29 +59,41 @@ export class StarknetApiService extends ApiService<
     this.updateBlockFetching();
   }
 
-  async init(): Promise<StarknetApiService> {
+  static async create(
+    project: SubqueryProject,
+    connectionPoolService: ConnectionPoolService<StarknetApiConnection>,
+    eventEmitter: EventEmitter2,
+    nodeConfig: NodeConfig,
+  ): Promise<StarknetApiService> {
     let network: StarknetNetworkConfig;
     try {
-      network = this.project.network;
+      network = project.network;
     } catch (e) {
       exitWithError(new Error(`Failed to init api`, { cause: e }), logger);
     }
 
-    if (this.nodeConfig.primaryNetworkEndpoint) {
-      const [endpoint, config] = this.nodeConfig.primaryNetworkEndpoint;
+    if (nodeConfig.primaryNetworkEndpoint) {
+      const [endpoint, config] = nodeConfig.primaryNetworkEndpoint;
       (network.endpoint as Record<string, IEndpointConfig>)[endpoint] = config;
     }
 
-    await this.createConnections(network, (endpoint, config) =>
+    const apiService = new StarknetApiService(
+      project,
+      connectionPoolService,
+      eventEmitter,
+      nodeConfig,
+    );
+
+    await apiService.createConnections(project.network, (endpoint, config) =>
       StarknetApiConnection.create(
         endpoint,
-        this.fetchBlocksBatches,
-        this.eventEmitter,
+        apiService.fetchBlocksBatches,
+        eventEmitter,
         config,
       ),
     );
 
-    return this;
+    return apiService;
   }
 
   protected metadataMismatchError(

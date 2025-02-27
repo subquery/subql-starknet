@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Update `@subql/common` (#21)
+- Update `@subql/node-core` an implement BlockchainService (#23)
 
 ### Fixed
 - Dictionary network family being invalid (#21)

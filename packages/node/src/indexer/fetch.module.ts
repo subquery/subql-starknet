@@ -1,56 +1,37 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
+import path from 'node:path';
 import { Module } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   StoreService,
-  ApiService,
   NodeConfig,
   ConnectionPoolService,
   ConnectionPoolStateManager,
-  IProjectUpgradeService,
   PoiSyncService,
   InMemoryCacheService,
   MonitorService,
   CoreModule,
-  IStoreModelProvider,
+  blockDispatcherFactory,
+  ProjectService,
+  UnfinalizedBlocksService,
+  DynamicDsService,
+  DsProcessorService,
+  FetchService,
+  DictionaryService,
 } from '@subql/node-core';
-import { SubqueryProject } from '../configure/SubqueryProject';
-import { StarknetApiConnection } from '../starknet/api.connection';
+import { BlockchainService } from '../blockchain.service';
 import { StarknetApiService } from '../starknet/api.service.starknet';
-import {
-  BlockDispatcherService,
-  WorkerBlockDispatcherService,
-} from './blockDispatcher';
 import { StarknetDictionaryService } from './dictionary/starknetDictionary.service';
-import { DsProcessorService } from './ds-processor.service';
-import { DynamicDsService } from './dynamic-ds.service';
-import { FetchService } from './fetch.service';
 import { IndexerManager } from './indexer.manager';
-import { ProjectService } from './project.service';
-import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
 
 @Module({
   imports: [CoreModule],
   providers: [
     {
-      provide: ApiService,
-      useFactory: async (
-        project: SubqueryProject,
-        connectionPoolService: ConnectionPoolService<StarknetApiConnection>,
-        eventEmitter: EventEmitter2,
-        nodeConfig: NodeConfig,
-      ) => {
-        const apiService = new StarknetApiService(
-          project,
-          connectionPoolService,
-          eventEmitter,
-          nodeConfig,
-        );
-        await apiService.init();
-        return apiService;
-      },
+      provide: 'APIService',
+      useFactory: StarknetApiService.create,
       inject: [
         'ISubqueryProject',
         ConnectionPoolService,
@@ -58,82 +39,50 @@ import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
         NodeConfig,
       ],
     },
+    {
+      provide: 'IBlockchainService',
+      useClass: BlockchainService,
+    },
+    DsProcessorService,
+    DynamicDsService,
+    {
+      provide: 'IUnfinalizedBlocksService',
+      useClass: UnfinalizedBlocksService,
+    },
+    {
+      useClass: ProjectService,
+      provide: 'IProjectService',
+    },
     IndexerManager,
     {
       provide: 'IBlockDispatcher',
-      useFactory: (
-        nodeConfig: NodeConfig,
-        eventEmitter: EventEmitter2,
-        projectService: ProjectService,
-        projectUpgradeService: IProjectUpgradeService,
-        apiService: StarknetApiService,
-        indexerManager: IndexerManager,
-        cacheService: InMemoryCacheService,
-        storeService: StoreService,
-        storeModelProvider: IStoreModelProvider,
-        poiSyncService: PoiSyncService,
-        project: SubqueryProject,
-        dynamicDsService: DynamicDsService,
-        unfinalizedBlocks: UnfinalizedBlocksService,
-        connectionPoolState: ConnectionPoolStateManager<StarknetApiConnection>,
-        monitorService?: MonitorService,
-      ) =>
-        nodeConfig.workers
-          ? new WorkerBlockDispatcherService(
-              nodeConfig,
-              eventEmitter,
-              projectService,
-              projectUpgradeService,
-              cacheService,
-              storeService,
-              storeModelProvider,
-              poiSyncService,
-              project,
-              dynamicDsService,
-              unfinalizedBlocks,
-              connectionPoolState,
-              monitorService,
-            )
-          : new BlockDispatcherService(
-              apiService,
-              nodeConfig,
-              indexerManager,
-              eventEmitter,
-              projectService,
-              projectUpgradeService,
-              storeService,
-              storeModelProvider,
-              poiSyncService,
-              project,
-            ),
+      useFactory: blockDispatcherFactory(
+        path.resolve(__dirname, '../../dist/indexer/worker/worker.js'),
+        [],
+      ),
       inject: [
         NodeConfig,
         EventEmitter2,
         'IProjectService',
         'IProjectUpgradeService',
-        ApiService,
-        IndexerManager,
         InMemoryCacheService,
         StoreService,
         'IStoreModelProvider',
         PoiSyncService,
         'ISubqueryProject',
         DynamicDsService,
-        UnfinalizedBlocksService,
+        'IUnfinalizedBlocksService',
         ConnectionPoolStateManager,
+        'IBlockchainService',
+        IndexerManager,
         MonitorService,
       ],
     },
-    FetchService,
-    StarknetDictionaryService,
-    DsProcessorService,
-    DynamicDsService,
-    StarknetApiService,
     {
-      useClass: ProjectService,
-      provide: 'IProjectService',
+      provide: DictionaryService,
+      useClass: StarknetDictionaryService,
     },
-    UnfinalizedBlocksService,
+    FetchService,
   ],
 })
 export class FetchModule {}

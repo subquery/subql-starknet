@@ -26,6 +26,7 @@ import {
   Abi,
   AbiEntry,
   FunctionAbi,
+  BlockIdentifier,
 } from 'starknet';
 import { SPEC } from 'starknet-types-07';
 import {
@@ -172,10 +173,6 @@ export class StarknetApi implements ApiWrapper {
     return block;
   }
 
-  async getFinalizedBlockHeight(): Promise<number> {
-    return (await this.getFinalizedBlock()).block_number;
-  }
-
   async getBestBlockHeight(): Promise<number> {
     return (await this.client.getBlockLatestAccepted()).block_number;
   }
@@ -243,9 +240,10 @@ export class StarknetApi implements ApiWrapper {
     }
   }
 
-  private async fetchLightBlock(
-    blockNumber: number,
+  async fetchLightBlock(
+    blockNumber: BlockIdentifier,
   ): Promise<IBlock<LightStarknetBlock>> {
+    // Cast to remove PENDING_BLOCK_WITH_TX_HASHES type
     const block = (await this.client.getBlockWithTxHashes(
       blockNumber,
     )) as SPEC.BLOCK_WITH_TX_HASHES;
@@ -431,7 +429,7 @@ export class StarknetApi implements ApiWrapper {
     return e;
   }
 
-  getSafeApi(height: number) {
+  getSafeApi(height: number): SafeStarknetProvider {
     return new SafeStarknetProvider(this.client, height);
   }
 }

@@ -1,13 +1,11 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   isBlockHandlerProcessor,
   isCallHandlerProcessor,
   isEventHandlerProcessor,
-  isCustomDs,
-  isRuntimeDs,
   StarknetCustomDataSource,
   StarknetHandlerKind,
   StarknetRuntimeHandlerInputMap,
@@ -22,6 +20,9 @@ import {
   BaseIndexerManager,
   IBlock,
   SandboxService,
+  DsProcessorService,
+  DynamicDsService,
+  UnfinalizedBlocksService,
 } from '@subql/node-core';
 import {
   StarknetTransaction,
@@ -31,9 +32,12 @@ import {
   StarknetBlockFilter,
   StarknetLogFilter,
   StarknetTransactionFilter,
+  SubqlDatasource,
+  StarknetCustomDatasource,
 } from '@subql/types-starknet';
+import { BlockchainService } from '../blockchain.service';
 import { StarknetProjectDs } from '../configure/SubqueryProject';
-import { StarknetApi } from '../starknet';
+import { StarknetApi, StarknetApiService } from '../starknet';
 import {
   filterBlocksProcessor,
   filterLogsProcessor,
@@ -41,10 +45,7 @@ import {
   isFullBlock,
 } from '../starknet/block.starknet';
 import SafeStarknetProvider from '../starknet/safe-api';
-import { DsProcessorService } from './ds-processor.service';
-import { DynamicDsService } from './dynamic-ds.service';
 import { BlockContent } from './types';
-import { UnfinalizedBlocksService } from './unfinalizedBlocks.service';
 
 @Injectable()
 export class IndexerManager extends BaseIndexerManager<
@@ -58,16 +59,19 @@ export class IndexerManager extends BaseIndexerManager<
   typeof ProcessorTypeMap,
   StarknetRuntimeHandlerInputMap
 > {
-  protected isRuntimeDs = isRuntimeDs;
-  protected isCustomDs = isCustomDs;
-
   constructor(
-    apiService: ApiService,
+    @Inject('APIService') apiService: StarknetApiService,
     nodeConfig: NodeConfig,
     sandboxService: SandboxService<SafeStarknetProvider, StarknetApi>,
-    dsProcessorService: DsProcessorService,
-    dynamicDsService: DynamicDsService,
-    unfinalizedBlocksService: UnfinalizedBlocksService,
+    dsProcessorService: DsProcessorService<
+      SubqlDatasource,
+      StarknetCustomDatasource
+    >,
+    dynamicDsService: DynamicDsService<SubqlDatasource>,
+    @Inject('IUnfinalizedBlocksService')
+    unfinalizedBlocksService: UnfinalizedBlocksService<BlockContent>,
+    @Inject('IBlockchainService')
+    blockchainService: BlockchainService,
   ) {
     super(
       apiService,
@@ -78,6 +82,7 @@ export class IndexerManager extends BaseIndexerManager<
       unfinalizedBlocksService,
       FilterTypeMap,
       ProcessorTypeMap,
+      blockchainService,
     );
   }
 

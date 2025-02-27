@@ -10,13 +10,13 @@ import {
   NestLogger,
   TestRunner,
   IBlock,
+  ProjectService,
 } from '@subql/node-core';
 import {
   StarknetProjectDs,
   SubqueryProject,
 } from '../configure/SubqueryProject';
 import { IndexerManager } from '../indexer/indexer.manager';
-import { ProjectService } from '../indexer/project.service';
 import { BlockContent } from '../indexer/types';
 import { StarknetApi } from '../starknet';
 import SafeStarknetProvider from '../starknet/safe-api';

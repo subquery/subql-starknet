@@ -8,6 +8,5 @@ export interface ApiWrapper {
   getGenesisHash: () => string;
   getChainId: () => string;
   getSpecVersion: () => string;
-  getFinalizedBlockHeight: () => Promise<number>;
   getBlockByHeightOrHash: (hashOrHeight: number | string) => Promise<SPEC.BLOCK_WITH_RECEIPTS>;
 }

@@ -46,7 +46,16 @@ const prepareApiService = async (
         provide: 'ISubqueryProject',
         useFactory: () => testSubqueryProject(endpoint),
       },
-      StarknetApiService,
+      {
+        provide: StarknetApiService,
+        useFactory: StarknetApiService.create,
+        inject: [
+          'ISubqueryProject',
+          ConnectionPoolService,
+          EventEmitterModule,
+          NodeConfig,
+        ],
+      },
     ],
     imports: [EventEmitterModule.forRoot()],
   }).compile();
@@ -54,7 +63,6 @@ const prepareApiService = async (
   const app = module.createNestApplication();
   await app.init();
   const apiService = app.get(StarknetApiService);
-  await apiService.init();
   return [apiService, app];
 };
 

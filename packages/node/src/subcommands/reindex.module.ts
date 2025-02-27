@@ -5,7 +5,6 @@ import { Module } from '@nestjs/common';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import {
-  ApiService,
   DbModule,
   ForceCleanService,
   StoreService,
@@ -13,12 +12,16 @@ import {
   PoiService,
   storeModelFactory,
   NodeConfig,
+  UnfinalizedBlocksService,
+  DynamicDsService,
+  DsProcessorService,
+  ConnectionPoolService,
+  ConnectionPoolStateManager,
 } from '@subql/node-core';
 import { Sequelize } from '@subql/x-sequelize';
+import { BlockchainService } from '../blockchain.service';
 import { ConfigureModule } from '../configure/configure.module';
-import { DsProcessorService } from '../indexer/ds-processor.service';
-import { DynamicDsService } from '../indexer/dynamic-ds.service';
-import { UnfinalizedBlocksService } from '../indexer/unfinalizedBlocks.service';
+import { StarknetApiService } from '../starknet';
 
 @Module({
   providers: [
@@ -40,10 +43,22 @@ import { UnfinalizedBlocksService } from '../indexer/unfinalizedBlocks.service';
       useClass: DynamicDsService,
     },
     DsProcessorService,
+    ConnectionPoolStateManager,
+    ConnectionPoolService,
     {
       // Used to work with DI for unfinalizedBlocksService but not used with reindex
-      provide: ApiService,
-      useFactory: () => undefined,
+      provide: 'APIService',
+      useFactory: StarknetApiService.create,
+      inject: [
+        'ISubqueryProject',
+        ConnectionPoolService,
+        EventEmitter2,
+        NodeConfig,
+      ],
+    },
+    {
+      provide: 'IBlockchainService',
+      useClass: BlockchainService,
     },
     SchedulerRegistry,
   ],

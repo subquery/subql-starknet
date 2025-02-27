@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { StarknetApi, StarknetApiService } from '../starknet';
-import { ProjectService } from './project.service';
+import { BlockchainService } from './blockchain.service';
+import { StarknetApi, StarknetApiService } from './starknet';
 
 const HTTP_ENDPOINT = 'https://free-rpc.nethermind.io/mainnet-juno/v0_7';
 
@@ -17,30 +17,17 @@ const mockApiService = async (): Promise<StarknetApiService> => {
   } as any;
 };
 
-describe('ProjectService', () => {
-  let projectService: ProjectService;
+describe('BlockchainService', () => {
+  let blockchainService: BlockchainService;
 
   beforeEach(async () => {
     const apiService = await mockApiService();
 
-    projectService = new ProjectService(
-      null as any,
-      apiService,
-      null as any,
-      null as any,
-      null as any,
-      null as any,
-      null as any,
-      null as any,
-      {} as any,
-      null as any,
-      null as any,
-      null as any,
-    );
+    blockchainService = new BlockchainService(apiService);
   });
 
   it('can get a block timestamps', async () => {
-    const timestamp = await (projectService as any).getBlockTimestamp(500_000);
+    const timestamp = await blockchainService.getBlockTimestamp(500_000);
 
     expect(timestamp).toEqual(new Date('2024-01-09T03:54:22.000Z'));
   });

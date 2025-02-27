@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [5.8.0] - 2025-02-27
 ### Changed
 - Update `@subql/common` (#21)
 - Update `@subql/node-core` an implement BlockchainService (#23)
@@ -26,7 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Init release
 
-[Unreleased]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.7.2...HEAD
+[Unreleased]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.8.0...HEAD
+[5.8.0]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.7.2...node-starknet/5.8.0
 [5.7.2]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.7.1...node-starknet/5.7.2
 [5.7.1]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.7.0...node-starknet/5.7.1
 [5.7.0]: https://github.com/subquery/subql-starknet/releases/tag/node-starknet/5.7.0

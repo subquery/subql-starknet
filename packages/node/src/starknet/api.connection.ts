@@ -93,7 +93,10 @@ export class StarknetApiConnection
       formatted_error = new TimeoutError(e);
     } else if (e.message.startsWith(`disconnected from `)) {
       formatted_error = new DisconnectionError(e);
-    } else if (e.message.startsWith(`Rate Limited at endpoint`)) {
+    } else if (
+      e.message.startsWith(`Rate Limited at endpoint`) ||
+      e.message.includes('Rate limit reached')
+    ) {
       formatted_error = new RateLimitError(e);
     } else if (e.message.includes(`Exceeded max limit of`)) {
       formatted_error = new LargeResponseError(e);

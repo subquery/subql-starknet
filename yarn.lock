@@ -2328,20 +2328,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/event-emitter@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@nestjs/event-emitter@npm:2.0.0"
-  dependencies:
-    eventemitter2: 6.4.9
-  peerDependencies:
-    "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
-    "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0
-    reflect-metadata: ^0.1.12
-  checksum: 958eec68b5a157fd81d00e53ee90de6b01a981968befd6d4b13c056faba0a55bde3cf9a820da333031c320c0d752d7488540a4b7e8cf8ea07bb95be30a670235
-  languageName: node
-  linkType: hard
-
-"@nestjs/event-emitter@npm:^3.0.0":
+"@nestjs/event-emitter@npm:^3.0.0, @nestjs/event-emitter@npm:^3.0.1":
   version: 3.0.1
   resolution: "@nestjs/event-emitter@npm:3.0.1"
   dependencies:
@@ -2973,7 +2960,7 @@ __metadata:
   dependencies:
     "@nestjs/common": ^11.0.10
     "@nestjs/core": ^11.0.10
-    "@nestjs/event-emitter": ^2.0.0
+    "@nestjs/event-emitter": ^3.0.1
     "@nestjs/platform-express": ^11.0.10
     "@nestjs/schedule": ^5.0.1
     "@nestjs/schematics": ^11.0.1

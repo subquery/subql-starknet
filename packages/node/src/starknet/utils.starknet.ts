@@ -25,6 +25,12 @@ import {
 import { BlockContent } from '../indexer/types';
 import { decodeGenericCalldata, decodeInvokeCalldata } from './decodeCalldata';
 
+export function getBlockTimestamp(
+  block: BlockContent | SPEC.BLOCK_HEADER,
+): Date {
+  return new Date(block.timestamp * 1000);
+}
+
 export function calcInterval(api: ApiWrapper): number {
   // TODO find a way to get this from the blockchain
   return 6000;
@@ -223,17 +229,12 @@ export function formatReceipt(receipt: SPEC.TXN_RECEIPT): TransactionReceipt {
   } as unknown as TransactionReceipt;
 }
 
-export function starknetBlockToHeader(
-  block:
-    | BlockContent
-    | (Omit<StarknetBlock, 'transactions'> & {
-        transactions: StarknetTransactionRaw[];
-      }),
-): Header {
+export function starknetBlockToHeader(block: BlockContent): Header {
   return {
     blockHeight: block.blockNumber,
     blockHash: block.blockHash,
     parentHash: block.parentHash,
+    timestamp: getBlockTimestamp(block),
   };
 }
 
@@ -242,6 +243,7 @@ export function starknetBlockHeaderToHeader(block: SPEC.BLOCK_HEADER): Header {
     blockHeight: block.block_number,
     blockHash: block.block_hash,
     parentHash: block.parent_hash,
+    timestamp: getBlockTimestamp(block),
   };
 }
 

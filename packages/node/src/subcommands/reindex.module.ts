@@ -17,6 +17,7 @@ import {
   DsProcessorService,
   ConnectionPoolService,
   ConnectionPoolStateManager,
+  MultiChainRewindService,
 } from '@subql/node-core';
 import { Sequelize } from '@subql/x-sequelize';
 import { BlockchainService } from '../blockchain.service';
@@ -60,6 +61,7 @@ import { StarknetApiService } from '../starknet';
       provide: 'IBlockchainService',
       useClass: BlockchainService,
     },
+    MultiChainRewindService,
     SchedulerRegistry,
   ],
   controllers: [],

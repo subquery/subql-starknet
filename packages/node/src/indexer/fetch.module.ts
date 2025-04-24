@@ -20,6 +20,7 @@ import {
   DsProcessorService,
   FetchService,
   DictionaryService,
+  MultiChainRewindService,
 } from '@subql/node-core';
 import { BlockchainService } from '../blockchain.service';
 import { StarknetApiService } from '../starknet/api.service.starknet';
@@ -54,6 +55,7 @@ import { IndexerManager } from './indexer.manager';
       provide: 'IProjectService',
     },
     IndexerManager,
+    MultiChainRewindService,
     {
       provide: 'IBlockDispatcher',
       useFactory: blockDispatcherFactory(
@@ -75,6 +77,7 @@ import { IndexerManager } from './indexer.manager';
         ConnectionPoolStateManager,
         'IBlockchainService',
         IndexerManager,
+        MultiChainRewindService,
         MonitorService,
       ],
     },

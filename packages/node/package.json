@@ -1,6 +1,6 @@
 {
   "name": "@subql/node-starknet",
-  "version": "5.9.0",
+  "version": "6.0.0",
   "description": "",
   "author": "Jay Ji",
   "license": "GPL-3.0",
@@ -19,14 +19,14 @@
     "subql-node-starknet": "./bin/run"
   },
   "dependencies": {
-    "@nestjs/common": "^11.0.10",
+    "@nestjs/common": "^11.0.16",
     "@nestjs/core": "^11.0.10",
     "@nestjs/event-emitter": "^3.0.1",
     "@nestjs/platform-express": "^11.0.10",
     "@nestjs/schedule": "^5.0.1",
     "@subql/common": "^5.4.0",
     "@subql/common-starknet": "workspace:*",
-    "@subql/node-core": "^17.1.0",
+    "@subql/node-core": "^18.0.3",
     "@subql/testing": "^2.2.2",
     "@subql/types-starknet": "workspace:*",
     "cacheable-lookup": "6",

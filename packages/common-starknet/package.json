@@ -1,6 +1,6 @@
 {
   "name": "@subql/common-starknet",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "",
   "scripts": {
     "build": "rm -rf dist && tsc -b",
@@ -14,7 +14,7 @@
   "main": "dist/index.js",
   "license": "GPL-3.0",
   "dependencies": {
-    "@subql/common": "^5.4.0",
+    "@subql/common": "^5.5.0",
     "@subql/types-starknet": "workspace:*",
     "@typechain/starknet": "latest",
     "js-yaml": "^4.1.0",

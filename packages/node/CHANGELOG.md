@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.0] - 2025-04-24
+### Added
+- Support for rewinds and unfinalized blocks with multichain projects
+
 ## [5.9.0] - 2025-03-05
 ### Changed
 - Update @nestjs/event-emitter to compatible version with other nest dependencies (#25)
@@ -36,7 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Init release
 
-[Unreleased]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.9.0...HEAD
+[Unreleased]: https://github.com/subquery/subql-starknet/compare/node-starknet/6.0.0...HEAD
+[6.0.0]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.9.0...node-starknet/6.0.0
 [5.9.0]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.8.0...node-starknet/5.9.0
 [5.8.0]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.7.2...node-starknet/5.8.0
 [5.7.2]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.7.1...node-starknet/5.7.2

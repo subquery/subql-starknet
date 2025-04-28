@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-04-24
+### Changed
+- Update `@subql/types-core`
+
 ## [1.1.0] - 2025-02-27
 ### Changed
 - Transction nonce and maxFee types (#22)
@@ -23,7 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Init release
 
-[Unreleased]: https://github.com/subquery/subql-starknet/compare/types-starknet/1.1.0...HEAD
+[Unreleased]: https://github.com/subquery/subql-starknet/compare/types-starknet/1.2.0...HEAD
+[1.2.0]: https://github.com/subquery/subql-starknet/compare/types-starknet/1.1.0...types-starknet/1.2.0
 [1.1.0]: https://github.com/subquery/subql-starknet/compare/types-starknet/1.0.2...types-starknet/1.1.0
 [1.0.2]: https://github.com/subquery/subql-starknet/compare/types-starknet/1.0.1...types-starknet/1.0.2
 [1.0.1]: https://github.com/subquery/subql-starknet/compare/types-starknet/1.0.0...types-starknet/1.0.1

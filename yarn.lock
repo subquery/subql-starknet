@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 5
+  version: 6
   cacheKey: 8
 
 "@actions/core@npm:^1.10.0":
@@ -2887,7 +2887,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@subql/common-starknet@workspace:packages/common-starknet"
   dependencies:
-    "@subql/common": ^5.5.0
+    "@subql/common": ^5.6.0
     "@subql/types-starknet": "workspace:*"
     "@typechain/starknet": latest
     "@types/ejs": ^3.1.2
@@ -2907,12 +2907,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@subql/common@npm:5.5.0, @subql/common@npm:^5.5.0":
-  version: 5.5.0
-  resolution: "@subql/common@npm:5.5.0"
+"@subql/common@npm:5.6.0, @subql/common@npm:^5.6.0":
+  version: 5.6.0
+  resolution: "@subql/common@npm:5.6.0"
   dependencies:
     "@subql/types-core": 2.0.2
-    axios: ^1.8.3
+    axios: ^1.9.0
     class-transformer: ^0.5.1
     class-validator: ^0.14.1
     form-data: ^4.0.1
@@ -2920,36 +2920,19 @@ __metadata:
     reflect-metadata: ^0.1.14
     semver: ^7.6.3
     update-notifier: ^5.1.0
-  checksum: d52d92b955b68ef51b0750fb8eba63565df19b9c13eb90d69ca828a9187646a0ef4ec8fee60573b605518f0d131ee171f576725333432aef06e3a014a565ed1b
+  checksum: 72d4ff86c4a1e47998ca9023140fa88b6dcb4667068d956441bb5a33c3d5f760ddda802e77e24561267434e7f56ed8eba6e4e4b62826444f02a19a735dca509e
   languageName: node
   linkType: hard
 
-"@subql/common@npm:^5.4.0":
-  version: 5.4.0
-  resolution: "@subql/common@npm:5.4.0"
-  dependencies:
-    "@subql/types-core": 2.0.1
-    axios: ^0.28.0
-    class-transformer: ^0.5.1
-    class-validator: ^0.14.1
-    form-data: ^4.0.1
-    js-yaml: ^4.1.0
-    reflect-metadata: ^0.1.14
-    semver: ^7.6.3
-    update-notifier: ^5.1.0
-  checksum: 69bec37d8484c9b4526cfbe850c8fc50a3cf419f6d1a375e663dd2bd9d8d5a3f578292b96f583b850a8a3173437e70c171b3b77f18d61ad99f277c425c244728
-  languageName: node
-  linkType: hard
-
-"@subql/node-core@npm:^18.0.3":
-  version: 18.0.3
-  resolution: "@subql/node-core@npm:18.0.3"
+"@subql/node-core@npm:^18.0.4":
+  version: 18.0.4
+  resolution: "@subql/node-core@npm:18.0.4"
   dependencies:
     "@apollo/client": ^3.11.2
     "@nestjs/common": ^11.0.16
     "@nestjs/event-emitter": ^3.0.0
     "@nestjs/schedule": ^5.0.1
-    "@subql/common": 5.5.0
+    "@subql/common": 5.6.0
     "@subql/testing": 2.2.4
     "@subql/types": 3.12.2
     "@subql/utils": 2.18.1
@@ -2969,7 +2952,7 @@ __metadata:
     toposort-class: ^1.0.1
     vm2: ^3.9.19
     yargs: ^16.2.0
-  checksum: 2b000781f538e326fb5c315e539b1f5e353ba9649074ede56929a28695770789a74e4cc60bdb6cf9121ca8ba156230236c077b9cfd88a17320ea074717cd652c
+  checksum: 484574ba436fc984c8fda83e6904246636cd3c0eb92ea77201b9823dcce35a531cb70eaf239546679b1a2ac2d43231d3bce16c26500e5804142921b9417e0a2d
   languageName: node
   linkType: hard
 
@@ -2984,9 +2967,9 @@ __metadata:
     "@nestjs/schedule": ^5.0.1
     "@nestjs/schematics": ^11.0.1
     "@nestjs/testing": ^11.0.10
-    "@subql/common": ^5.4.0
+    "@subql/common": ^5.6.0
     "@subql/common-starknet": "workspace:*"
-    "@subql/node-core": ^18.0.3
+    "@subql/node-core": ^18.0.4
     "@subql/testing": ^2.2.2
     "@subql/types-starknet": "workspace:*"
     "@types/express": ^4.17.13
@@ -3027,13 +3010,6 @@ __metadata:
   dependencies:
     "@subql/types-core": ^2.0.0
   checksum: 0f720d9c3f791bd1ffa30d7040cbac8ef5efd41fb18ab3002a87067d92954ca8839b2634abc8cdbdcde67dd284d2ed0fb98fae7f81487ca51f9ee7d225a8fa39
-  languageName: node
-  linkType: hard
-
-"@subql/types-core@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@subql/types-core@npm:2.0.1"
-  checksum: e9727804c720bbb55f90afc220940da5ef31c2a3c659d22c3756b9dc6e48ed50bf54858c66e6e9a380a6996c26452f8cd3c055531d6af80fa23569df2fecfea0
   languageName: node
   linkType: hard
 
@@ -4446,25 +4422,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.28.0":
-  version: 0.28.0
-  resolution: "axios@npm:0.28.0"
-  dependencies:
-    follow-redirects: ^1.15.0
-    form-data: ^4.0.0
-    proxy-from-env: ^1.1.0
-  checksum: d3782377512e67510787bf325b664f16c8b595ccdbcf52fca58433fbd082e33c3ef58a19e7d016ce92666be5a1a5ea82028add0cb841077981df9617bd071615
-  languageName: node
-  linkType: hard
-
-"axios@npm:^1.8.3":
-  version: 1.8.4
-  resolution: "axios@npm:1.8.4"
+"axios@npm:^1.9.0":
+  version: 1.9.0
+  resolution: "axios@npm:1.9.0"
   dependencies:
     follow-redirects: ^1.15.6
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: e901dc1730bdcd769839b3d93ae6d6457a53d79b19a0eb623ebfea333441259ab51e63ca118baa47a5156567401466ac739f31087b4ee5e6770ab2e227484538
+  checksum: 631f02c9c279f2ae90637a4989cc9d75c1c27aefd16b6e8eb90f98a4d0bddaccfd1cb1387be12101d1ab0f9bbf0c47e2451b4de0cf2870462a7d9ed3de8da3f2
   languageName: node
   linkType: hard
 
@@ -7240,16 +7205,6 @@ __metadata:
   version: 3.3.1
   resolution: "flatted@npm:3.3.1"
   checksum: 85ae7181650bb728c221e7644cbc9f4bf28bc556f2fc89bb21266962bdf0ce1029cc7acc44bb646cd469d9baac7c317f64e841c4c4c00516afa97320cdac7f94
-  languageName: node
-  linkType: hard
-
-"follow-redirects@npm:^1.15.0":
-  version: 1.15.5
-  resolution: "follow-redirects@npm:1.15.5"
-  peerDependenciesMeta:
-    debug:
-      optional: true
-  checksum: 5ca49b5ce6f44338cbfc3546823357e7a70813cecc9b7b768158a1d32c1e62e7407c944402a918ea8c38ae2e78266312d617dc68783fac502cbb55e1047b34ec
   languageName: node
   linkType: hard
 
@@ -13724,7 +13679,7 @@ __metadata:
 
 "typescript@patch:typescript@^5.5.4#~builtin<compat/typescript>":
   version: 5.5.4
-  resolution: "typescript@patch:typescript@npm%3A5.5.4#~builtin<compat/typescript>::version=5.5.4&hash=493e53"
+  resolution: "typescript@patch:typescript@npm%3A5.5.4#~builtin<compat/typescript>::version=5.5.4&hash=701156"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

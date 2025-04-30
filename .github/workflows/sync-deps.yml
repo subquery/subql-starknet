@@ -41,4 +41,4 @@ jobs:
           commit-message: "Update @subql deps"
           token: ${{ secrets.SQ_SDK_GITHUB_SECRET }}
           title: "Sync @subql dependencies"
-          body-file: ".github/PULL_REQUEST_TEMPLATE.md"
+          body-path: ".github/PULL_REQUEST_TEMPLATE.md"

@@ -10,6 +10,7 @@ jobs:
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
       contents: write
+      pull-requests: write
     env:
       SUBQL_ACCESS_TOKEN: ${{ secrets.SUBQL_ACCESS_TOKEN }}
       SUBQL_ACCESS_TOKEN_TEST: ${{ secrets.SUBQL_ACCESS_TOKEN_TEST }}
@@ -34,7 +35,7 @@ jobs:
         id: branch-name
         run: echo "branch=sync-$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
 
-      - uses: peter-evans/create-pull-request@v5
+      - uses: peter-evans/create-pull-request@v7
         with:
           branch: ${{ steps.branch-name.outputs.branch }}
           commit-message: "Update @subql deps"

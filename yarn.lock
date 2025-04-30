@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 5
+  version: 6
   cacheKey: 8
 
 "@actions/core@npm:^1.10.0":
@@ -13679,7 +13679,7 @@ __metadata:
 
 "typescript@patch:typescript@^5.5.4#~builtin<compat/typescript>":
   version: 5.5.4
-  resolution: "typescript@patch:typescript@npm%3A5.5.4#~builtin<compat/typescript>::version=5.5.4&hash=493e53"
+  resolution: "typescript@patch:typescript@npm%3A5.5.4#~builtin<compat/typescript>::version=5.5.4&hash=701156"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver

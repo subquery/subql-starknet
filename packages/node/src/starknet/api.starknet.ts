@@ -4,7 +4,8 @@
 import assert from 'assert';
 import fs from 'fs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { BlockWithTxs } from '@starknet-io/types-js';
+import { BlockWithTxs } from '@starknet-io/starknet-types-07';
+import * as SPEC from '@starknet-io/starknet-types-08';
 import { getLogger, IBlock } from '@subql/node-core';
 import {
   ApiWrapper,
@@ -28,7 +29,6 @@ import {
   FunctionAbi,
   BlockIdentifier,
 } from 'starknet';
-import { SPEC } from 'starknet-types-07';
 import {
   FinalizedBlockService,
   HEADER_WITH_STATUS,
@@ -97,7 +97,7 @@ export class StarknetApi implements ApiWrapper {
     private eventEmitter: EventEmitter2,
     private config?: IStarknetEndpointConfig,
   ) {
-    const { hostname, protocol, searchParams } = new URL(endpoint);
+    const { hostname, protocol } = new URL(endpoint);
 
     const protocolStr = protocol.replace(':', '');
 
@@ -114,9 +114,6 @@ export class StarknetApi implements ApiWrapper {
       },
       batch: this.config?.batchSize ?? false,
     };
-    searchParams.forEach((value, name) => {
-      (connection.headers as any)[name] = value;
-    });
     this.client = new RpcProvider(connection);
     this.finalizedBlockService = new FinalizedBlockService(
       this.getBlockByHeightOrHash.bind(this),
@@ -159,8 +156,6 @@ export class StarknetApi implements ApiWrapper {
     if (block === null) {
       throw new Error(`Getting genesis block returned null from block 1`);
     }
-    // @ts-ignore
-    // TODO, @starknet-io/types-js is not align with starknet rpc types, follow this ticket https://github.com/starknet-io/types-js/issues/31
     return block;
   }
 

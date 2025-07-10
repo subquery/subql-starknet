@@ -5,7 +5,8 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { BlockchainService } from './blockchain.service';
 import { StarknetApi, StarknetApiService } from './starknet';
 
-const HTTP_ENDPOINT = 'https://free-rpc.nethermind.io/mainnet-juno/v0_7';
+const HTTP_ENDPOINT =
+  process.env.HTTP_ENDPOINT ?? 'https://starknet.api.onfinality.io/public';
 
 const mockApiService = async (): Promise<StarknetApiService> => {
   const strkApi = new StarknetApi(HTTP_ENDPOINT, new EventEmitter2());

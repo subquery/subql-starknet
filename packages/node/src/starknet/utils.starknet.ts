@@ -1,7 +1,8 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { SPEC } from '@starknet-io/types-js';
+import * as SPEC07 from '@starknet-io/starknet-types-07';
+import * as SPEC from '@starknet-io/starknet-types-08';
 import { Header, IBlock } from '@subql/node-core';
 import {
   ApiWrapper,
@@ -249,14 +250,21 @@ export function starknetBlockHeaderToHeader(block: SPEC.BLOCK_HEADER): Header {
 
 //TODO, only used to phrase abi event
 export function reverseToRawLog(log: StarknetLog): SPEC.EMITTED_EVENT {
-  return {
+  // Strip the block and transaction properties
+  const { block, transaction, ...rest } = log;
+  const emittedEvent = {
     block_hash: log.blockHash,
     keys: [...log.topics],
     from_address: log.address,
     transaction_hash: log.transactionHash,
     block_number: log.blockNumber,
-    ...log,
+    ...rest,
   };
+
+  // log also has a toJSON method, which we don't want to include in the raw log
+  delete (emittedEvent as any).toJSON;
+
+  return emittedEvent;
 }
 
 // This is used when user abi not provided, or decode call in tx
@@ -290,7 +298,11 @@ export function hexEq(a: string, b: string): boolean {
 
 // check if block is finalized
 export function isFinalizedBlock(
-  block: SPEC.BLOCK_WITH_RECEIPTS | SPEC.PENDING_BLOCK_WITH_RECEIPTS,
+  block:
+    | SPEC07.SPEC.BLOCK_WITH_RECEIPTS
+    | SPEC07.SPEC.PENDING_BLOCK_WITH_RECEIPTS
+    | SPEC.BLOCK_WITH_RECEIPTS
+    | SPEC.PENDING_BLOCK_WITH_RECEIPTS,
 ): block is SPEC.BLOCK_WITH_RECEIPTS {
   return (
     'status' in block &&

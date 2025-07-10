@@ -97,7 +97,7 @@ export class StarknetApi implements ApiWrapper {
     private eventEmitter: EventEmitter2,
     private config?: IStarknetEndpointConfig,
   ) {
-    const { hostname, protocol, searchParams } = new URL(endpoint);
+    const { hostname, protocol } = new URL(endpoint);
 
     const protocolStr = protocol.replace(':', '');
 
@@ -114,9 +114,6 @@ export class StarknetApi implements ApiWrapper {
       },
       batch: this.config?.batchSize ?? false,
     };
-    searchParams.forEach((value, name) => {
-      (connection.headers as any)[name] = value;
-    });
     this.client = new RpcProvider(connection);
     this.finalizedBlockService = new FinalizedBlockService(
       this.getBlockByHeightOrHash.bind(this),

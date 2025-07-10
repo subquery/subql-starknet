@@ -19,7 +19,7 @@ network:
   #  endpoint: "fill it in"
   chainId: '0x534e5f4d41494e'
   dictionary: 'https://strk-dict.api.onfinality.io/'
-  endpoint: 'https://free-rpc.nethermind.io/mainnet-juno/v0_7'
+  endpoint: 'https://starknet.api.onfinality.io/public'
 
 dataSources:
   - kind: starknet/Runtime

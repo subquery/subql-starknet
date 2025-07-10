@@ -15,7 +15,8 @@ import { SubqueryProject } from '../configure/SubqueryProject';
 import { StarknetApiService } from './api.service.starknet';
 
 // Add api key to work
-const HTTP_ENDPOINT = 'https://free-rpc.nethermind.io/mainnet-juno/v0_7';
+const HTTP_ENDPOINT =
+  process.env.HTTP_ENDPOINT ?? 'https://starknet.api.onfinality.io/public';
 
 function testSubqueryProject(endpoint: string): SubqueryProject {
   return {
@@ -71,11 +72,11 @@ describe('ApiService', () => {
   let apiService: StarknetApiService;
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     [apiService, app] = await prepareApiService();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     return app?.close();
   });
 

@@ -10,7 +10,8 @@ import {
 } from './block.starknet';
 import { hexEq } from './utils.starknet';
 
-const HTTP_ENDPOINT = 'https://free-rpc.nethermind.io/mainnet-juno/v0_7';
+const HTTP_ENDPOINT =
+  process.env.HTTP_ENDPOINT ?? 'https://starknet.api.onfinality.io/public';
 
 jest.setTimeout(100000);
 

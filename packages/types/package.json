@@ -1,6 +1,6 @@
 {
   "name": "@subql/types-starknet",
-  "version": "1.2.1",
+  "version": "1.2.2-0",
   "description": "",
   "homepage": "https://github.com/subquery/subql",
   "repository": "github:subquery/subql",
@@ -28,5 +28,6 @@
   "dependencies": {
     "@subql/types-core": "^2.1.0",
     "starknet": "^7.6.2"
-  }
+  },
+  "stableVersion": "1.2.1"
 }

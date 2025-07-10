@@ -1,8 +1,8 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
+import * as SPEC from '@starknet-io/starknet-types-08';
 import P from 'pino';
-import { SPEC } from 'starknet-types-07';
 import { FinalizedBlockService } from './finalized.block.starknet';
 
 const createMockBlock = (
@@ -21,6 +21,7 @@ const createMockBlock = (
   l1_da_mode: 'BLOB',
   l1_gas_price: { price_in_wei: '0', price_in_fri: '0' },
   l1_data_gas_price: { price_in_wei: '0', price_in_fri: '0' },
+  l2_gas_price: { price_in_wei: '0', price_in_fri: '0' },
 });
 
 // **Mock blocks**

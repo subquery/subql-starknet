@@ -26,8 +26,7 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@starknet-io/types-js": "latest",
     "@subql/types-core": "^2.1.0",
-    "starknet": "^6.11.0"
+    "starknet": "^7.6.2"
   }
 }

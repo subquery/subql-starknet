@@ -1,7 +1,7 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import {SPEC} from '@starknet-io/types-js';
+import {TXN_TYPE} from '@starknet-io/starknet-types-08';
 import {BaseDataSource} from '@subql/common';
 import {FileReference} from '@subql/types-core';
 import {
@@ -67,7 +67,7 @@ export class TransactionFilter implements StarknetTransactionFilter {
   function?: string | null;
   @IsOptional()
   @IsEnum(SubqlStarknetTxnKind) //TODO, not sure works without validation
-  type?: SPEC.TXN_TYPE;
+  type?: TXN_TYPE;
 }
 
 export function forbidNonWhitelisted(keys: any, validationOptions?: ValidationOptions) {

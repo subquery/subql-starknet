@@ -10,6 +10,6 @@ export function getBlockSize(block: BlockContent): number {
   return isFullBlock(block)
     ? block.transactions
         .map((tx) => tx.receipt.execution_resources.steps)
-        .reduce((sum, steps) => sum + steps, 0)
+        .reduce((sum, steps) => (sum ?? 0) + (steps ?? 0), 0) ?? 0
     : block.transactions.length;
 }

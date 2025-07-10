@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { Inject } from '@nestjs/common';
-import { SPEC } from '@starknet-io/types-js';
+import { BLOCK_WITH_TX_HASHES } from '@starknet-io/starknet-types-08';
 import {
   isCustomDs,
   isRuntimeDs,
@@ -149,7 +149,7 @@ export class BlockchainService
   async getBlockTimestamp(height: number): Promise<Date> {
     const block = (await this.apiService.unsafeApi.api.getBlock(
       height,
-    )) as SPEC.BLOCK_WITH_TX_HASHES;
+    )) as BLOCK_WITH_TX_HASHES;
 
     return getBlockTimestamp(block);
   }

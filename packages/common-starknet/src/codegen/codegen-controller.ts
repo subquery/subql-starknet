@@ -5,11 +5,11 @@ import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 import {Interface, EventFragment, FunctionFragment} from '@ethersproject/abi';
-import {ABI} from '@starknet-io/types-js';
+import {CONTRACT_ABI as ABI} from '@starknet-io/starknet-types-08';
 import {FileReference} from '@subql/types-core';
 import {StarknetHandlerKind, StarknetRuntimeDatasource} from '@subql/types-starknet';
 import {Data} from 'ejs';
-import {runTypeChain, glob, parseContractPath} from 'typechain';
+import {glob, parseContractPath} from 'typechain';
 import {isCustomDs, isRuntimeDs, NOT_NULL_FILTER} from '../project';
 
 const RECONSTRUCTED_FACTORIES_TS = path.resolve(__dirname, '../../templates/factories-index.ts.ejs');

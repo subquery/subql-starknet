@@ -1,9 +1,9 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
+import * as SPEC from '@starknet-io/starknet-types-08';
 import { profiler } from '@subql/node-core';
 import P from 'pino';
-import { SPEC } from 'starknet-types-07';
 
 const INIT_BINARY_JUMP = 1000;
 

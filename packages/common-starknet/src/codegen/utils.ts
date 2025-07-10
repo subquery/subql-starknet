@@ -1,7 +1,7 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import {ABI} from '@starknet-io/types-js';
+import {CONTRACT_ABI as ABI} from '@starknet-io/starknet-types-08';
 import {loadFromJsonOrYaml} from '@subql/common';
 import {parseContractPath} from 'typechain';
 

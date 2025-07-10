@@ -1,7 +1,7 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { BlockWithTxs, BlockWithTxHashes, SPEC } from '@starknet-io/types-js';
+import * as SPEC from '@starknet-io/starknet-types-08';
 import { getLogger } from '@subql/node-core';
 import {
   BigNumberish,
@@ -13,7 +13,6 @@ import {
   RpcProvider,
   waitForTransactionOptions,
 } from 'starknet';
-import spec from 'starknet-types-07';
 
 const logger = getLogger('safe.api.starknet');
 
@@ -43,9 +42,9 @@ export default class SafeStarknetProvider extends RpcProvider {
   }
 
   async estimateMessageFee(
-    message: spec.L1Message,
+    message: SPEC.L1Message,
     blockIdentifier?: BlockIdentifier,
-  ): Promise<spec.FeeEstimate> {
+  ): Promise<SPEC.FeeEstimate> {
     // @ts-ignore
     return this.baseApi.estimateMessageFee(message, this.blockHeight);
   }
@@ -58,14 +57,16 @@ export default class SafeStarknetProvider extends RpcProvider {
   }
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async
-  getBlockWithTxs(blockHashOrBlockTag: BlockIdentifier): Promise<BlockWithTxs> {
+  getBlockWithTxs(
+    blockHashOrBlockTag: BlockIdentifier,
+  ): Promise<SPEC.BlockWithTxs> {
     throw new Error('Method `getBlockWithTransactions` not supported.');
   }
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   getBlockWithTxHashes(
     blockHashOrBlockTag: BlockIdentifier,
-  ): Promise<BlockWithTxHashes> {
+  ): Promise<SPEC.BlockWithTxHashes> {
     throw new Error('Method `getBlock` not supported.');
   }
 

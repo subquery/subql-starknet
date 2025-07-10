@@ -1,7 +1,8 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { SPEC } from '@starknet-io/types-js';
+import * as SPEC07 from '@starknet-io/starknet-types-07';
+import * as SPEC from '@starknet-io/starknet-types-08';
 import { Header, IBlock } from '@subql/node-core';
 import {
   ApiWrapper,
@@ -290,7 +291,11 @@ export function hexEq(a: string, b: string): boolean {
 
 // check if block is finalized
 export function isFinalizedBlock(
-  block: SPEC.BLOCK_WITH_RECEIPTS | SPEC.PENDING_BLOCK_WITH_RECEIPTS,
+  block:
+    | SPEC07.SPEC.BLOCK_WITH_RECEIPTS
+    | SPEC07.SPEC.PENDING_BLOCK_WITH_RECEIPTS
+    | SPEC.BLOCK_WITH_RECEIPTS
+    | SPEC.PENDING_BLOCK_WITH_RECEIPTS,
 ): block is SPEC.BLOCK_WITH_RECEIPTS {
   return (
     'status' in block &&

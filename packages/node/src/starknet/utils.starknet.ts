@@ -250,14 +250,21 @@ export function starknetBlockHeaderToHeader(block: SPEC.BLOCK_HEADER): Header {
 
 //TODO, only used to phrase abi event
 export function reverseToRawLog(log: StarknetLog): SPEC.EMITTED_EVENT {
-  return {
+  // Strip the block and transaction properties
+  const { block, transaction, ...rest } = log;
+  const emittedEvent = {
     block_hash: log.blockHash,
     keys: [...log.topics],
     from_address: log.address,
     transaction_hash: log.transactionHash,
     block_number: log.blockNumber,
-    ...log,
+    ...rest,
   };
+
+  // log also has a toJSON method, which we don't want to include in the raw log
+  delete (emittedEvent as any).toJSON;
+
+  return emittedEvent;
 }
 
 // This is used when user abi not provided, or decode call in tx

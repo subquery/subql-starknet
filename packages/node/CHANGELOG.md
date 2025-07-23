@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [6.1.0] - 2025-07-23
 ### Changed
 - Update to RPC Spec 0.8 (#31)
 - Optimise docker image size (#32)
@@ -51,7 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Init release
 
-[Unreleased]: https://github.com/subquery/subql-starknet/compare/node-starknet/6.0.2...HEAD
+[Unreleased]: https://github.com/subquery/subql-starknet/compare/node-starknet/6.1.0...HEAD
+[6.1.0]: https://github.com/subquery/subql-starknet/compare/node-starknet/6.0.2...node-starknet/6.1.0
 [6.0.2]: https://github.com/subquery/subql-starknet/compare/node-starknet/6.0.1...node-starknet/6.0.2
 [6.0.1]: https://github.com/subquery/subql-starknet/compare/node-starknet/6.0.0...node-starknet/6.0.1
 [6.0.0]: https://github.com/subquery/subql-starknet/compare/node-starknet/5.9.0...node-starknet/6.0.0

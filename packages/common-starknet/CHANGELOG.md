@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Update to RPC Spec 0.8 (#31)
+- Update `@subql/common` (#32)
 
 ## [1.2.2] - 2025-07-01
 ### Changed

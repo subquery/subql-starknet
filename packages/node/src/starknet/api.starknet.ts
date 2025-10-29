@@ -4,8 +4,8 @@
 import assert from 'assert';
 import fs from 'fs';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { BlockWithTxs } from '@starknet-io/starknet-types-07';
-import * as SPEC from '@starknet-io/starknet-types-08';
+import * as RPCSPEC08 from '@starknet-io/starknet-types-08';
+import * as SPEC from '@starknet-io/starknet-types-09';
 import { getLogger, IBlock } from '@subql/node-core';
 import {
   ApiWrapper,
@@ -28,6 +28,8 @@ import {
   AbiEntry,
   FunctionAbi,
   BlockIdentifier,
+  CallResult,
+  createAbiParser,
 } from 'starknet';
 import {
   FinalizedBlockService,
@@ -151,7 +153,9 @@ export class StarknetApi implements ApiWrapper {
     }
   }
 
-  private async getGenesisBlock(): Promise<BlockWithTxs> {
+  private async getGenesisBlock(): Promise<
+    SPEC.BlockWithTxs | RPCSPEC08.BlockWithTxs
+  > {
     const block = await this.client.getBlockWithTxs(1);
     if (block === null) {
       throw new Error(`Getting genesis block returned null from block 1`);
@@ -308,11 +312,13 @@ export class StarknetApi implements ApiWrapper {
       const abiEvents = events.getAbiEvents(iAbi);
       const abiStructs = CallData.getAbiStruct(iAbi);
       const abiEnums = CallData.getAbiEnum(iAbi);
+      const abiParser = createAbiParser(iAbi);
       const [parsed] = events.parseEvents(
         [emittedEvent],
         abiEvents,
         abiStructs,
         abiEnums,
+        abiParser,
       );
       log.args = parsed as T;
       return log;
@@ -385,7 +391,10 @@ export class StarknetApi implements ApiWrapper {
     );
   }
 
-  static DecodeCallDataWithAbi(iAbi: Abi, call: StarknetContractCall): any {
+  static DecodeCallDataWithAbi(
+    iAbi: Abi,
+    call: StarknetContractCall,
+  ): Record<string, CallResult> {
     const callData = new CallData(iAbi);
     const { inputs } = callData.parser
       .getLegacyFormat()
@@ -393,9 +402,7 @@ export class StarknetApi implements ApiWrapper {
         (abiItem: AbiEntry) =>
           encodeSelectorToHex(abiItem.name) === call.selector,
       ) as FunctionAbi;
-    const inputsTypes = inputs.map((inp: any) => {
-      return inp.type as string;
-    });
+    const inputsTypes = inputs.map((inp) => inp.type);
     const res = callData.decodeParameters(inputsTypes, call.calldata);
     const result = inputs.reduce((acc, item, index) => {
       acc[item.name] = res[index];

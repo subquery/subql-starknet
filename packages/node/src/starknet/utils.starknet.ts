@@ -1,8 +1,8 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import * as SPEC07 from '@starknet-io/starknet-types-07';
-import * as SPEC from '@starknet-io/starknet-types-08';
+import * as RPCSPEC08 from '@starknet-io/starknet-types-08';
+import * as SPEC from '@starknet-io/starknet-types-09';
 import { Header, IBlock } from '@subql/node-core';
 import {
   ApiWrapper,
@@ -296,17 +296,18 @@ export function hexEq(a: string, b: string): boolean {
   }
 }
 
+type BlockWithHashesResponse = Awaited<
+  ReturnType<RpcProvider['getBlockWithTxHashes']>
+>;
+
 // check if block is finalized
-export function isFinalizedBlock(
-  block:
-    | SPEC07.SPEC.BLOCK_WITH_RECEIPTS
-    | SPEC07.SPEC.PENDING_BLOCK_WITH_RECEIPTS
-    | SPEC.BLOCK_WITH_RECEIPTS
-    | SPEC.PENDING_BLOCK_WITH_RECEIPTS,
-): block is SPEC.BLOCK_WITH_RECEIPTS {
+export function isFinalizedBlock(block: {
+  status?: SPEC.BLOCK_STATUS | RPCSPEC08.BLOCK_STATUS;
+}): block is SPEC.BLOCK_WITH_RECEIPTS {
   return (
     'status' in block &&
     block.status !== 'PENDING' &&
-    block.status !== 'REJECTED'
+    block.status !== 'REJECTED' &&
+    block.status !== 'PRE_CONFIRMED'
   );
 }

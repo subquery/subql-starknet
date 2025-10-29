@@ -5,7 +5,7 @@ import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 import {Interface, EventFragment, FunctionFragment} from '@ethersproject/abi';
-import {CONTRACT_ABI as ABI} from '@starknet-io/starknet-types-08';
+import {CONTRACT_ABI as ABI} from '@starknet-io/starknet-types-09';
 import {FileReference} from '@subql/types-core';
 import {StarknetHandlerKind, StarknetRuntimeDatasource} from '@subql/types-starknet';
 import {Data} from 'ejs';

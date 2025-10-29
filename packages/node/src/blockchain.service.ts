@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import { Inject } from '@nestjs/common';
-import { BLOCK_WITH_TX_HASHES } from '@starknet-io/starknet-types-08';
+import { BLOCK_WITH_TX_HASHES } from '@starknet-io/starknet-types-09';
 import {
   isCustomDs,
   isRuntimeDs,

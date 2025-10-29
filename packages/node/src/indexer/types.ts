@@ -9,7 +9,10 @@ export type BlockContent = StarknetBlock | LightStarknetBlock;
 export function getBlockSize(block: BlockContent): number {
   return isFullBlock(block)
     ? block.transactions
-        .map((tx) => tx.receipt.execution_resources.steps)
+        .map(
+          ({ receipt: { execution_resources } }) =>
+            execution_resources.l1_data_gas + execution_resources.l1_gas,
+        )
         .reduce((sum, steps) => (sum ?? 0) + (steps ?? 0), 0) ?? 0
     : block.transactions.length;
 }

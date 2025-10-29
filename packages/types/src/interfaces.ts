@@ -1,7 +1,7 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import {BLOCK_WITH_RECEIPTS} from '@starknet-io/starknet-types-08';
+import {BLOCK_WITH_RECEIPTS} from '@starknet-io/starknet-types-09';
 
 export interface ApiWrapper {
   init: () => Promise<void>;

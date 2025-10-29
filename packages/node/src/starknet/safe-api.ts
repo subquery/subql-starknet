@@ -1,7 +1,8 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import * as SPEC from '@starknet-io/starknet-types-08';
+import * as RPCSPEC08 from '@starknet-io/starknet-types-08';
+import * as SPEC from '@starknet-io/starknet-types-09';
 import { getLogger } from '@subql/node-core';
 import {
   BigNumberish,
@@ -44,7 +45,7 @@ export default class SafeStarknetProvider extends RpcProvider {
   async estimateMessageFee(
     message: SPEC.L1Message,
     blockIdentifier?: BlockIdentifier,
-  ): Promise<SPEC.FeeEstimate> {
+  ): Promise<SPEC.MESSAGE_FEE_ESTIMATE | RPCSPEC08.FEE_ESTIMATE> {
     // @ts-ignore
     return this.baseApi.estimateMessageFee(message, this.blockHeight);
   }

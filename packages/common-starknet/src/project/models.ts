@@ -1,7 +1,7 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import {TXN_TYPE} from '@starknet-io/starknet-types-08';
+import {TXN_TYPE} from '@starknet-io/starknet-types-09';
 import {BaseDataSource} from '@subql/common';
 import {FileReference} from '@subql/types-core';
 import {

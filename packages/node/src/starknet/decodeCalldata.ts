@@ -1,7 +1,7 @@
 // Copyright 2020-2025 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: GPL-3.0
 
-import { Felt } from '@starknet-io/starknet-types-08';
+import { Felt } from '@starknet-io/starknet-types-09';
 import { StarknetContractCall } from '@subql/types-starknet';
 
 export class DecodeCalldataError extends Error {

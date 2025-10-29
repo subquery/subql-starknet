@@ -12,7 +12,7 @@ import {
   TXN_TYPE,
   RESOURCE_PRICE,
   BLOCK_STATUS,
-} from '@starknet-io/starknet-types-08';
+} from '@starknet-io/starknet-types-09';
 import {BlockFilter} from '@subql/types-core';
 import {ParsedEvent, TransactionReceipt} from 'starknet';
 

@@ -27,6 +27,6 @@
   ],
   "dependencies": {
     "@subql/types-core": "^2.1.0",
-    "starknet": "^7.6.2"
+    "starknet": "^8.6.0"
   }
 }

@@ -34,7 +34,7 @@
     "lodash": "^4.17.21",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "starknet": "^7.6.2",
+    "starknet": "^8.6.0",
     "yargs": "^16.2.0"
   },
   "peerDependencies": {

@@ -1,4 +1,4 @@
-name: "Prerelease"
+name: "Publish"
 on:
   push:
     branches:
@@ -75,7 +75,7 @@ jobs:
     needs: [pre-ci, setup]
     if: >
       !startsWith(github.event.head_commit.message, '[SKIP CI]')
-      && !startsWith(github.event.head_commit.message, '[release]')
+      && startsWith(github.event.head_commit.message, '[release]')
       && github.repository == 'subquery/subql-starknet'
     runs-on: ubuntu-latest
     steps:
